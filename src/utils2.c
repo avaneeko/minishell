@@ -1,18 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   utils2.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/24 18:06:42 by losypenk          #+#    #+#             */
-/*   Updated: 2025/07/25 19:34:53 by losypenk         ###   ########.fr       */
+/*   Created: 2025/07/25 19:06:24 by losypenk          #+#    #+#             */
+/*   Updated: 2025/07/25 19:36:10 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "utils.h"
 
-int	main(int argc, char const *argv[], char const *envp[])
+/*																			*/
+/*	String equal.															*/
+/*	Returns 1 if the strings are equal, 0 otherwise.						*/
+/*																			*/
+int		streq(char const *a, char const *b)
 {
-	return (0);
+	while (*a && *b)
+	{
+		if (*a != *b)
+			return (0);
+		a++;
+		b++;
+	}
+	return (*a == *b);
 }

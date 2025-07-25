@@ -1,18 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/24 18:06:42 by losypenk          #+#    #+#             */
-/*   Updated: 2025/07/25 19:34:53 by losypenk         ###   ########.fr       */
+/*   Created: 2025/07/25 18:41:55 by losypenk          #+#    #+#             */
+/*   Updated: 2025/07/25 19:35:10 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#ifndef MINISHELL_H
+# define MINISHELL_H
 
-int	main(int argc, char const *argv[], char const *envp[])
-{
-	return (0);
-}
+# include <stdio.h> //! TODO: REMOVE THIS IN SHIPPING.
+
+# include <unistd.h>
+# include <sys/wait.h>
+# include <stdlib.h>
+# include "utils.h"
+
+#endif
