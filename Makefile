@@ -6,7 +6,7 @@
 #    By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/24 17:33:26 by losypenk          #+#    #+#              #
-#    Updated: 2025/07/25 15:45:53 by losypenk         ###   ########.fr        #
+#    Updated: 2025/07/25 16:15:25 by losypenk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,8 +17,8 @@ OBJ := $(SRC:src/%.c=obj/%.o)
 
 CC := cc
 
-CFLAGS := -Wall -Wextra -Werror -Isrc -MMD -MP $(CFLAGS)
-LDFLAGS := $(LDFLAGS)
+CFLAGS := -Wall -Wextra -Werror -Isrc -MMD -MP $(CF)
+LDFLAGS := $(LDF)
 
 all: $(NAME)
 
