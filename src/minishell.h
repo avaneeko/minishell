@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 18:41:55 by losypenk          #+#    #+#             */
-/*   Updated: 2025/07/25 19:35:10 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/07/26 16:26:02 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,9 @@
 # include <unistd.h>
 # include <sys/wait.h>
 # include <stdlib.h>
+# include <readline/readline.h>
+# include <readline/history.h>
+
 # include "utils.h"
 
 #endif
