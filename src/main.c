@@ -14,5 +14,12 @@
 
 int	main(int argc, char const *argv[], char const *envp[])
 {
+	char *line;
+	while ((line = readline("? ")))
+	{
+		write(2, line, slen(line));
+		free(line);
+	}
+
 	return (0);
 }

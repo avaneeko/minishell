@@ -78,4 +78,11 @@ void	copy_token_list(t_token_list const *src, t_token_list *dst);
 //
 int	clone_token_list(t_token_list const *list, t_token_list **out);
 
+//
+//	Resizes the token list.
+//	Always free()'s the old *list, even on failure.
+//	Returns 1 on success, 0 otherwise.
+//
+int	resize_token_list(t_token_list **list, unsigned int new_capacity);
+
 #endif
