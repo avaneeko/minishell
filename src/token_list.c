@@ -14,8 +14,8 @@
 
 int	new_token_list(unsigned int capacity, t_token_list **out)
 {
-	t_token_list *const list = malloc(sizeof(t_token_list)
-		+ capacity * sizeof(t_token *));
+	t_token_list *const	list = malloc(sizeof(t_token_list)
+			+ capacity * sizeof(t_token *));
 
 	if (!list)
 		return (0);
@@ -37,8 +37,8 @@ void	copy_token_list(t_token_list const *src, t_token_list *dst)
 
 int	clone_token_list(t_token_list const *list, t_token_list **out)
 {
-	t_token_list *const mem = malloc(sizeof(t_token_list)
-		+ list->len * sizeof(t_token *));
+	t_token_list *const	mem = malloc(sizeof(t_token_list)
+			+ list->len * sizeof(t_token *));
 
 	if (mem)
 	{
@@ -55,7 +55,7 @@ int	resize_token_list(t_token_list **list, unsigned int new_capacity)
 	if (new_capacity < (*list)->cap)
 		(*list)->len = new_capacity;
 	mem = malloc(sizeof(t_token_list)
-		+ new_capacity * sizeof(t_token *));
+			+ new_capacity * sizeof(t_token *));
 	if (mem)
 	{
 		copy_token_list(*list, mem);

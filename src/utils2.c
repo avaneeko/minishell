@@ -16,7 +16,7 @@
 /*	String equal.															*/
 /*	Returns 1 if the strings are equal, 0 otherwise.						*/
 /*																			*/
-int		streq(char const *a, char const *b)
+int	streq(char const *a, char const *b)
 {
 	while (*a && *b)
 	{
