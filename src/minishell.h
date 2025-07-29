@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 18:41:55 by losypenk          #+#    #+#             */
-/*   Updated: 2025/07/29 15:16:12 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/07/29 17:58:36 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,35 @@ typedef struct s_token
 
 typedef struct s_token_list
 {
-	t_token			*tok;	// Token ptr array.
-	unsigned int	len;	// It's length.
+	unsigned int	cap;	// Capacity of .tok
+	unsigned int	len;	// Count of valid tokens in .tok
+	t_token			*tok[];	// Token ptr array.
 }	t_token_list;
+
+//
+//	Instantiate a new token list, with set capacity.
+//	Returns 1 on success, 0 otherwise.
+//
+int new_token_list(unsigned int capacity, t_token_list **out);
+
+//
+//	Destroys the token list.
+//	Releases all resources held by t_token_list.
+//	This does not release the tokens that list refernces, only the list itself.
+//*	list is unusable after this function.
+//
+void	destroy_token_list(t_token_list const *list);
+
+//
+//	Copies the token list. dst must have enough space for the copy.
+//
+void	copy_token_list(t_token_list const *src, t_token_list *dst);
+
+//
+//	Clones the token list, allocating resources for the newly created clone.
+//*	This does not clone the tokens, only their references inside the list.
+//	Returns 1 on success, 0 otherwise.
+//
+int	clone_token_list(t_token_list const *list, t_token_list **out);
 
 #endif
