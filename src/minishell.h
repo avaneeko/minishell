@@ -56,7 +56,7 @@ typedef struct s_token_list
 //	Instantiate a new token list, with set capacity.
 //	Returns 1 on success, 0 otherwise.
 //
-int new_token_list(unsigned int capacity, t_token_list **out);
+int		new_token_list(unsigned int capacity, t_token_list **out);
 
 //
 //	Destroys the token list.
@@ -76,13 +76,13 @@ void	copy_token_list(t_token_list const *src, t_token_list *dst);
 //*	This does not clone the tokens, only their references inside the list.
 //	Returns 1 on success, 0 otherwise.
 //
-int	clone_token_list(t_token_list const *list, t_token_list **out);
+int		clone_token_list(t_token_list const *list, t_token_list **out);
 
 //
 //	Resizes the token list.
 //	Always free()'s the old *list, even on failure.
 //	Returns 1 on success, 0 otherwise.
 //
-int	resize_token_list(t_token_list **list, unsigned int new_capacity);
+int		resize_token_list(t_token_list **list, unsigned int new_capacity);
 
 #endif

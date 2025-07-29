@@ -18,7 +18,7 @@ OBJ := $(SRC:src/%.c=obj/%.o)
 CC := cc
 
 CFLAGS := -Wall -Wextra -Werror -Isrc -MMD -MP $(CF)
-LDFLAGS := $(LDF)
+LDFLAGS := -lreadline $(LDF)
 
 all: $(NAME)
 
