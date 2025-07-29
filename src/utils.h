@@ -6,15 +6,15 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 18:43:31 by losypenk          #+#    #+#             */
-/*   Updated: 2025/07/25 19:36:17 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/07/29 16:03:36 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef UTILS_H
 # define UTILS_H
 
-#include <stdint.h>
-#include <stdlib.h>
+# include <stdint.h>
+# include <stdlib.h>
 
 //*$	This file defines fundamental, commonly used functions.
 
