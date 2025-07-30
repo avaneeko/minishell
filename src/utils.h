@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 18:43:31 by losypenk          #+#    #+#             */
-/*   Updated: 2025/07/29 16:03:36 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/07/30 13:18:47 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,5 +48,10 @@ void	*mclone(void const *p, size_t size);
 /*	Returns 1 if the strings are equal, 0 otherwise.						*/
 /*																			*/
 int		streq(char const *a, char const *b);
+
+/*																			*/
+/*	String copy.															*/
+/*																			*/
+void	scpy(char *dst, char const *src);
 
 #endif
