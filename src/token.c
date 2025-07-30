@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 13:13:16 by losypenk          #+#    #+#             */
-/*   Updated: 2025/07/30 13:44:36 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/07/30 14:08:51 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,4 +32,27 @@ int	create_token(enum e_token_type type, char const *tok, t_token **out)
 void	destroy_token(t_token const *token)
 {
 	free((void *)token);
+}
+
+int	modify_token(t_token **token, char const *new_contents)
+{
+	size_t const	len = slen(new_contents);
+	t_token	*t;
+	if (slen((*token)->token) == len)
+	{
+		scpy((*token)->token, new_contents);
+		return (1);
+	}
+	else
+	{
+		t = malloc(sizeof(t_token) + len + 1);
+		if (t)
+		{
+			t->type = (*token)->type;
+			scpy(t->token, new_contents);
+		}
+		free(*token);
+		*token = t;
+		return (t != 0);
+	}
 }

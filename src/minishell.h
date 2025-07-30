@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 18:41:55 by losypenk          #+#    #+#             */
-/*   Updated: 2025/07/30 13:43:29 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/07/30 14:01:07 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ int		new_token_list(unsigned int capacity, t_token_list **out);
 //
 //	Destroys the token list.
 //	Releases all resources held by t_token_list.
-//	This does not release the tokens that list refernces, only the list itself.
+//	This does not release the tokens that list references, only the list itself.
 //*	list is unusable after this function.
 //
 void	destroy_token_list(t_token_list const *list);
@@ -99,5 +99,17 @@ int		create_token(enum e_token_type type, char const *tok, t_token **out);
 //	Token is rendered unsable after this function.
 //
 void	destroy_token(t_token const *token);
+
+//
+//	Modifies the token's contents by recreating the token with appropriate size.
+//! It's forbidden to call this function on tokens that do not have any token
+//!	contents, such as e_token_type::TOKEN_PIPE.
+//*	Always free()'s the `*token`, even on failure, unless no reallocation was
+//*	required.
+//* `new_contents` are copied into the token, not referenced.
+//	Writes the output to `*token` or nulls it on failure.
+//	Returns 1 on success, 0 otherwise.
+//
+int	modify_token(t_token **token, char const *new_contents);
 
 #endif
