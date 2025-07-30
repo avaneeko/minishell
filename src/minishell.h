@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 18:41:55 by losypenk          #+#    #+#             */
-/*   Updated: 2025/07/30 14:01:07 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/07/30 22:22:55 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ enum e_token_type
 
 //
 //	Defines a token.
-//!	.token might be missing from certain .type tokens.
+//!	.token might be missing from certain .type tokens. That's intentional.
 //
 typedef struct s_token
 {
@@ -86,6 +86,14 @@ int		clone_token_list(t_token_list const *list, t_token_list **out);
 int		resize_token_list(t_token_list **list, unsigned int new_capacity);
 
 //
+//	Appends the new token pointer to the list, might grow the `*list` if it's
+//	capacity is too small for appending.
+//!	Will free the `*list` and `token` on failure.
+//	Returns 1 on success, 0 on failure.
+//
+int		append_token_list(t_token_list **list, t_token *token);
+
+//
 //	Creates an allocated token with type `type` and `tok` contents.
 //*	`tok` pointer is optional.
 //	If `tok` is null, the token will only have the type and no contents.
@@ -96,7 +104,7 @@ int		create_token(enum e_token_type type, char const *tok, t_token **out);
 
 //
 //	Destroy token. Releases all resources held by token.
-//	Token is rendered unsable after this function.
+//	Token is rendered unusable after this function.
 //
 void	destroy_token(t_token const *token);
 
@@ -104,6 +112,7 @@ void	destroy_token(t_token const *token);
 //	Modifies the token's contents by recreating the token with appropriate size.
 //! It's forbidden to call this function on tokens that do not have any token
 //!	contents, such as e_token_type::TOKEN_PIPE.
+//!	`new_contents` cannot be null.
 //*	Always free()'s the `*token`, even on failure, unless no reallocation was
 //*	required.
 //* `new_contents` are copied into the token, not referenced.
