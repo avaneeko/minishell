@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 18:41:55 by losypenk          #+#    #+#             */
-/*   Updated: 2025/07/29 17:58:36 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/07/30 13:12:50 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,5 +84,14 @@ int		clone_token_list(t_token_list const *list, t_token_list **out);
 //	Returns 1 on success, 0 otherwise.
 //
 int		resize_token_list(t_token_list **list, unsigned int new_capacity);
+
+//
+//	Creates an allocated token with type `type` and `tok` contents.
+//*	`tok` pointer is optional.
+//	If `tok` is null, the token will only have the type and no contents.
+//	Writes the new token to *out, only on success.
+//	Returns 1 on success, 0 otherwise.
+//
+int		create_token(enum e_token_type type, char const *tok, t_token **out);
 
 #endif

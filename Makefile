@@ -6,13 +6,13 @@
 #    By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/24 17:33:26 by losypenk          #+#    #+#              #
-#    Updated: 2025/07/25 19:34:22 by losypenk         ###   ########.fr        #
+#    Updated: 2025/07/30 13:39:14 by losypenk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME := minishell
 
-SRC := src/main.c src/utils.c src/utils2.c
+SRC := src/main.c src/utils.c src/utils2.c src/token.c
 OBJ := $(SRC:src/%.c=obj/%.o)
 
 CC := cc
