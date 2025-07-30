@@ -6,13 +6,13 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 13:13:16 by losypenk          #+#    #+#             */
-/*   Updated: 2025/07/30 13:34:09 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/07/30 13:44:36 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int create_token(enum e_token_type type, char const *tok, t_token **out)
+int	create_token(enum e_token_type type, char const *tok, t_token **out)
 {
 	t_token	*mem;
 
@@ -27,4 +27,9 @@ int create_token(enum e_token_type type, char const *tok, t_token **out)
 		scpy(mem->token, tok);
 	*out = mem;
 	return (1);
+}
+
+void	destroy_token(t_token const *token)
+{
+	free((void *)token);
 }

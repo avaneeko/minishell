@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 18:41:55 by losypenk          #+#    #+#             */
-/*   Updated: 2025/07/30 13:12:50 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/07/30 13:43:29 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,5 +93,11 @@ int		resize_token_list(t_token_list **list, unsigned int new_capacity);
 //	Returns 1 on success, 0 otherwise.
 //
 int		create_token(enum e_token_type type, char const *tok, t_token **out);
+
+//
+//	Destroy token. Releases all resources held by token.
+//	Token is rendered unsable after this function.
+//
+void	destroy_token(t_token const *token);
 
 #endif
