@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 18:41:55 by losypenk          #+#    #+#             */
-/*   Updated: 2025/07/30 22:22:55 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/07/31 16:45:55 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,12 @@ int		new_token_list(unsigned int capacity, t_token_list **out);
 void	destroy_token_list(t_token_list const *list);
 
 //
+//	Destroys the token list and all of it's tokens.
+//*	list and its tokens are rendered unusable after this function.
+//
+void	destroy_token_list_deep(t_token_list const *list);
+
+//
 //	Copies the token list. dst must have enough space for the copy.
 //
 void	copy_token_list(t_token_list const *src, t_token_list *dst);
@@ -119,6 +125,6 @@ void	destroy_token(t_token const *token);
 //	Writes the output to `*token` or nulls it on failure.
 //	Returns 1 on success, 0 otherwise.
 //
-int	modify_token(t_token **token, char const *new_contents);
+int		modify_token(t_token **token, char const *new_contents);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 16:14:56 by losypenk          #+#    #+#             */
-/*   Updated: 2025/07/29 17:57:50 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/07/31 16:52:37 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ int	resize_token_list(t_token_list **list, unsigned int new_capacity)
 {
 	t_token_list	*mem;
 
-	if (new_capacity < (*list)->cap)
+	if ((*list)->len > new_capacity)
 		(*list)->len = new_capacity;
 	mem = malloc(sizeof(t_token_list)
 			+ new_capacity * sizeof(t_token *));
@@ -60,8 +60,10 @@ int	resize_token_list(t_token_list **list, unsigned int new_capacity)
 	{
 		copy_token_list(*list, mem);
 		mem->cap = new_capacity;
+		destroy_token_list(*list);
 	}
-	free(*list);
+	else
+		destroy_token_list_deep(*list);
 	*list = mem;
 	return (mem != 0);
 }
