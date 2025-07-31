@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 13:13:16 by losypenk          #+#    #+#             */
-/*   Updated: 2025/07/30 14:08:51 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/07/31 19:46:15 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,14 @@ int	create_token(enum e_token_type type, char const *tok, t_token **out)
 	if (tok)
 		mem = malloc(sizeof(t_token) + (slen(tok) + 1));
 	else
-		mem = malloc(sizeof(t_token));
+		mem = malloc(sizeof(t_token) + 1);
 	if (!mem)
 		return (0);
 	mem->type = type;
 	if (tok)
 		scpy(mem->token, tok);
+	else
+		mem->token[0] = 0;
 	*out = mem;
 	return (1);
 }
