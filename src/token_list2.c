@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 22:03:21 by losypenk          #+#    #+#             */
-/*   Updated: 2025/07/31 16:46:42 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/08/01 20:24:10 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,4 +34,14 @@ void	destroy_token_list_deep(t_token_list const *list)
 	while (i < list->len)
 		destroy_token(list->tok[i++]);
 	destroy_token_list(list);
+}
+
+void	clear_token_list(t_token_list *list)
+{
+	unsigned int	i;
+
+	i = 0;
+	while (i < list->len)
+		destroy_token(list->tok[i++]);
+	list->len = 0;
 }

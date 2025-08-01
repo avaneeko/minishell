@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 18:41:55 by losypenk          #+#    #+#             */
-/*   Updated: 2025/07/31 16:45:55 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/08/01 20:22:18 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 
 # include <unistd.h>
 # include <sys/wait.h>
+# include <signal.h>
 # include <stdlib.h>
 # include <readline/readline.h>
 # include <readline/history.h>
@@ -83,6 +84,11 @@ void	copy_token_list(t_token_list const *src, t_token_list *dst);
 //	Returns 1 on success, 0 otherwise.
 //
 int		clone_token_list(t_token_list const *list, t_token_list **out);
+
+//
+//	Empties the entire token list, freeing all it's tokens and their references.
+//
+void	clear_token_list(t_token_list *list);
 
 //
 //	Resizes the token list.
