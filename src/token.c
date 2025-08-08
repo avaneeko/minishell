@@ -31,6 +31,29 @@ int	create_token(enum e_token_type type, char const *tok, t_token **out)
 	return (1);
 }
 
+int	create_token2(enum e_token_type type, char const *tok, size_t tok_len,
+		t_token **out)
+{
+	t_token	*mem;
+
+	if (tok)
+		mem = malloc(sizeof(t_token) + (tok_len + 1));
+	else
+		mem = malloc(sizeof(t_token) + 1);
+	if (!mem)
+		return (0);
+	mem->type = type;
+	if (tok)
+	{
+		mcpy(mem->token, tok, tok_len);
+		mem->token[tok_len] = 0;
+	}
+	else
+		mem->token[0] = 0;
+	*out = mem;
+	return (1);
+}
+
 void	destroy_token(t_token const *token)
 {
 	free((void *)token);

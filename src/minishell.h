@@ -115,6 +115,15 @@ int		append_token_list(t_token_list **list, t_token *token);
 int		create_token(enum e_token_type type, char const *tok, t_token **out);
 
 //
+//	Same as create_token, but accepts a pointer with a size to allow for
+//	strings with no null termination as the token contents.
+//	Writes the new token to *out, only on success.
+//	Returns 1 on success, 0 otherwise.
+//
+int		create_token2(enum e_token_type type, char const *tok, size_t tok_len,
+		t_token **out);
+
+//
 //	Destroy token. Releases all resources held by token.
 //	Token is rendered unusable after this function.
 //
