@@ -12,14 +12,14 @@
 
 #include "minishell.h"
 
-// See if it's a pipe token, if so, tokenize.
-int	try_token_pipe(char **str, t_token_list **list, int *brk)
+// See if it's a heredocument token, if so, tokenize.
+int	try_token_heredoc(char **str, t_token_list **list, int *brk)
 {
 	t_token*	token;
 
-	if (str[0][0] != '|')
+	if (str[0][0] != '<' || str[0][1] != '<')
 		return (0);
-	if (!create_token(TOKEN_PIPE, NULL, &token))
+	if (!create_token(TOKEN_HEREDOC, NULL, &token))
 	{
 		*brk = 1;
 		return (1);
@@ -29,7 +29,28 @@ int	try_token_pipe(char **str, t_token_list **list, int *brk)
 		*brk = 1;
 		return (1);
 	}
-	(*str)++;
+	*str += 2;
+	return (1);
+}
+
+// See if it's a append redirect token, if so, tokenize.
+int	try_token_append_redir(char **str, t_token_list **list, int *brk)
+{
+	t_token*	token;
+
+	if (str[0][0] != '>' || str[0][1] != '>')
+		return (0);
+	if (!create_token(TOKEN_REDIRECT_OUTPUT_APPEND, NULL, &token))
+	{
+		*brk = 1;
+		return (1);
+	}
+	if (!append_token_list(list, token))
+	{
+		*brk = 1;
+		return (1);
+	}
+	*str += 2;
 	return (1);
 }
 
@@ -66,19 +87,17 @@ int	try_1c_tok(char **str, t_token_list **list, int *brk,
 //	Returns non-zero if a token was picked up or errored.
 int	try_simple_token(char **str, t_token_list **list, int *brk)
 {
-	if (try_1c_tok(str, list, brk, (int[]){'|', TOKEN_PIPE}))
+	if (try_token_heredoc(str, list, brk))
 		return (1);
-	else if (try_1c_tok(str, list, brk, (int[]){'<', TOKEN_REDIRECT_INPUT}))
-		return (1);
-	else if (try_1c_tok(str, list, brk, (int[]){'>', TOKEN_REDIRECT_OUTPUT}))
-		return (1);
+	if (*brk == 0)
+	{
+		if (try_token_append_redir(str, list, brk))
+			return (1);
+		return (try_1c_tok(str, list, brk, (int[]){'|', TOKEN_PIPE})
+			|| try_1c_tok(str, list, brk, (int[]){'<', TOKEN_REDIRECT_INPUT})
+			|| try_1c_tok(str, list, brk, (int[]){'>', TOKEN_REDIRECT_OUTPUT}));
+	}
 	return (0);
-}
-
-int	try_word_token(void)
-{
-	write(2, "Not implemented!", sizeof "Not implemented!" - 1);
-	_exit(101);
 }
 
 //
@@ -87,6 +106,45 @@ int	try_word_token(void)
 int	is_wspc(char c)
 {
 	return (c == ' ' || c == '\r' || c == '\n' || c == '\t' || c == '\v');
+}
+
+//
+// Is char a meta character
+//
+int	is_mtc(char c)
+{
+	return (c == '|' || c == '<' || c == '>');
+}
+
+//? Should this function even have a return value?
+//? This will always be the last tokenization attempt, no other possible tokens
+//? are possible after this, without next step to skip to, this can only fail.
+int	try_word_token(char **str, t_token_list **list, int *brk)
+{
+	char *s;
+	t_token	*token;
+	// write(2, "Not implemented!", sizeof "Not implemented!" - 1);
+	// _exit(101);
+
+	s = *str;
+	while (*s && !is_wspc(*s) && !is_mtc(*s))
+	{
+		s++;
+	}
+	// write(1, "WORD TOKENIZED: `", 17);
+	// write(1, *str, s - *str);
+	// write(1, "`\r\n", 3);
+	if (s != *str)
+	{
+		if (!create_token2(TOKEN_WORD, *str, s - *str, &token))
+		{
+			*brk = 1;
+			return (1);
+		}
+		*str = s;
+		return (*brk = !append_token_list(list, token));
+	}
+	return (1);
 }
 
 // 0 on failure.
@@ -104,10 +162,8 @@ int	tokenize(char *str, t_token_list *list)
 		if (try_simple_token(&str, &list, &brk))
 		{
 		}
-		else if (try_word_token())
-		{
-			(*str)++;
-		}
+		else
+			try_word_token(&str, &list, &brk);
 	}
 	return (1);
 }
