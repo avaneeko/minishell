@@ -137,13 +137,33 @@ int	try_word_token(char **str, t_token_list **list, int *brk)
 	if (s != *str)
 	{
 		if (!create_token2(TOKEN_WORD, *str, s - *str, &token))
-		{
-			*brk = 1;
-			return (1);
-		}
+			return (*brk = 1);
 		*str = s;
 		return (*brk = !append_token_list(list, token));
 	}
+	return (1);
+}
+
+// q - quote.
+// (*s == 0) means unclosed quote.
+int	try_tokenize_quote(char **str, t_token_list **list, int *brk)
+{
+	char const	q = **str;
+	char		*s = *str;
+	t_token		*tok;
+
+	if (q != '\'' && q != '\"')
+		return (0);
+	s++;
+	while (*s && *s != q)
+		s++;
+	if (*s == 0)
+		return (*brk = 1);
+	if (!create_token2(TOKEN_WORD, *str, s - *str + 1, &tok))
+		return (*brk = 1);
+	if (!append_token_list(list, tok))
+		return (*brk = 1);
+	*str = s + 1;
 	return (1);
 }
 
@@ -159,11 +179,12 @@ int	tokenize(char *str, t_token_list *list)
 	{
 		while (is_wspc(*str))
 			str++;
-		if (try_simple_token(&str, &list, &brk))
+		if (try_tokenize_quote(&str, &list, &brk)
+			|| try_simple_token(&str, &list, &brk))
 		{
 		}
 		else
 			try_word_token(&str, &list, &brk);
 	}
-	return (1);
+	return (brk == 0);
 }
