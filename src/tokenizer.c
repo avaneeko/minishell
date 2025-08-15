@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 14:50:08 by losypenk          #+#    #+#             */
-/*   Updated: 2025/08/01 20:36:28 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/08/15 14:45:35 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,6 +167,53 @@ int	try_tokenize_quote(char **str, t_token_list **list, int *brk)
 	return (1);
 }
 
+//! New prototype of word tokenizer.
+
+// Walks the string for the quote
+// Will set brk if quote is unmatched.
+// Returns 1 if we traversed the word, 0 otherwise.
+static int quote_walker(char **str, int *brk)
+{
+	char const	q = **str;
+	char		*s;
+
+	s = *str;
+	if (q != '\'' && q != '\"')
+		return (0);
+	s++;
+	while (*s && *s != q)
+		s++;
+	if (*s == 0)
+		return (*brk = 1);
+	*str = s + 1;
+	return (1);
+}
+
+int	tok_word(char **str, t_token_list **list, int *brk)
+{
+	char	*s;
+	t_token	*tok;
+
+	s = *str;
+	while (*s && !is_wspc(*s) && !is_mtc(*s) && *brk == 0)
+	{
+		if (quote_walker(&s, brk))
+			continue;
+		else
+			s++;
+	}
+	if (s == *str)
+		return (0);
+	if (!create_token2(TOKEN_WORD, *str, s - *str, &tok))
+		return (*brk = 1);
+	if (!append_token_list(list, tok))
+		return (*brk = 1);
+	*str = s;
+	return (1);
+}
+
+// End of prototype.
+
 // 0 on failure.
 // cq - Current quote.
 int	tokenize(char *str, t_token_list *list)
@@ -179,12 +226,11 @@ int	tokenize(char *str, t_token_list *list)
 	{
 		while (is_wspc(*str))
 			str++;
-		if (try_tokenize_quote(&str, &list, &brk)
-			|| try_simple_token(&str, &list, &brk))
+		if (try_simple_token(&str, &list, &brk))
 		{
 		}
 		else
-			try_word_token(&str, &list, &brk);
+			tok_word(&str, &list, &brk); //! HOTWIRE
 	}
 	return (brk == 0);
 }

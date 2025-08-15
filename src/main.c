@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 18:06:42 by losypenk          #+#    #+#             */
-/*   Updated: 2025/08/01 20:36:00 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/08/15 14:20:23 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void	print_token_list(t_token_list *list)
 	};
 	for (unsigned int i = 0; i < list->len; i++)
 	{
-		__builtin_printf("%i: %s\r\n", i, e2str[list->tok[i]->type]);
+		__builtin_printf("%i: %s %s\r\n", i, e2str[list->tok[i]->type], list->tok[i]->token);
 	}
 }
 
