@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 18:41:55 by losypenk          #+#    #+#             */
-/*   Updated: 2025/08/01 20:22:18 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/08/18 17:44:15 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,5 +141,47 @@ void	destroy_token(t_token const *token);
 //	Returns 1 on success, 0 otherwise.
 //
 int		modify_token(t_token **token, char const *new_contents);
+
+//
+//	Environment.
+//
+
+// Initial amount of entries reserved by `t_env`, in entries.
+# ifndef ENV_MEM_RESERVE
+#  define ENV_MEM_RESERVE 1024
+# endif
+
+//
+//	Environmental pair of key and value.
+//
+typedef struct s_epair
+{
+	char	*key;
+	char	*value;
+	int		origin;	// Specifies whether it came from env or export.
+}	t_epair;
+
+typedef struct s_env
+{
+	unsigned int	len;
+	unsigned int	cap;
+	t_epair			pairs[];
+}	t_env;
+
+//
+//	Destroys env, freeing every epair held by env and the env itself.
+//
+void	destroy_env(t_env const *env);
+
+//
+//	Destroys all resources held by epair.
+//	Assumes epair ptr is not malloc()'ed. (Current design)
+//
+void	destroy_epair(t_epair const *pair);
+
+//
+// Parses all of envp into `t_env`
+//
+int		parse_envp(t_env *env, char const **envp);
 
 #endif
