@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 14:50:08 by losypenk          #+#    #+#             */
-/*   Updated: 2025/08/15 14:45:35 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/08/18 14:06:12 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,59 +116,6 @@ int	is_mtc(char c)
 	return (c == '|' || c == '<' || c == '>');
 }
 
-//? Should this function even have a return value?
-//? This will always be the last tokenization attempt, no other possible tokens
-//? are possible after this, without next step to skip to, this can only fail.
-int	try_word_token(char **str, t_token_list **list, int *brk)
-{
-	char *s;
-	t_token	*token;
-	// write(2, "Not implemented!", sizeof "Not implemented!" - 1);
-	// _exit(101);
-
-	s = *str;
-	while (*s && !is_wspc(*s) && !is_mtc(*s))
-	{
-		s++;
-	}
-	// write(1, "WORD TOKENIZED: `", 17);
-	// write(1, *str, s - *str);
-	// write(1, "`\r\n", 3);
-	if (s != *str)
-	{
-		if (!create_token2(TOKEN_WORD, *str, s - *str, &token))
-			return (*brk = 1);
-		*str = s;
-		return (*brk = !append_token_list(list, token));
-	}
-	return (1);
-}
-
-// q - quote.
-// (*s == 0) means unclosed quote.
-int	try_tokenize_quote(char **str, t_token_list **list, int *brk)
-{
-	char const	q = **str;
-	char		*s = *str;
-	t_token		*tok;
-
-	if (q != '\'' && q != '\"')
-		return (0);
-	s++;
-	while (*s && *s != q)
-		s++;
-	if (*s == 0)
-		return (*brk = 1);
-	if (!create_token2(TOKEN_WORD, *str, s - *str + 1, &tok))
-		return (*brk = 1);
-	if (!append_token_list(list, tok))
-		return (*brk = 1);
-	*str = s + 1;
-	return (1);
-}
-
-//! New prototype of word tokenizer.
-
 // Walks the string for the quote
 // Will set brk if quote is unmatched.
 // Returns 1 if we traversed the word, 0 otherwise.
@@ -212,14 +159,11 @@ int	tok_word(char **str, t_token_list **list, int *brk)
 	return (1);
 }
 
-// End of prototype.
-
 // 0 on failure.
 // cq - Current quote.
 int	tokenize(char *str, t_token_list *list)
 {
 	int brk;
-	// int	cq;
 
 	brk = 0;
 	while (*str && brk == 0)
@@ -230,7 +174,7 @@ int	tokenize(char *str, t_token_list *list)
 		{
 		}
 		else
-			tok_word(&str, &list, &brk); //! HOTWIRE
+			tok_word(&str, &list, &brk);
 	}
 	return (brk == 0);
 }
