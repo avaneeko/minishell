@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 18:43:31 by losypenk          #+#    #+#             */
-/*   Updated: 2025/07/30 13:18:47 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/08/20 13:22:15 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,5 +53,11 @@ int		streq(char const *a, char const *b);
 /*	String copy.															*/
 /*																			*/
 void	scpy(char *dst, char const *src);
+
+/*																			*/
+/*	Gets the index of the first character's `c' occurrence in string `str`.	*/
+/*	Returns index or ~0 (-1) if `c` is not present in `str`.				*/
+/*																			*/
+unsigned int	get_char_idx(char const *str, char c);
 
 #endif

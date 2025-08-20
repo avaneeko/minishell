@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 18:41:55 by losypenk          #+#    #+#             */
-/*   Updated: 2025/08/18 17:44:15 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/08/20 12:35:41 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,5 +183,19 @@ void	destroy_epair(t_epair const *pair);
 // Parses all of envp into `t_env`
 //
 int		parse_envp(t_env *env, char const **envp);
+
+//
+//	All things application.
+//
+
+//
+//	Application state.
+//
+typedef struct s_app
+{
+	t_env	*env;
+}	t_app;
+
+int		app_create(int argc, char const **argv, char const **envp);
 
 #endif

@@ -30,7 +30,29 @@ void	destroy_epair(t_epair const *pair)
 	free(pair->value);
 }
 
+//	str - one envp entry.
+int		create_pair(char const *str, t_epair *out)
+{
+	unsigned int const	e = get_char_idx(str, '=');
+	t_epair				pair;
+
+
+	if (e == ~0)
+		return (0);
+	pair.key = mclone(str, e);
+	if (!pair.key)
+		return (0);
+	pair.key[e] = 0;
+	pair.value = mclone(str + e, slen(str + e));
+	*out = pair;
+	return (1);
+}
 
 int		parse_envp(t_env *env, char const **envp)
 {
+	while (*envp)
+	{
+
+	}
+	free(env);
 }

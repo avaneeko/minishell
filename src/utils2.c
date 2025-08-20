@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 19:06:24 by losypenk          #+#    #+#             */
-/*   Updated: 2025/07/30 13:18:02 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/08/20 13:22:12 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,4 +37,17 @@ void	scpy(char *dst, char const *src)
 		dst++;
 	}
 	*dst = 0;
+}
+
+unsigned int	get_char_idx(char const *str, char c)
+{
+	unsigned int	idx;
+
+	idx = ~0;
+	while (str[++idx])
+	{
+		if (str[idx] == c)
+			return (idx);
+	}
+	return (~0);
 }
