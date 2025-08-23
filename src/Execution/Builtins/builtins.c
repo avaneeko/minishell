@@ -29,40 +29,6 @@ int	is_builtin(const char *cmd)
 	);
 }
 
-// Set or display environment variables
-int	builtin_export(char **argv, t_env *env)
-{
-	(void)argv;
-	(void)env;
-	//TODO: implement unset logic
-	return (0);
-}
-
-// Unset environment variables
-int	builtin_unset(char **argv, t_env *env)
-{
-	(void)argv;
-	(void)env;
-	//TODO: implement unset logic
-	return (0);
-}
-
-// Print environment variables
-int	builtin_env(t_env *env)
-{
-	(void)env;
-	//TODO: implement env logic
-	return (0);
-}
-
-// Exit the shell
-int	builtin_exit(char **argv)
-{
-	(void)argv;
-	// TODO: implement exit logic
-	return (0);
-}
-
 int	exec_builtin(char **argv, t_env *env)
 {
 	if (streq(argv[0], "cd"))
