@@ -6,7 +6,7 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:36:28 by jgueon            #+#    #+#             */
-/*   Updated: 2025/08/23 17:09:21 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/08/23 19:23:56 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,38 +27,6 @@ int	is_builtin(const char *cmd)
 		|| streq(cmd, "env")
 		|| streq(cmd, "exit")
 	);
-}
-
-// change directory
-int	builtin_cd(char **argv, t_env *env)
-{
-	(void)argv;
-	(void)env;
-	//TO DO: implement cd logic
-	return (0);
-}
-
-// Print arguments
-int	builtin_echo(char **argv)
-{
-	(void)argv;
-	// TODO: implement echo logic
-	return (0);
-}
-
-// Print arguments
-int	builtin_echo(char **argv)
-{
-	(void)argv;
-	// TODO: implement echo logic
-	return (0);
-}
-
-// Print the current working directory
-int	builtin_pwd(void)
-{
-	//TODO: implement pwd logic
-	return (0);
 }
 
 // Set or display environment variables
