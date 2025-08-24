@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/25 18:41:55 by losypenk          #+#    #+#             */
-/*   Updated: 2025/08/20 12:35:41 by losypenk         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -148,8 +136,16 @@ int		modify_token(t_token **token, char const *new_contents);
 
 // Initial amount of entries reserved by `t_env`, in entries.
 # ifndef ENV_MEM_RESERVE
-#  define ENV_MEM_RESERVE 1024
+#  define ENV_MEM_RESERVE 1024u
 # endif
+
+// Amount of entries the env list is grown if it ever becomes full.
+# ifndef ENV_MEM_GROW_SIZE
+#  define ENV_MEM_GROW_SIZE 512u
+# endif
+
+#define ORIGIN_EXPORT 42
+#define ORIGIN_ENV -42
 
 //
 //	Environmental pair of key and value.
@@ -165,19 +161,25 @@ typedef struct s_env
 {
 	unsigned int	len;
 	unsigned int	cap;
-	t_epair			pairs[];
+	t_epair			*pairs;
 }	t_env;
 
 //
 //	Destroys env, freeing every epair held by env and the env itself.
 //
-void	destroy_env(t_env const *env);
+void	destroy_env(t_env *env);
 
 //
 //	Destroys all resources held by epair.
 //	Assumes epair ptr is not malloc()'ed. (Current design)
 //
 void	destroy_epair(t_epair const *pair);
+
+
+//
+//	TODO: Document.
+//
+int	create_env_from_envp(char const **envp, t_env *out_env);
 
 //
 // Parses all of envp into `t_env`
@@ -193,9 +195,10 @@ int		parse_envp(t_env *env, char const **envp);
 //
 typedef struct s_app
 {
-	t_env	*env;
+	t_env	env;
 }	t_app;
 
-int		app_create(int argc, char const **argv, char const **envp);
+int		app_create(int argc, char const **argv, char const **envp,
+	t_app *out);
 
 #endif

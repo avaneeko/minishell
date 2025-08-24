@@ -6,14 +6,14 @@
 #    By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/24 17:33:26 by losypenk          #+#    #+#              #
-#    Updated: 2025/08/01 16:44:51 by losypenk         ###   ########.fr        #
+#    Updated: 2025/08/24 12:23:02 by losypenk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME := minishell
 
 SRC := src/main.c src/utils.c src/utils2.c src/token.c src/token_list.c \
-	src/token_list2.c src/tokenizer.c
+	src/token_list2.c src/tokenizer.c src/app_create.c src/env.c
 OBJ := $(SRC:src/%.c=obj/%.o)
 
 CC := cc
