@@ -175,6 +175,10 @@ void	destroy_env(t_env *env);
 //
 void	destroy_epair(t_epair const *pair);
 
+//
+//	Removes the pair at `idx` from the env list via remove-swap.
+//
+void	remove_epair_at_idx(t_env *env, unsigned int idx);
 
 //
 //	TODO: Document.
@@ -200,5 +204,7 @@ typedef struct s_app
 
 int		app_create(int argc, char const **argv, char const **envp,
 	t_app *out);
+
+void	app_destroy(t_app *app);
 
 #endif

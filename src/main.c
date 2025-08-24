@@ -32,6 +32,7 @@ int	main(int argc, char const *argv[], char const *envp[])
 		__builtin_dump_struct(&app.env.pairs[i], &printf);
 	}
 
+	app_destroy(&app);
 	return EXIT_SUCCESS;
 }
 

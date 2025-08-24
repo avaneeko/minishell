@@ -13,7 +13,8 @@
 NAME := minishell
 
 SRC := src/main.c src/utils.c src/utils2.c src/token.c src/token_list.c \
-	src/token_list2.c src/tokenizer.c src/app_create.c src/env.c
+	src/token_list2.c src/tokenizer.c src/app_create.c src/app_destroy.c \
+	src/env.c
 OBJ := $(SRC:src/%.c=obj/%.o)
 
 CC := cc

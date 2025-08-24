@@ -71,10 +71,16 @@ int	grow_env(t_env *env)
 	return ((env->pairs = new) != 0);
 }
 
-// Will free() `env->pairs` on failure.
-static int	try_append(t_env *env, t_epair const *pair)
+void	remove_epair_at_idx(t_env *env, unsigned int idx)
 {
-	if (env->len + 1 <= env->cap || grow_env(env))
+	destroy_epair(env->pairs + idx);
+	env->pairs[idx] = env->pairs[--(env->len)];
+}
+
+// Will free() `env->pairs` on failure.
+int	try_append_epair(t_env *env, t_epair const *pair)
+{
+	if (env->len < env->cap || grow_env(env))
 	{
 		env->pairs[env->len++] = *pair;
 		return (1);
@@ -91,7 +97,7 @@ int		parse_envp(t_env *env, char const **envp)
 
 	while (*envp)
 	{
-		if (create_pair(*envp, &new_pair) && try_append(env, &new_pair))
+		if (create_pair(*envp, &new_pair) && try_append_epair(env, &new_pair))
 			envp++;
 		else
 		{
