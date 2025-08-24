@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 18:43:31 by losypenk          #+#    #+#             */
-/*   Updated: 2025/08/20 13:22:15 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/08/24 12:56:28 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,5 +59,11 @@ void	scpy(char *dst, char const *src);
 /*	Returns index or ~0 (-1) if `c` is not present in `str`.				*/
 /*																			*/
 unsigned int	get_char_idx(char const *str, char c);
+
+/*																			*/
+/*	Memory clone with growth.												*/
+/*	Like mclone() but allows to grow the clone's allocation.				*/
+/*																			*/
+void	*mclone_grow(void const *p, size_t p_size, size_t grow_size);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 19:06:24 by losypenk          #+#    #+#             */
-/*   Updated: 2025/08/20 13:22:12 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/08/24 12:59:01 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,4 +50,14 @@ unsigned int	get_char_idx(char const *str, char c)
 			return (idx);
 	}
 	return (~0);
+}
+
+void	*mclone_grow(void const *p, size_t p_size, size_t grow_size)
+{
+	void	*mem;
+
+	mem = malloc(p_size + grow_size);
+	if (mem)
+		mcpy(mem, p, p_size);
+	return (mem);
 }
