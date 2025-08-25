@@ -134,19 +134,6 @@ int		modify_token(t_token **token, char const *new_contents);
 //	Environment.
 //
 
-// Initial amount of entries reserved by `t_env`, in entries.
-# ifndef ENV_MEM_RESERVE
-#  define ENV_MEM_RESERVE 1024u
-# endif
-
-// Amount of entries the env list is grown if it ever becomes full.
-# ifndef ENV_MEM_GROW_SIZE
-#  define ENV_MEM_GROW_SIZE 512u
-# endif
-
-#define ORIGIN_EXPORT 42
-#define ORIGIN_ENV -42
-
 //
 //	Environmental pair of key and value.
 //
@@ -165,6 +152,24 @@ typedef struct s_env
 }	t_env;
 
 //
+//	Appends the epair entry into the env.
+//! Will free `env->pairs` and `pair` on failure.
+//
+int		try_append_epair(t_env *env, t_epair const *pair);
+
+//
+//	Removes the pair with matching `key`.
+//	Returns 1 if epair with `key` was found and removed, 0 otherwise.
+//
+int		remove_epair_by_key(t_env *env, char const* key);
+
+//
+//	Lookup an epair with `key`.
+//	Returns 1 if epair with `key` was found and written to `out`, 0 otherwise.
+//
+int		get_epair_by_key(t_env *env, char const* key, t_epair *out);
+
+//
 //	Destroys env, freeing every epair held by env and the env itself.
 //
 void	destroy_env(t_env *env);
@@ -175,10 +180,6 @@ void	destroy_env(t_env *env);
 //
 void	destroy_epair(t_epair const *pair);
 
-//
-//	Removes the pair at `idx` from the env list via remove-swap.
-//
-void	remove_epair_at_idx(t_env *env, unsigned int idx);
 
 //
 //	TODO: Document.
@@ -190,6 +191,19 @@ int	create_env_from_envp(char const **envp, t_env *out_env);
 //
 int		parse_envp(t_env *env, char const **envp);
 
+// Initial amount of entries reserved by `t_env`, in entries.
+# ifndef ENV_MEM_RESERVE
+#  define ENV_MEM_RESERVE 1024u
+# endif
+
+// Amount of entries the env list is grown if it ever becomes full.
+# ifndef ENV_MEM_GROW_SIZE
+#  define ENV_MEM_GROW_SIZE 512u
+# endif
+
+#define ORIGIN_EXPORT 42
+#define ORIGIN_ENV -42
+
 //
 //	All things application.
 //
@@ -199,12 +213,11 @@ int		parse_envp(t_env *env, char const **envp);
 //
 typedef struct s_app
 {
-	t_env	env;
+	t_env			env;
+	t_token_list	*token_list;
 }	t_app;
 
 int		app_create(int argc, char const **argv, char const **envp,
 	t_app *out);
-
-void	app_destroy(t_app *app);
 
 #endif
