@@ -166,8 +166,9 @@ int		remove_epair_by_key(t_env *env, char const* key);
 //
 //	Lookup an epair with `key`.
 //	Returns 1 if epair with `key` was found and written to `out`, 0 otherwise.
+//! Do not destroy or free() the `out` pair.
 //
-int		get_epair_by_key(t_env *env, char const* key, t_epair *out);
+int		get_epair_by_key(t_env const *env, char const* key, t_epair *out);
 
 //
 //	Removes the pair at `idx` from the env list via remove-swap.

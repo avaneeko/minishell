@@ -71,12 +71,6 @@ int	grow_env(t_env *env)
 	return ((env->pairs = new) != 0);
 }
 
-void	remove_epair_at_idx(t_env *env, unsigned int idx)
-{
-	destroy_epair(env->pairs + idx);
-	env->pairs[idx] = env->pairs[--(env->len)];
-}
-
 // Will free() `env->pairs` on failure.
 int	try_append_epair(t_env *env, t_epair const *pair)
 {
@@ -106,4 +100,42 @@ int		parse_envp(t_env *env, char const **envp)
 		}
 	}
 	return (1);
+}
+
+void	remove_epair_at_idx(t_env *env, unsigned int idx)
+{
+	destroy_epair(env->pairs + idx);
+	env->pairs[idx] = env->pairs[--(env->len)];
+}
+
+int		get_epair_by_key(t_env const *env, char const* key, t_epair *out)
+{
+	unsigned int	i;
+
+	i = ~0u;
+	while (++i < env->len)
+	{
+		if (streq(env->pairs[i].key, key))
+		{
+			*out = env->pairs[i];
+			return (1);
+		}
+	}
+	return (0);
+}
+
+int		remove_epair_by_key(t_env *env, char const* key)
+{
+	unsigned int	i;
+
+	i = ~0u;
+	while (++i < env->len)
+	{
+		if (streq(env->pairs[i].key, key))
+		{
+			remove_epair_at_idx(env, i);
+			return (1);
+		}
+	}
+	return (0);
 }
