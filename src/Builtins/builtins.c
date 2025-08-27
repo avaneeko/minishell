@@ -6,11 +6,12 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:36:28 by jgueon            #+#    #+#             */
-/*   Updated: 2025/08/23 19:23:56 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/08/27 21:21:52 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "builtins.h"
 
 /****************************************************************************
  *  Check if command is a builtin, and one to execute the detected built in *
