@@ -12,11 +12,6 @@
 
 # include "utils.h"
 
-extern int	g_exit_status; // Global variable for signals
-// int g_exit_status = 0;  // Define and initialize in one(main.c) file only
-
-
-
 enum e_token_type
 {
 	TOKEN_UNDEFINED,
@@ -50,7 +45,7 @@ typedef struct s_token_list
 //	Instantiate a new token list, with set capacity.
 //	Returns 1 on success, 0 otherwise.
 //
-int		new_token_list(unsigne source file and declared as extern in the header file (e.g., ed int capacity, t_token_list **out);
+int		new_token_list(unsigned int capacity, t_token_list **out);
 
 //
 //	Destroys the token list.
@@ -63,7 +58,16 @@ void	destroy_token_list(t_token_list const *list);
 //
 //	Destroys the token list and all of it's tokens.
 //*	list and its tokens are rendered unusable after this function.
-//e source file and declared as extern in the header file (e.g., 
+//
+void	destroy_token_list_deep(t_token_list const *list);
+
+//
+//	Copies the token list. dst must have enough space for the copy.
+//
+void	copy_token_list(t_token_list const *src, t_token_list *dst);
+
+//
+//	Clones the token list, allocating resources for the newly created clone.
 //*	This does not clone the tokens, only their references inside the list.
 //	Returns 1 on success, 0 otherwise.
 //
@@ -162,8 +166,9 @@ int		remove_epair_by_key(t_env *env, char const* key);
 //
 //	Lookup an epair with `key`.
 //	Returns 1 if epair with `key` was found and written to `out`, 0 otherwise.
+//! Do not destroy or free() the `out` pair.
 //
-int		get_epair_by_key(t_env *env, char const* key, t_epair *out);
+int		get_epair_by_key(t_env const *env, char const* key, t_epair *out);
 
 //
 //	Removes the pair at `idx` from the env list via remove-swap.
@@ -220,15 +225,5 @@ typedef struct s_app
 
 int		app_create(int argc, char const **argv, char const **envp,
 	t_app *out);
-
-
-// Signal and exit status infrastructure
-void	setup_signals(void);
-void	set_child_signals(void);
-int		get_exit_status(void);
-void	set_exit_status(int statuts);
-
-
-
 
 #endif
