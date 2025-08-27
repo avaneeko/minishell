@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/25 18:41:55 by losypenk          #+#    #+#             */
-/*   Updated: 2025/08/23 18:05:59 by jgueon           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -23,6 +11,11 @@
 # include <readline/history.h>
 
 # include "utils.h"
+
+extern int	g_exit_status; // Global variable for signals
+// int g_exit_status = 0;  // Define and initialize in one(main.c) file only
+
+
 
 enum e_token_type
 {
@@ -57,7 +50,7 @@ typedef struct s_token_list
 //	Instantiate a new token list, with set capacity.
 //	Returns 1 on success, 0 otherwise.
 //
-int		new_token_list(unsigned int capacity, t_token_list **out);
+int		new_token_list(unsigne source file and declared as extern in the header file (e.g., ed int capacity, t_token_list **out);
 
 //
 //	Destroys the token list.
@@ -70,16 +63,7 @@ void	destroy_token_list(t_token_list const *list);
 //
 //	Destroys the token list and all of it's tokens.
 //*	list and its tokens are rendered unusable after this function.
-//
-void	destroy_token_list_deep(t_token_list const *list);
-
-//
-//	Copies the token list. dst must have enough space for the copy.
-//
-void	copy_token_list(t_token_list const *src, t_token_list *dst);
-
-//
-//	Clones the token list, allocating resources for the newly created clone.
+//e source file and declared as extern in the header file (e.g., 
 //*	This does not clone the tokens, only their references inside the list.
 //	Returns 1 on success, 0 otherwise.
 //
@@ -146,11 +130,6 @@ int		modify_token(t_token **token, char const *new_contents);
 //	Environment.
 //
 
-// Initial amount of entries reserved by `t_env`, in entries.
-# ifndef ENV_MEM_RESERVE
-#  define ENV_MEM_RESERVE 1024
-# endif
-
 //
 //	Environmental pair of key and value.
 //
@@ -165,13 +144,36 @@ typedef struct s_env
 {
 	unsigned int	len;
 	unsigned int	cap;
-	t_epair			pairs[];
+	t_epair			*pairs;
 }	t_env;
+
+//
+//	Appends the epair entry into the env.
+//! Will free `env->pairs` and `pair` on failure.
+//
+int		try_append_epair(t_env *env, t_epair const *pair);
+
+//
+//	Removes the pair with matching `key`.
+//	Returns 1 if epair with `key` was found and removed, 0 otherwise.
+//
+int		remove_epair_by_key(t_env *env, char const* key);
+
+//
+//	Lookup an epair with `key`.
+//	Returns 1 if epair with `key` was found and written to `out`, 0 otherwise.
+//
+int		get_epair_by_key(t_env *env, char const* key, t_epair *out);
+
+//
+//	Removes the pair at `idx` from the env list via remove-swap.
+//
+void	remove_epair_at_idx(t_env *env, unsigned int idx);
 
 //
 //	Destroys env, freeing every epair held by env and the env itself.
 //
-void	destroy_env(t_env const *env);
+void	destroy_env(t_env *env);
 
 //
 //	Destroys all resources held by epair.
@@ -179,10 +181,29 @@ void	destroy_env(t_env const *env);
 //
 void	destroy_epair(t_epair const *pair);
 
+
+//
+//	TODO: Document.
+//
+int	create_env_from_envp(char const **envp, t_env *out_env);
+
 //
 // Parses all of envp into `t_env`
 //
 int		parse_envp(t_env *env, char const **envp);
+
+// Initial amount of entries reserved by `t_env`, in entries.
+# ifndef ENV_MEM_RESERVE
+#  define ENV_MEM_RESERVE 1024u
+# endif
+
+// Amount of entries the env list is grown if it ever becomes full.
+# ifndef ENV_MEM_GROW_SIZE
+#  define ENV_MEM_GROW_SIZE 512u
+# endif
+
+#define ORIGIN_EXPORT 42
+#define ORIGIN_ENV -42
 
 //
 //	All things application.
@@ -193,9 +214,21 @@ int		parse_envp(t_env *env, char const **envp);
 //
 typedef struct s_app
 {
-	t_env	*env;
+	t_env			env;
+	t_token_list	*token_list;
 }	t_app;
 
-int		app_create(int argc, char const **argv, char const **envp);
+int		app_create(int argc, char const **argv, char const **envp,
+	t_app *out);
+
+
+// Signal and exit status infrastructure
+void	setup_signals(void);
+void	set_child_signals(void);
+int		get_exit_status(void);
+void	set_exit_status(int statuts);
+
+
+
 
 #endif
