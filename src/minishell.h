@@ -226,4 +226,6 @@ typedef struct s_app
 int		app_create(int argc, char const **argv, char const **envp,
 	t_app *out);
 
+void	app_destroy(t_app *app);
+
 #endif
