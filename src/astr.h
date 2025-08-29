@@ -43,4 +43,10 @@ int		astr_append(t_astr *self, char const *str);
 //
 int		astr_append2(t_astr *self, char const *buf, unsigned int len);
 
+//
+//	Resets the string's contents but keeps the allocated space.
+//	Helps to avoid AppendableString resource re-creation.
+//
+void	astr_reset(t_astr *self);
+
 #endif

@@ -11,6 +11,7 @@
 # include <readline/history.h>
 
 # include "utils.h"
+# include "astr.h"
 
 enum e_token_type
 {
