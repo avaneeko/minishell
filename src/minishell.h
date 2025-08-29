@@ -212,6 +212,18 @@ int		parse_envp(t_env *env, char const **envp);
 #define ORIGIN_ENV -42
 
 //
+//	Expansion.
+//
+
+// Holds all expansion state/information.
+typedef struct s_exp
+{
+	t_astr	a;				  // Appendable string for currently expanded token.
+	t_token_list **list;	  // The token list.
+	t_env const *env;		  // Environment variables.
+}	t_exp;
+
+//
 //	All things application.
 //
 
