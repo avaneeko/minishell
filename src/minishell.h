@@ -11,6 +11,7 @@
 # include <readline/history.h>
 
 # include "utils.h"
+# include "astr.h"
 
 enum e_token_type
 {
@@ -211,6 +212,18 @@ int		parse_envp(t_env *env, char const **envp);
 #define ORIGIN_ENV -42
 
 //
+//	Expansion.
+//
+
+// Holds all expansion state/information.
+typedef struct s_exp
+{
+	t_astr	a;				  // Appendable string for currently expanded token.
+	t_token_list **list;	  // The token list.
+	t_env const *env;		  // Environment variables.
+}	t_exp;
+
+//
 //	All things application.
 //
 
@@ -225,5 +238,7 @@ typedef struct s_app
 
 int		app_create(int argc, char const **argv, char const **envp,
 	t_app *out);
+
+void	app_destroy(t_app *app);
 
 #endif
