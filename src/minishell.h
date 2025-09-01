@@ -172,6 +172,14 @@ int		remove_epair_by_key(t_env *env, char const* key);
 int		get_epair_by_key(t_env const *env, char const* key, t_epair *out);
 
 //
+//	Just like get_epair_by_key() but with `key` and `key_len` instead
+//	null terminated `key` argument.
+//! Do not destroy or free() the `out` pair.
+//
+int		get_epair_by_key2(t_env const *env, char const* key,
+		unsigned int key_len, t_epair *out);
+
+//
 //	Removes the pair at `idx` from the env list via remove-swap.
 //
 void	remove_epair_at_idx(t_env *env, unsigned int idx);
