@@ -30,7 +30,7 @@ $(NAME): $(OBJ)
 obj:
 	mkdir -p obj
 
-obj/%.o: src/%.c obj
+obj/%.o: src/%.c | obj
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:

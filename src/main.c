@@ -51,7 +51,7 @@ int	main(int argc, char const *argv[], char const *envp[])
 		if (!tokenize(line, app.token_list))
 			write(1, "Tokenizer error.", sizeof "Tokenizer error." - 1);
 		expand(&app.token_list, &app.env);
-		// print_token_list(app.token_list);
+		print_token_list(app.token_list);
 		clear_token_list(app.token_list);
 		// write(1, &(char){'\n'}, 1);
 		free(line);

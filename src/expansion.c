@@ -1,10 +1,39 @@
 #include "minishell.h"
 
+//? Does this belong here?
 static int is_alphanum(char c)
 {
-	return (c >= 'a' && c <= 'z')
+	return ((c >= 'a' && c <= 'z')
 		|| (c >= 'A' && c <= 'Z')
-		|| (c >= '0' && c <= '9');
+		|| (c >= '0' && c <= '9'));
+}
+
+// Validates if the variable name is valid according to shell rules
+// Returns:
+// 0 - invalid variable name
+// 1 - valid standard variable name
+// 2 - special variable (currently only $?)
+static int is_valid_var_name(char const *s)
+{
+	// Check for $? (exit status)
+	if (s[0] == '$' && s[1] == '?')
+		return 2;
+
+	// Check if there's a $ and at least one character after it
+	if (s[0] != '$' || s[1] == '\0')
+		return 0;
+
+	// Variable name can't start with a number
+	if (s[1] >= '0' && s[1] <= '9')
+		return 0;
+
+	// First character must be alpha or underscore
+	if (!((s[1] >= 'a' && s[1] <= 'z') || 
+			(s[1] >= 'A' && s[1] <= 'Z') || 
+			s[1] == '_'))
+		return 0;
+
+	return 1;
 }
 
 // Get length of the variable.
@@ -13,13 +42,18 @@ static int is_alphanum(char c)
 // Given s -> "$" it should set `out` to 1. (single $ becomes a $) Ret = 1
 // Given s -> "something" it should return 0. (no $ found, not a variable)
 //! This does not handle $1 to $9 - positional arguments, out of scope.
-// TODO: Reject s -> $9startingwithnumber
 // TODO: Handle $? - last exit code.
 int get_val_len(char const *s, unsigned int *out)
 {
 	unsigned int len;	// Length of the variable
 
-	if (*s == '$')
+	if (*s == '$' && is_valid_var_name(s) == 2)
+	{
+		__builtin_debugtrap(/* UNIMPLEMENTED */);
+		*out = 2; // $?
+		return (1);
+	}
+	else if (*s == '$' && is_valid_var_name(s) == 1)
 	{
 		len = 1;
 		s++;
@@ -33,7 +67,6 @@ int get_val_len(char const *s, unsigned int *out)
 	}
 	return (0);
 }
-
 
 // s cannot be null.
 char const *get_expansion_contents(t_env const* env, char const *s,
@@ -49,12 +82,56 @@ char const *get_expansion_contents(t_env const* env, char const *s,
 		return (0);
 }
 
+// arg[0] is *i
+// arg[1] is *var_len
+static int	expand_variable(t_token *token, t_env const *env, t_astr *a, 
+							unsigned int **arg)
+{
+	char *const	var_name = malloc(arg[1][0] + 1);
+
+	if (!var_name)
+	{
+		astr_destroy(a);
+		return (0);
+	}
+	mcpy(var_name, token->token + arg[0][0], arg[1][0]);
+	var_name[arg[1][0]] = '\0';
+	char const *val = get_expansion_contents(env, token->token + arg[0][0] + 1,
+			arg[1][0] - 1);
+	if (val)
+	{
+		if (!astr_append2(a, val, slen(val)))
+		{
+			free(var_name);
+			astr_destroy(a);
+			return (0);
+		}
+	}
+	free(var_name);
+	arg[0][0] += arg[1][0];
+	return (1);
+}
+
+static int	handle_quoted_char(t_token *token, t_astr *a, char *q, unsigned int *i)
+{
+	if (token->token[*i] == '\'' || token->token[*i] == '"')
+	{
+		if (*q == 0)
+			*q = token->token[*i];
+		else if (*q == token->token[*i])
+			*q = 0;
+	}
+	if (!astr_append2(a, token->token + *i, 1))
+		return (0);
+	*i += 1;
+	return (1);
+}
+
+// In do_str_expansion:
+
+
+
 // q - current quote.
-/*
-TODO:
-Properly Free resources on failure.
-Handle $?, reject $1 etc.
-*/
 int	do_str_expansion(t_token **t, t_env const *env)
 {
 	char			q;
@@ -71,39 +148,13 @@ int	do_str_expansion(t_token **t, t_env const *env)
 		if (q != '\'' && get_val_len((*t)->token + i, &var_len))
 		{
 			// Variable expansion.
-			char *var_name = malloc(var_len + 1);
-			if (!var_name)
-			{
-				astr_destroy(&a);
+			if (!expand_variable(*t, env, &a, (unsigned int *[]){&i, &var_len}))
 				return (0);
-			}
-			mcpy(var_name, (*t)->token + i, var_len);
-			var_name[var_len] = '\0';
-			char const *val = get_expansion_contents(env, (*t)->token + i + 1, var_len - 1);
-			if (val)
-			{
-				if (!astr_append2(&a, val, slen(val)))
-				{
-					free(var_name);
-					astr_destroy(&a);
-					return (0);
-				}
-			}
-			free(var_name);
-			i += var_len;
 		}
 		else
 		{
-			if ((*t)->token[i] == '\'' || (*t)->token[i] == '"')
-			{
-				if (q == 0)
-					q = (*t)->token[i];
-				else if (q == (*t)->token[i])
-					q = 0;
-			}
-			if (!astr_append2(&a, (*t)->token + i, 1))
+			if (!handle_quoted_char(*t, &a, &q, &i))
 				return (0);
-			i++;
 		}
 	}
 	return (modify_token(t, a.s));
