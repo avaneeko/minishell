@@ -127,10 +127,6 @@ static int	handle_quoted_char(t_token *token, t_astr *a, char *q, unsigned int *
 	return (1);
 }
 
-// In do_str_expansion:
-
-
-
 // q - current quote.
 int	do_str_expansion(t_token **t, t_env const *env)
 {
