@@ -20,39 +20,42 @@ void	print_token_list(t_token_list *list)
 	}
 }
 
+// int	main(int argc, char const *argv[], char const *envp[])
+// {
+// 	t_app app;
+
+// 	if (!app_create(argc, argv, envp, &app))
+// 		return EXIT_FAILURE;
+
+// 	for	(unsigned int i = 0; i < app.env.len; ++i)
+// 	{
+// 		__builtin_dump_struct(&app.env.pairs[i], &printf);
+// 	}
+
+// 	app_destroy(&app);
+// 	return EXIT_SUCCESS;
+// }
+
+//! HOTWIRE
+int	expand(t_token_list **list, t_env const *env);
+
 int	main(int argc, char const *argv[], char const *envp[])
 {
 	t_app app;
-
 	if (!app_create(argc, argv, envp, &app))
 		return EXIT_FAILURE;
-
-	for	(unsigned int i = 0; i < app.env.len; ++i)
+	char *line;
+	while ((line = readline("$ ")))
 	{
-		__builtin_dump_struct(&app.env.pairs[i], &printf);
+		//write(1, line, slen(line));
+		if (!tokenize(line, app.token_list))
+			write(1, "Tokenizer error.", sizeof "Tokenizer error." - 1);
+		expand(&app.token_list, &app.env);
+		print_token_list(app.token_list);
+		clear_token_list(app.token_list);
+		// write(1, &(char){'\n'}, 1);
+		free(line);
 	}
 
-	app_destroy(&app);
-	return EXIT_SUCCESS;
+	return (0);
 }
-
-// int	main(int argc, char const *argv[], char const *envp[])
-// {
-// 	(void)argc; (void)argv; (void)envp;
-// 	t_token_list *l;
-// 	if (!new_token_list(4096, &l))
-// 		exit(101);
-// 	char *line;
-// 	while ((line = readline("? ")))
-// 	{
-// 		//write(1, line, slen(line));
-// 		if (!tokenize(line, l))
-// 			write(1, "Tokenizer error.", sizeof "Tokenizer error." - 1);
-// 		print_token_list(l);
-// 		clear_token_list(l);
-// 		// write(1, &(char){'\n'}, 1);
-// 		free(line);
-// 	}
-
-// 	return (0);
-// }

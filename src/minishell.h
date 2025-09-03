@@ -248,7 +248,7 @@ void	app_destroy(t_app *app);
 void	setup_signals(void);
 void	set_child_signals(void);
 int		get_exit_status(void);
-void	set_exit_status(int statuts);
+void	set_exit_status(int status);
 
 
 typedef struct s_redir
