@@ -36,9 +36,6 @@ void	print_token_list(t_token_list *list)
 // 	return EXIT_SUCCESS;
 // }
 
-//! HOTWIRE
-int	expand(t_token_list **list, t_env const *env);
-
 int	main(int argc, char const *argv[], char const *envp[])
 {
 	t_app app;
@@ -51,6 +48,7 @@ int	main(int argc, char const *argv[], char const *envp[])
 		if (!tokenize(line, app.token_list))
 			write(1, "Tokenizer error.", sizeof "Tokenizer error." - 1);
 		expand(&app.token_list, &app.env);
+		token_resplit(&app);
 		print_token_list(app.token_list);
 		clear_token_list(app.token_list);
 		// write(1, &(char){'\n'}, 1);

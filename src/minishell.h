@@ -231,6 +231,19 @@ typedef struct s_exp
 	t_env const *env;		  // Environment variables.
 }	t_exp;
 
+// struct s_app;
+typedef struct s_app t_app;
+
+//
+//	Token expansion.
+//
+int	expand(t_token_list **list, t_env const *env);
+
+//
+//	Post-expansion token splitting.
+//
+int token_resplit(t_app *app);
+
 //
 //	All things application.
 //
