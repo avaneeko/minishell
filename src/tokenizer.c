@@ -101,14 +101,6 @@ int	try_simple_token(char **str, t_token_list **list, int *brk)
 }
 
 //
-// Is char a whitespace
-//
-int	is_wspc(char c)
-{
-	return (c == ' ' || c == '\r' || c == '\n' || c == '\t' || c == '\v');
-}
-
-//
 // Is char a meta character
 //
 int	is_mtc(char c)

@@ -69,6 +69,6 @@ void	*mclone_grow(void const *p, size_t p_size, size_t grow_size);
 /*																			*/
 /*	Is char a whitespace?													*/
 /*																			*/
-int	is_wspc(char c)
+int	is_wspc(char c);
 
 #endif

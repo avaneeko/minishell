@@ -175,6 +175,14 @@ int		remove_epair_by_key(t_env *env, char const* key);
 int		get_epair_by_key(t_env const *env, char const* key, t_epair *out);
 
 //
+//	Just like get_epair_by_key() but with `key` and `key_len` instead
+//	null terminated `key` argument.
+//! Do not destroy or free() the `out` pair.
+//
+int		get_epair_by_key2(t_env const *env, char const* key,
+		unsigned int key_len, t_epair *out);
+
+//
 //	Removes the pair at `idx` from the env list via remove-swap.
 //
 void	remove_epair_at_idx(t_env *env, unsigned int idx);
@@ -226,6 +234,19 @@ typedef struct s_exp
 	t_env const *env;		  // Environment variables.
 }	t_exp;
 
+// struct s_app;
+typedef struct s_app t_app;
+
+//
+//	Token expansion.
+//
+int	expand(t_token_list **list, t_env const *env);
+
+//
+//	Post-expansion token splitting.
+//
+int token_resplit(t_app *app);
+
 //
 //	All things application.
 //
@@ -265,7 +286,6 @@ typedef struct s_command
 	int             is_builtin;  // 1 if is builtin, 0 if not
 	struct s_command *next;      // Next command in pipeline
 }   t_command;
-
 
 
 #endif

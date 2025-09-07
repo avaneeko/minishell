@@ -14,7 +14,7 @@ NAME := minishell
 
 SRC := src/main.c src/utils.c src/utils2.c src/token.c src/token_list.c \
 	src/token_list2.c src/tokenizer.c src/app_create.c src/app_destroy.c \
-	src/env.c
+	src/env.c src/expansion.c src/astr.c src/token_resplit.c
 OBJ := $(SRC:src/%.c=obj/%.o)
 
 CC := cc
@@ -30,7 +30,7 @@ $(NAME): $(OBJ)
 obj:
 	mkdir -p obj
 
-obj/%.o: src/%.c obj
+obj/%.o: src/%.c | obj
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
