@@ -1,6 +1,7 @@
 #include "minishell.h"
-#include <sys/wait.h>
-#include <unistd.h>
+#include "./execution_utils.h"
+// #include <sys/wait.h>
+// #include <unistd.h>
 
 /*
 * Close unused pipe ends in parent/child.
@@ -23,10 +24,41 @@ void	close_pipes_except(int **pipes, int n_cmd, int except, int is_write)
 	}
 }
 
-/*
-* Function to fork-execute one command in the pipeline.
-* index: index in pipeline.
-*/
+// // executor_helpers.c
+// static void	set_pipe_ends(t_command *cmd, int **pipes, int n_cmd, int idx)
+// {
+// 	if (idx > 0)
+// 		dup2(pipes[idx - 1], STDIN_FILENO);
+// 	if (cmd->next)
+// 		dup2(pipes[idx][1], STDOUT_FILENO);
+// }
+
+// static void	set_redirs(t_command *cmd)
+// {
+// 	if (cmd->infile != -1)
+// 	{
+// 		dup2(cmd->infile, STDIN_FILENO);
+// 		close(cmd->infile);
+// 	}
+// 	if (cmd->outfile != -1)
+// 	{
+// 		dup2(cmd->outfile, STDOUT_FILENO);
+// 		close(cmd->outfile);
+// 	}
+// }
+
+// static void	exec_command(t_command *cmd, t_env *env)
+// {
+// 	if (cmd->is_builtin)
+// 		exit(exec_builtin(cmd->argv, env));
+// 	else
+// 	{
+// 		execvp(cmd->argv, cmd->argv);
+// 		perror(cmd->argv);
+// 		exit(127);
+// 	}
+// }
+
 pid_t	fork_command(t_command *cmd, t_env *env, int **pipes, int n_cmd, int idx)
 {
 	pid_t	pid;
@@ -34,52 +66,76 @@ pid_t	fork_command(t_command *cmd, t_env *env, int **pipes, int n_cmd, int idx)
 	pid = fork();
 	if (pid == 0)
 	{
-		if (idx > 0)
-		{
-			dup2(pipes[idx - 1][0], STDIN_FILENO);
-		}
-		if (cmd->next != NULL)
-		{
-			dup2(pipes[idx][1], STDOUT_FILENO);
-		}
+		set_pipe_ends(cmd, pipes, n_cmd, idx);
 		close_pipes_except(pipes, n_cmd, idx, 0);
-		if (cmd->infile != -1)
-		{
-			dup2(cmd->infile, STDIN_FILENO);
-			close(cmd->infile);
-		}
-		if (cmd->outfile != -1)
-		{
-			dup2(cmd->outfile, STDOUT_FILENO);
-			close(cmd->outfile);
-		}
-		if (cmd->is_builtin)
-		{
-			exit(exec_builtin(cmd->argv, env));
-		}
-		else
-		{
-			execvp(cmd->argv[0], cmd->argv);
-			perror(cmd->argv[0]);
-			exit(127);
-		}
+		set_redirs(cmd);
+		exec_command(cmd, env);
 	}
 	return (pid);
 }
 
 /*
-* Execute a pipeline of t_command linked list.
-* Returns last exit code.
+*	Helper function for "execute_pipeline"
 */
+static void	init_pipeline_resources(int n_cmd, int ***pipes_ptr, pid_t **pids_ptr)
+{
+	int	**pipes;
+	pid_t	*pids;
+	int	i;
+
+	pipes = malloc(sizeof(int *) * (n_cmd - 1));
+	pids = malloc(sizeof(pid_t) * n_cmd);
+	i = 0;
+	while (i < n_cmd - 1)
+	{
+		pipes[i] = malloc(sizeof(int) * 2);
+		pipe(pipes[i]);
+		i++;
+	}
+	*pipes_ptr = pipes;
+	*pids_ptr = pids;
+}
+
+// static void	close_and_free_pipes(int n_cmd, int **pipes)
+// {
+// 	int	i;
+
+// 	i = 0;
+// 	while (i < n_cmd - 1)
+// 	{
+// 		close(pipes[i]);
+// 		close(pipes[i][1]);
+// 		free(pipes[i]);
+// 		i++;
+// 	}
+// 	free(pipes);
+// }
+
+// static int	wait_pipeline(pid_t *pids, int n_cmd)
+// {
+// 	int	i;
+// 	int	status;
+// 	int	exit_code = 1;
+
+// 	i = 0;
+// 	while (i < n_cmd)
+// 	{
+// 		waitpid(pids[i], &status, 0);
+// 		if (WIFEXITED(status))
+// 			exit_code = WEXITSTATUS(status);
+// 		i++;
+// 	}
+// 	free(pids);
+// 	return (exit_code);
+// }
+
 int	execute_pipeline(t_command *cmd, t_env *env)
 {
 	int		n_cmd;
 	t_command	*cur;
 	int		**pipes;
-	pid_t	*pids;
+	pid_t		*pids;
 	int		idx;
-	int		status;
-	int		exit_code;
 
 	n_cmd = 0;
 	cur = cmd;
@@ -88,15 +144,7 @@ int	execute_pipeline(t_command *cmd, t_env *env)
 		n_cmd++;
 		cur = cur->next;
 	}
-	pipes = malloc(sizeof(int *) * (n_cmd - 1));
-	pids = malloc(sizeof(pid_t) * n_cmd);
-	idx = 0;
-	while (idx < n_cmd - 1)
-	{
-		pipes[idx] = malloc(sizeof(int) * 2);
-		pipe(pipes[idx]);
-		idx++;
-	}
+	init_pipeline_resources(n_cmd, &pipes, &pids);
 	cur = cmd;
 	idx = 0;
 	while (cur)
@@ -105,25 +153,7 @@ int	execute_pipeline(t_command *cmd, t_env *env)
 		cur = cur->next;
 		idx++;
 	}
-	idx = 0;
-	while (idx < n_cmd - 1)
-	{
-		close(pipes[idx][0]);
-		close(pipes[idx][1]);
-		free(pipes[idx]);
-		idx++;
-	}
-	free(pipes);
-	idx = 0;
-	while (idx < n_cmd)
-	{
-		waitpid(pids[idx], &status, 0);
-		if (WIFEXITED(status))
-			exit_code = WEXITSTATUS(status);
-		else
-			exit_code = 1;
-		idx++;
-	}
-	free(pids);
-	return (exit_code);
+	close_and_free_pipes(n_cmd, pipes);
+	return (wait_pipeline(pids, n_cmd));
 }
+

@@ -1,6 +1,5 @@
 #include "minishell.h"
-#include <stdlib.h>
-#include <string.h>
+#include "./parse_utils.h"
 
 static int	is_redirection(int type)
 {
@@ -31,7 +30,7 @@ static int	append_redir(t_redir **head, t_redir **cur, int type, char *target)
 	if (!redir)
 		return (0);
 	redir->type = type;
-	redir->target = strdup(target);
+	redir->target = ft_strdup(target);
 	if (!redir->target)
 	{
 		free(redir);

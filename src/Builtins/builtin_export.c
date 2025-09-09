@@ -1,4 +1,5 @@
 #include "minishell.h"
+#include "builtins_utils.h"
 
 static char *find_eq(char *str)
 {

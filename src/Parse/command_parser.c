@@ -1,51 +1,50 @@
 #include "minishell.h"
-#include <stdlib.h>
-#include <string.h>
+#include "./parse_utils.h"
 
-// Helper function for **create_argv
-static unsigned int count_args(t_token_list *list, unsigned int start, unsigned int end)
-{
-    unsigned int count = 0;
-    unsigned int i = start;
+// // Helper function for **create_argv
+// static unsigned int count_args(t_token_list *list, unsigned int start, unsigned int end)
+// {
+//     unsigned int count = 0;
+//     unsigned int i = start;
 
-    while (i < end)
-    {
-        if (list->tok[i]->type == TOKEN_WORD)
-            count++;
-        i++;
-    }
-    return (count);
-}
+//     while (i < end)
+//     {
+//         if (list->tok[i]->type == TOKEN_WORD)
+//             count++;
+//         i++;
+//     }
+//     return (count);
+// }
 
-// Helper function for **create_argv
-static char **fill_argv(t_token_list *list, unsigned int start, unsigned int end, unsigned int argc)
-{
-    char            **argv;
-    unsigned int    i = 0;
-    unsigned int    j = start;
+// // Helper function for **create_argv
+// static char **fill_argv(t_token_list *list, unsigned int start, unsigned int end, unsigned int argc)
+// {
+//     char            **argv;
+//     unsigned int    i = 0;
+//     unsigned int    j = start;
 
-    argv = malloc(sizeof(char *) * (argc + 1));
-    if (!argv)
-        return (NULL);
-    while (j < end)
-    {
-        if (list->tok[j]->type == TOKEN_WORD)
-        {
-            argv[i] = strdup(list->tok[j]->token);
-            if (!argv[i])
-            {
-                while (i > 0)
-                    free(argv[--i]);
-                free(argv);
-                return (NULL);
-            }
-            i++;
-        }
-        j++;
-    }
-    argv[i] = NULL;
-    return (argv);
-}
+//     argv = malloc(sizeof(char *) * (argc + 1));
+//     if (!argv)
+//         return (NULL);
+//     while (j < end)
+//     {
+//         if (list->tok[j]->type == TOKEN_WORD)
+//         {
+//             argv[i] = strdup(list->tok[j]->token);
+//             if (!argv[i])
+//             {
+//                 while (i > 0)
+//                     free(argv[--i]);
+//                 free(argv);
+//                 return (NULL);
+//             }
+//             i++;
+//         }
+//         j++;
+//     }
+//     argv[i] = NULL;
+//     return (argv);
+// }
 
 
 // Create argv array of strings from tokens of type TOKEN_WORD in [start, end)
@@ -57,37 +56,61 @@ static char **create_argv(t_token_list *list, unsigned int start, unsigned int e
     return (fill_argv(list, start, end, argc));
 }
 
+// /*
+// * Helper function for *create_command
+// */
+// static t_command	*init_command(void)
+// {
+// 	t_command *cmd;
+
+// 	cmd = malloc(sizeof(t_command));
+// 	if (!cmd)
+// 		return (NULL);
+// 	cmd->argv = NULL;
+// 	cmd->redirs = NULL;
+// 	cmd->is_builtin = 0;
+// 	cmd->next = NULL;
+// 	return (cmd);
+// }
+
+// /*
+// * Helper function for *create_command
+// */
+// static int	set_command_argv(t_command *cmd, t_token_list *list,
+// 	unsigned int start, unsigned int end)
+// {
+// 	cmd->argv = create_argv(list, start, end);
+// 	if (!cmd->argv)
+// 		return (0);
+// 	return (1);
+// }
 
 static t_command	*create_command(t_token_list *list, unsigned int start, unsigned int end)
 {
-	t_command	*cmd;
+	t_command *cmd;
 
-	cmd = malloc(sizeof(t_command));
+	cmd = init_command();
 	if (!cmd)
 		return (NULL);
-	cmd->argv = NULL;
-	cmd->redirs = NULL;
-	cmd->is_builtin = 0;
-	cmd->next = NULL;
-	cmd->argv = create_argv(list, start, end);
-	if (!cmd->argv)
+	if (!set_command_argv(cmd, list, start, end))
 	{
 		free(cmd);
 		return (NULL);
 	}
 	cmd->redirs = parse_redirections(list, start, end);
-	if (!cmd->redirs && start != end) // if no redirections and tokens present, it's ok, else fail
+	if (!cmd->redirs && start != end)
 	{
 		free_matrix(cmd->argv);
 		free(cmd);
 		return (NULL);
 	}
 	if (cmd->argv[0])
-    	cmd->is_builtin = is_builtin(cmd->argv[0]);
+		cmd->is_builtin = is_builtin(cmd->argv[0]);
 	else
-    	cmd->is_builtin = 0;
+		cmd->is_builtin = 0;
 	return (cmd);
 }
+
 
 void	free_commands(t_command *head)
 {
@@ -149,3 +172,17 @@ t_command	*parse(t_token_list *list)
 	}
 	return (head);
 }
+
+// void free_matrix(char **matrix)
+// {
+//     int i = 0;
+
+//     if (!matrix)
+//         return;
+//     while (matrix[i])
+//     {
+//         free(matrix[i]);
+//         i++;
+//     }
+//     free(matrix);
+// }

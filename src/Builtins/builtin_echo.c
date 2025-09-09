@@ -1,16 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   echo.c                                             :+:      :+:    :+:   */
+/*   builtin_echo.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 19:14:04 by jgueon            #+#    #+#             */
-/*   Updated: 2025/08/23 19:23:29 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/09/09 20:39:20 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell"
+#include "minishell.h"
+#include "builtins_utils.h"
 
 // Prints its arguments separated by spaces, handles '-n' (no newline)
 // Returns 0 always

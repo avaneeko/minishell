@@ -1,8 +1,9 @@
 #include "minishell.h"
-#include <errno.h>
-#include <string.h>
-#include <fcntl.h>
-#include <signal.h>
+#include "./execution_utils.h"
+// #include <errno.h>
+// #include <string.h>
+// #include <fcntl.h>
+// #include <signal.h>
 
 /*
 * Close both ends of a pipe if they are valid.

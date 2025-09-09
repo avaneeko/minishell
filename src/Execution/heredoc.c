@@ -1,10 +1,5 @@
 #include "minishell.h"
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <signal.h>
-#include <errno.h>
+#include "./execution_utils.h"
 
 static void	heredoc_sigint_handler(int signo)
 {
@@ -29,7 +24,7 @@ int	heredoc_read(int write_fd, char *delimiter)
 	char	*line;
 	size_t	del_len;
 
-	del_len = strlen(delimiter);
+	del_len = slen(delimiter);
 	setup_heredoc_signals();
 	while (1)
 	{
@@ -37,18 +32,17 @@ int	heredoc_read(int write_fd, char *delimiter)
 		line = readline(NULL);
 		if (line == NULL)
 			break ;
-		if (strncmp(line, delimiter, del_len) == 0 && line[del_len] == '\0')
+		if (ft_strncmp(line, delimiter, del_len) == 0 && line[del_len] == '\0')
 		{
 			free(line);
 			break ;
 		}
-		write(write_fd, line, strlen(line));
+		write(write_fd, line, slen(line));
 		write(write_fd, "\n", 1);
 		free(line);
 	}
 	close(write_fd);
-	// Restore default signals after heredoc reading
-	signal(SIGINT, SIG_DFL);
+	signal(SIGINT, SIG_DFL); // Restore default signals after heredoc reading
 	signal(SIGQUIT, SIG_DFL);
 	return (0);
 }

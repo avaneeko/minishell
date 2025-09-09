@@ -1,4 +1,5 @@
 #include "minishell.h"
+#include "builtins_utils.h"
 
 int builtin_exit(char **argv)
 {
@@ -19,7 +20,7 @@ int builtin_exit(char **argv)
             }
             i++;
         }
-        exit_status = atoi(argv[1]);
+        exit_status = ft_atoi(argv[1]);
     }
     exit(exit_status);
 }

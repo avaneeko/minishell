@@ -1,5 +1,6 @@
 
 #include "minishell.h"
+#include "builtins_utils.h"
 
 int builtin_env(t_env *env)
 {

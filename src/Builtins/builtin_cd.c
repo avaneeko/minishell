@@ -1,16 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cd.c                                               :+:      :+:    :+:   */
+/*   builtin_cd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 19:01:30 by jgueon            #+#    #+#             */
-/*   Updated: 2025/08/23 19:10:32 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/09/09 20:38:52 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "builtins_utils.h"
 
 // Changes the current directory to argv[1] (or $HOME if no arg)
 // Returns 0 (success) or 1 (failure)

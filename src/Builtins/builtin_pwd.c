@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pwd.c                                              :+:      :+:    :+:   */
+/*   builtin_pwd.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 19:20:35 by jgueon            #+#    #+#             */
-/*   Updated: 2025/08/23 19:23:50 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/09/09 20:37:09 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <limits.h>
+#include "builtins_utils.h"
 
 // Print the current working directory
 int builtin_pwd(void)

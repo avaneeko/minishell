@@ -1,8 +1,9 @@
 #include "minishell.h"
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "./execution_utils.h"
+// #include <fcntl.h>
+// #include <unistd.h>
+// #include <stdio.h>
+// #include <stdlib.h>
 
 /*
 * Close fds if not -1.
@@ -52,56 +53,73 @@ int	open_heredoc(char *delim)
 }
 
 /*
+* Helper function for setup_redirections
+*/
+static int	handle_input_redirection(t_redir *redir, int *infd)
+{
+	int	fd;
+
+	if (*infd != -1)
+		close(*infd);
+	if (redir->type == TOKEN_HEREDOC)
+	{
+		fd = open_heredoc(redir->target);
+		if (fd < 0)
+			return (-1);
+	}
+	else
+	{
+		fd = open(redir->target, O_RDONLY);
+		if (fd < 0)
+			return (-1);
+	}
+	*infd = fd;
+	return (0);
+}
+
+/*
+* Helper function for setup_redirections
+*/
+static int	handle_output_redirection(t_redir *redir, int *outfd)
+{
+	int	fd;
+
+	if (*outfd != -1)
+		close(*outfd);
+	if (redir->type == TOKEN_REDIRECT_OUTPUT_APPEND)
+		fd = open(redir->target, O_CREAT | O_WRONLY | O_APPEND, 0644);
+	else
+		fd = open(redir->target, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	if (fd < 0)
+		return (-1);
+	*outfd = fd;
+	return (0);
+}
+
+/*
 * Open all redirections for a command, set infd/outfd for process.
 * Returns 0 on success, -1 on error.
 */
 int	setup_redirections(t_redir *redirs, int *infd, int *outfd)
 {
-	int		fd;
-	t_redir	*r;
+	t_redir	*redir;
 
 	*infd = -1;
 	*outfd = -1;
-	r = redirs;
-	while (r)
+	redir = redirs;
+	while (redir)
 	{
-		if (r->type == TOKEN_REDIRECT_INPUT)
+		if (redir->type == TOKEN_REDIRECT_INPUT || redir->type == TOKEN_HEREDOC)
 		{
-			if (*infd != -1)
-				close(*infd);
-			fd = open(r->target, O_RDONLY);
-			if (fd < 0)
+			if (handle_input_redirection(redir, infd) == -1)
 				return (-1);
-			*infd = fd;
 		}
-		else if (r->type == TOKEN_REDIRECT_OUTPUT)
+		else if (redir->type == TOKEN_REDIRECT_OUTPUT || redir->type == TOKEN_REDIRECT_OUTPUT_APPEND)
 		{
-			if (*outfd != -1)
-				close(*outfd);
-			fd = open(r->target, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-			if (fd < 0)
+			if (handle_output_redirection(redir, outfd) == -1)
 				return (-1);
-			*outfd = fd;
 		}
-		else if (r->type == TOKEN_REDIRECT_OUTPUT_APPEND)
-		{
-			if (*outfd != -1)
-				close(*outfd);
-			fd = open(r->target, O_CREAT | O_WRONLY | O_APPEND, 0644);
-			if (fd < 0)
-				return (-1);
-			*outfd = fd;
-		}
-		else if (r->type == TOKEN_HEREDOC)
-		{
-			if (*infd != -1)
-				close(*infd);
-			fd = open_heredoc(r->target);
-			if (fd < 0)
-				return (-1);
-			*infd = fd;
-		}
-		r = r->next;
+		redir = redir->next;
 	}
 	return (0);
 }

@@ -1,9 +1,9 @@
 #include "minishell.h"
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
-#include <signal.h>
-#include <stdio.h>
+#include "./execution_utils.h"
+// #include <sys/wait.h>
+// #include <unistd.h>
+// #include <signal.h>
+// #include <stdio.h>
 
 /*
 * Waits for a single child process to finish and sets global exit status.

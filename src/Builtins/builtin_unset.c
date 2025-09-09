@@ -1,5 +1,6 @@
 
 #include "minishell.h"
+#include "builtins_utils.h"
 
 static int is_valid_key(char *key)
 {
