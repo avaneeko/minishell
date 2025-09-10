@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   utils.h                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/25 18:43:31 by losypenk          #+#    #+#             */
-/*   Updated: 2025/09/04 16:54:42 by losypenk         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef UTILS_H
 # define UTILS_H
 
@@ -53,6 +41,11 @@ int		streq(char const *a, char const *b);
 /*	String copy.															*/
 /*																			*/
 void	scpy(char *dst, char const *src);
+
+/*																			*/
+/*	Memory set.																*/
+/*																			*/
+void	mset(void *dst, int c, size_t count);
 
 /*																			*/
 /*	Gets the index of the first character's `c' occurrence in string `str`.	*/
