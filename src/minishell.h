@@ -5,6 +5,9 @@
 
 # include <unistd.h>
 # include <sys/wait.h>
+# include <sys/types.h>
+# include <sys/stat.h>
+# include <fcntl.h>
 # include <signal.h>
 # include <stdlib.h>
 # include <readline/readline.h>
@@ -231,6 +234,31 @@ typedef struct s_exp
 	t_env const *env;		  // Environment variables.
 }	t_exp;
 
+//
+//	Checks whether the string `s` contains a valid start sequence of a variable.
+//	Returns:
+//	0 - invalid variable name
+//	1 - valid standard variable name
+//	2 - special variable (currently only $?)
+//
+int	is_valid_var_name(char const *s);
+
+// Get length of the variable.
+// Examples (return meaning `*out =`):
+// Given s -> "$VAR something" it should set `out` to 4. Ret = 1
+// Given s -> "$" it should set `out` to 1. (single $ becomes a $) Ret = 1
+// Given s -> "something" it should return 0. (no $ found, not a variable)
+//! This does not handle $1 to $9 - positional arguments, out of scope.
+// TODO: Handle $? - last exit code.
+int get_val_len(char const *s, unsigned int *out);
+
+//
+//	Gets the contents based on the environment key `s`
+//*	`s` cannot be null.
+//
+char const *get_expansion_contents(t_env const* env, char const *s,
+		unsigned int len);
+
 // struct s_app;
 typedef struct s_app t_app;
 
@@ -262,5 +290,10 @@ int		app_create(int argc, char const **argv, char const **envp,
 	t_app *out);
 
 void	app_destroy(t_app *app);
+
+//
+//	Prompt the user for all the here documents inside the tokens.
+//
+int	prompt_heredoc(t_app *app);
 
 #endif
