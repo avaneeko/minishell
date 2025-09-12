@@ -44,7 +44,6 @@ int	main(int argc, char const *argv[], char const *envp[])
 	char *line;
 	while ((line = readline("$ ")))
 	{
-		//write(1, line, slen(line));
 		if (!tokenize(line, app.token_list))
 			write(1, "Tokenizer error.", sizeof "Tokenizer error." - 1);
 		expand(&app.token_list, &app.env);

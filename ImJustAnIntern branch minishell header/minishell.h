@@ -16,9 +16,6 @@
 # include "utils.h"
 # include "astr.h"
 
-extern int	g_exit_status; // Global variable for signals
-// int g_exit_status = 0;  // Define and initialize in one(main.c) file only
-
 enum e_token_type
 {
 	TOKEN_UNDEFINED,
@@ -298,31 +295,5 @@ void	app_destroy(t_app *app);
 //	Prompt the user for all the here documents inside the tokens.
 //
 int	prompt_heredoc(t_app *app);
-
-
-// Signal and exit status infrastructure
-void	setup_signals(void);
-void	set_child_signals(void);
-int		get_exit_status(void);
-void	set_exit_status(int status);
-
-
-typedef struct s_redir
-{
-	int             type;     // e.g., TOKEN_REDIRECT_INPUT, TOKEN_REDIRECT_OUTPUT, etc.
-	char            *target;  // filename or heredoc delimiter
-	struct s_redir  *next;
-}   t_redir;
-
-typedef struct s_command
-{
-	char            	**argv;
-	t_redir         	*redirs;     // Linked list of redirections
-	int					infile;      // File descriptor for redirected input or -1
-    int 				outfile;     // File descriptor for redirected output or -1
-	int             	is_builtin;  // 1 if is builtin, 0 if not
-	struct s_command 	*next;      // Next command in pipeline
-}   t_command;
-
 
 #endif

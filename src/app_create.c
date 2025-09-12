@@ -11,6 +11,7 @@ int	app_create(int argc, char const **argv, char const **envp, t_app *out)
 		destroy_env(&out->env);
 		return (0);
 	}
+	mset(out->heredocs, -1, sizeof out->heredocs);
 
 	return 1; // Success!
 }

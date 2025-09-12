@@ -124,6 +124,25 @@ int		get_epair_by_key(t_env const *env, char const* key, t_epair *out)
 	return (0);
 }
 
+int		get_epair_by_key2(t_env const *env, char const* key,
+		unsigned int key_len, t_epair *out)
+{
+	unsigned int	i;
+	size_t			pkey_len;
+
+	i = ~0u;
+	while (++i < env->len)
+	{
+		pkey_len = slen(env->pairs[i].key);
+		if (pkey_len == key_len && mcmp(env->pairs[i].key, key, key_len) == 0)
+		{
+			*out = env->pairs[i];
+			return (1);
+		}
+	}
+	return (0);
+}
+
 int		remove_epair_by_key(t_env *env, char const* key)
 {
 	unsigned int	i;

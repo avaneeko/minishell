@@ -6,15 +6,16 @@
 #    By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/24 17:33:26 by losypenk          #+#    #+#              #
-#    Updated: 2025/08/24 12:23:02 by losypenk         ###   ########.fr        #
+#    Updated: 2025/09/12 14:49:42 by losypenk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME := minishell
 
-SRC := src/main.c src/utils.c src/utils2.c src/token.c src/token_list.c \
-	src/token_list2.c src/tokenizer.c src/app_create.c src/app_destroy.c \
-	src/env.c src/expansion.c src/astr.c src/token_resplit.c
+SRC := src/main.c src/utils.c src/utils2.c src/utils3.c src/token.c \
+	src/token_list.c src/token_list2.c src/tokenizer.c src/app_create.c \
+	src/app_destroy.c src/env.c src/expansion.c src/astr.c src/token_resplit.c \
+	src/heredoc.c src/expansion_utils.c
 OBJ := $(SRC:src/%.c=obj/%.o)
 
 CC := cc
