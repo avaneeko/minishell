@@ -78,10 +78,20 @@ static int	write_exact(int fd, void const *p, size_t size)
 // Util to write heredoc input and free it with error reporting.
 // Always frees `input`
 // Closes `*fd` in case of failure.
-static int	write_heredoc(int *fd, char *input)
+static int	write_heredoc(int *fd, char *input, int const nl)
 {
 	if (write_exact(*fd, input, slen(input)))
 	{
+		if (nl && write_exact(*fd, "\n", 1))
+			;
+		else
+		{
+			write(2, "minishell: Failure occurred when writing to a heredoc"
+				" file descriptor. Aborting prompt.\n", 88);
+			close(*fd);
+			free(input);
+			return ((*fd = -1) == 0);
+		}
 		free(input);
 		return (1);
 	}
@@ -114,6 +124,10 @@ int	expand_prompt(t_env const *env, char *input)
 	if (!astr_create(&a))
 		return (err_expand_prompt_astr_failure());
 	q = 0;
+	if (q == 0 && q == 1)
+	{
+		q = 5;
+	}
 	s = input;
 	while (s)
 	{
@@ -155,7 +169,7 @@ int	heredoc_input_tty(t_app *app, int *fd, char const *heredoc_end, int exp)
 		else
 		{
 			// Simply write the input, no expansion.
-			if (!write_heredoc(fd, input))
+			if (!write_heredoc(fd, input, 1))
 				return (0);
 		}
 	}
@@ -244,6 +258,7 @@ int	prompt_heredoc(t_app *app)
 		{
 			// Prompt for heredoc with
 			// app->token_list->tok[i] and app->token_list->tok[i + 1]
+			do_prompt(app, app->token_list->tok[i + 1]->token);
 		}
 		else if (is_bad_heredoc(app, i))
 		{
