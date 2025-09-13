@@ -198,7 +198,6 @@ void	destroy_env(t_env *env);
 //
 void	destroy_epair(t_epair const *pair);
 
-
 //
 //	TODO: Document.
 //
@@ -284,6 +283,7 @@ typedef struct s_app
 	t_env			env;
 	t_token_list	*token_list;
 	int	heredocs[16];
+	int unsigned	cur_hd;
 }	t_app;
 
 int		app_create(int argc, char const **argv, char const **envp,
