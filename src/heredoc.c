@@ -107,9 +107,25 @@ static int	write_heredoc(int *fd, char *input, int const nl)
 
 static int	err_expand_prompt_astr_failure()
 {
-	write(2, "minishell: AppendableString initialization failure: Out of memory"
-		". Aborting prompt.\n", 84);
+	write(2, "minishell: AppendableString failure: Out of memory"
+		". Aborting prompt.\n", 69);
 	return (0);
+}
+
+// Handles characters that are not part of the variable expansion.
+// Handles quotes as well.
+//! Will free `str` on failure.
+// Returns 1 on success, 0 otherwise.
+// haha we actually do want to append quotes, but not handle them anyhow.
+static int	handle_char(char const *str, t_astr *a, int unsigned *i)
+{
+	if (!astr_append2(a, str + *i, 1))
+	{
+		free((void *)str);
+		return (0);
+	}
+	*i += 1;
+	return (1);
 }
 
 // Function that expands a heredoc prompt.
@@ -117,21 +133,22 @@ static int	err_expand_prompt_astr_failure()
 // Returns 1 on success, 0 otherwise.
 int	expand_prompt(t_env const *env, char *input)
 {
-	char	q;
-	char	*s;
-	t_astr	a;
+	unsigned int	var_len;
+	int unsigned	i;
+	t_astr			a;
 
 	if (!astr_create(&a))
 		return (err_expand_prompt_astr_failure());
-	q = 0;
-	if (q == 0 && q == 1)
+	i = 0;
+	while (input[i])
 	{
-		q = 5;
-	}
-	s = input;
-	while (s)
-	{
-		s++;
+		if (get_val_len(input + i, &var_len))
+		{
+			// Start of a variable.
+		}
+		else if (!handle_char(input, &a, &i))
+			return (err_expand_prompt_astr_failure());
+		i++;
 	}
 	return (1);
 }
@@ -151,7 +168,7 @@ int	heredoc_input_tty(t_app *app, int *fd, char const *heredoc_end, int exp)
 			// Discard current `input` prompt.
 			close(app->heredocs[app->cur_hd]);
 			app->heredocs[app->cur_hd] = open(get_heredoc_filename(app->cur_hd),
-				O_RDWR | O_CREAT | O_EXCL, 0600);
+				O_RDONLY, 0600);
 			unlink(get_heredoc_filename(app->cur_hd));
 			free(input);
 			return (1);
@@ -165,6 +182,7 @@ int	heredoc_input_tty(t_app *app, int *fd, char const *heredoc_end, int exp)
 		else if (input && exp)
 		{
 			// Expand and write the input.
+			expand_prompt(&app->env, input) && write_heredoc(fd, input, 1);
 		}
 		else
 		{
