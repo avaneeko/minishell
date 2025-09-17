@@ -54,7 +54,7 @@ int	heredoc_input_tty(t_app *app, int *fd, char const *heredoc_end, int exp)
 		{
 			// Expand and write the input.
 			if (!expand_prompt(&app->env, &input)
-					&& write_heredoc(fd, input, 1))
+					|| !write_heredoc(fd, input, 1))
 				return (0); // Convey error: OOM during expansion.
 		}
 		else
