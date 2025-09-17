@@ -71,11 +71,6 @@ int	try_open_heredoc(t_app *app, int /*out*/ *idx)
 	return (1);
 }
 
-static int	write_exact(int fd, void const *p, size_t size)
-{
-	return (write(fd, p, size) == (ssize_t)size);
-}
-
 // Util to write heredoc input and free it with error reporting.
 // Always frees `input`
 // Closes `*fd` in case of failure.
@@ -288,7 +283,7 @@ static int	has_quotes(char const *s)
 }
 
 // heredoc_end - delimiter.
-int do_prompt(t_app *app, t_token *hd, t_token *hd_end, char const *heredoc_end)
+int do_prompt(t_app *app, t_token *hd, t_token *hd_end, char *heredoc_end)
 {
 	int	fd;
 	int const exp = !has_quotes(heredoc_end); // is expansion required?

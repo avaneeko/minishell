@@ -64,4 +64,9 @@ void	*mclone_grow(void const *p, size_t p_size, size_t grow_size);
 /*																			*/
 int	is_wspc(char c);
 
+/*																			*/
+/*	Ensures that the write operation completed in full, if so, returns 1.	*/
+/*																			*/
+int	write_exact(int fd, void const *p, size_t size);
+
 #endif
