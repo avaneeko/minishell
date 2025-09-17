@@ -61,10 +61,11 @@ int	try_open_heredoc(t_app *app, int /*out*/ *idx)
 		exit(1);
 	}
 	app->cur_hd = i;
+	unlink(get_heredoc_filename(i));
 	app->heredocs[i] = open(get_heredoc_filename(i), O_RDWR | O_CREAT | O_EXCL,
 		0600);
 	if (app->heredocs[i] == -1)
-		return (0);
+		return (0); // Convey error?
 	*idx = app->heredocs[i];
 	// can't unlink here cuz the file needs to be re-opened later.
 	return (1);
@@ -72,7 +73,7 @@ int	try_open_heredoc(t_app *app, int /*out*/ *idx)
 
 static int	write_exact(int fd, void const *p, size_t size)
 {
-	return (write(fd, p, size) == size);
+	return (write(fd, p, size) == (ssize_t)size);
 }
 
 // Util to write heredoc input and free it with error reporting.
@@ -128,10 +129,52 @@ static int	handle_char(char const *str, t_astr *a, int unsigned *i)
 	return (1);
 }
 
+// Inplace quote removal, helps to avoid the malloc.
+static void	unquote_inplace(char *s)
+{
+	char	*w;
+
+	w = s;
+	while (*s)
+	{
+		if (*s != '\'' && *s != '"')
+			*w++ = *s;
+		s++;
+	}
+	*w = 0;
+}
+
+// arg[0] is *i
+// arg[1] is *var_len
+static int	expand_variable(char *str, t_env const *env, t_astr *a,
+							unsigned int **arg)
+{
+	char *const	var_name = malloc(arg[1][0] + 1);
+
+	if (!var_name)
+	{
+		astr_destroy(a);
+		return (0);
+	}
+	mcpy(var_name, str + arg[0][0], arg[1][0]);
+	var_name[arg[1][0]] = '\0';
+	char const *val = get_expansion_contents(env, str + arg[0][0] + 1,
+			arg[1][0] - 1);
+	if (val && !astr_append2(a, val, slen(val)))
+	{
+		free(var_name);
+		astr_destroy(a);
+		return (0);
+	}
+	free(var_name);
+	arg[0][0] += arg[1][0];
+	return (1);
+}
+
 // Function that expands a heredoc prompt.
 // Will free `input` on failure.
 // Returns 1 on success, 0 otherwise.
-int	expand_prompt(t_env const *env, char *input)
+int	expand_prompt(t_env const *env, char **input)
 {
 	unsigned int	var_len;
 	int unsigned	i;
@@ -142,14 +185,17 @@ int	expand_prompt(t_env const *env, char *input)
 	i = 0;
 	while (input[i])
 	{
-		if (get_val_len(input + i, &var_len))
+		if (get_val_len(*input + i, &var_len))
 		{
-			// Start of a variable.
+			if (!expand_variable(*input, env, &a,
+					(unsigned int *[]){&i, &var_len}))
+				return (0);
 		}
-		else if (!handle_char(input, &a, &i))
+		else if (!handle_char(*input, &a, &i))
 			return (err_expand_prompt_astr_failure());
-		i++;
 	}
+	free(*input);
+	*input = a.s;
 	return (1);
 }
 
@@ -182,7 +228,7 @@ int	heredoc_input_tty(t_app *app, int *fd, char const *heredoc_end, int exp)
 		else if (input && exp)
 		{
 			// Expand and write the input.
-			expand_prompt(&app->env, input) && write_heredoc(fd, input, 1);
+			expand_prompt(&app->env, &input) && write_heredoc(fd, input, 1);
 		}
 		else
 		{
@@ -194,15 +240,17 @@ int	heredoc_input_tty(t_app *app, int *fd, char const *heredoc_end, int exp)
 	return (1);
 }
 
+// TODO [MIN-33]: Implement heredoc_input_fd()
 int	heredoc_input_fd(t_app *app, int *fd, char const *heredoc_end, int exp)
 {
+	(void)app; (void)fd; (void)heredoc_end; (void)exp;
 	__builtin_trap(/*UNIMPLEMENTED*/);
 }
 
 //* will close *fd on failure.
-int	get_heredoc_input(t_app *app, int *fd, char const *heredoc_end, int exp)
+int	get_heredoc_input(t_app *app, int *fd, char *heredoc_end, int exp)
 {
-	char	*input;
+	unquote_inplace(heredoc_end);
 
 	if (isatty(STDIN_FILENO) && heredoc_input_tty(app, fd, heredoc_end, exp))
 		return (1);
@@ -212,6 +260,8 @@ int	get_heredoc_input(t_app *app, int *fd, char const *heredoc_end, int exp)
 	return (0); // Failure!
 }
 
+/*
+unused.
 int	expand_heredoc(t_env const *env, int should_expand)
 {
 	t_astr	a;
@@ -223,6 +273,7 @@ int	expand_heredoc(t_env const *env, int should_expand)
 
 	return (1);
 }
+*/
 
 // Used to figure out whether heredoc needs expansion.
 static int	has_quotes(char const *s)
@@ -236,30 +287,17 @@ static int	has_quotes(char const *s)
 	return (0);
 }
 
-// Inplace quote removal, helps to avoid the malloc.
-static void	unquote_inplace(char *s)
-{
-	char	*w;
-
-	w = s;
-	while (*s)
-	{
-		if (*s != '\'' && *s != '"')
-			*w++ = *s;
-		s++;
-	}
-	*w = 0;
-}
-
 // heredoc_end - delimiter.
-int do_prompt(t_app *app, char const *heredoc_end)
+int do_prompt(t_app *app, t_token *hd, t_token *hd_end, char const *heredoc_end)
 {
 	int	fd;
-	int const exp = has_quotes(heredoc_end); // is expansion required?
+	int const exp = !has_quotes(heredoc_end); // is expansion required?
 
 	if (try_open_heredoc(app, &fd) && get_heredoc_input(app, &fd, heredoc_end,
-		exp))
+			exp))
 	{
+		hd->token[0] = fd; // Save fd inside the token.
+		hd_end->type = TOKEN_UNDEFINED; // Mark token as spent.
 		return (1); // Success!
 	}
 	else
@@ -276,7 +314,8 @@ int	prompt_heredoc(t_app *app)
 		{
 			// Prompt for heredoc with
 			// app->token_list->tok[i] and app->token_list->tok[i + 1]
-			do_prompt(app, app->token_list->tok[i + 1]->token);
+			do_prompt(app, app->token_list->tok[i], app->token_list->tok[i + 1],
+				app->token_list->tok[i + 1]->token);
 		}
 		else if (is_bad_heredoc(app, i))
 		{
