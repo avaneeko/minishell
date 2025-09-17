@@ -69,4 +69,9 @@ int	is_wspc(char c);
 /*																			*/
 int	write_exact(int fd, void const *p, size_t size);
 
+/*																			*/
+/*	Removes quotes from a string without reallocation.						*/
+/*																			*/
+void	unquote_inplace(char *s);
+
 #endif

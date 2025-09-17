@@ -45,6 +45,9 @@ typedef struct s_token_list
 	t_token			*tok[];	// Token ptr array.
 }	t_token_list;
 
+// Max characters allowed in the prompt at a time.
+#define PROMPT_CHAR_LIMIT 1024
+
 //
 //	Instantiate a new token list, with set capacity.
 //	Returns 1 on success, 0 otherwise.
@@ -290,6 +293,9 @@ int		app_create(int argc, char const **argv, char const **envp,
 	t_app *out);
 
 void	app_destroy(t_app *app);
+
+// Closes all open fd's of app->heredoc.
+void app_reset_heredocs(t_app *app);
 
 //
 //	Prompt the user for all the here documents inside the tokens.

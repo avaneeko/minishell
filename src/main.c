@@ -46,7 +46,8 @@ int	main(int argc, char const *argv[], char const *envp[])
 	{
 		if (!tokenize(line, app.token_list))
 			write(1, "Tokenizer error.", sizeof "Tokenizer error." - 1);
-		prompt_heredoc(&app);
+		if (!prompt_heredoc(&app))
+			break;
 		expand(&app.token_list, &app.env);
 		token_resplit(&app);
 		print_token_list(app.token_list);

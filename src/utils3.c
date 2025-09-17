@@ -15,3 +15,17 @@ int	write_exact(int fd, void const *p, size_t size)
 {
 	return (write(fd, p, size) == (ssize_t)size);
 }
+
+void	unquote_inplace(char *s)
+{
+	char	*w;
+
+	w = s;
+	while (*s)
+	{
+		if (*s != '\'' && *s != '"')
+			*w++ = *s;
+		s++;
+	}
+	*w = 0;
+}
