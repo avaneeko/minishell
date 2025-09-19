@@ -57,6 +57,7 @@ static void Debug_PrintAllHeredocumentContents( t_app * app )
 			{
 				write(STDOUT_FILENO, buf, bytesRead);
 			}
+			lseek(app->heredocs[i], 0, SEEK_SET);
 		}
 	}
 }
