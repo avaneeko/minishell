@@ -5,7 +5,7 @@ int	get_heredoc_input(t_app *app, int *fd, char *heredoc_end, int exp);
 int	heredoc_input_tty(t_app *app, int *fd, char const *heredoc_end, int exp);
 int	heredoc_input_fd(t_app *app, int *fd, char const *heredoc_end, int exp);
 static int	heredoc_stop(t_app *app, void *input, int *fd);
-static int	err_reset_heredoc(t_app *app);
+static int	err_fatal_heredoc_io(t_app *app);
 
 // From heredoc_get_file_name.c
 char const	*get_heredoc_filename(int unsigned idx);
@@ -27,7 +27,7 @@ int	get_heredoc_input(t_app *app, int *fd, char *heredoc_end, int exp)
 	else if (!isatty(STDIN_FILENO)
 		&& heredoc_input_fd(app, fd, heredoc_end, exp))
 		return (1);
-	return err_reset_heredoc(app); // Failure!
+	return err_fatal_heredoc_io(app); // Failure!
 }
 
 int	heredoc_input_tty(t_app *app, int *fd, char const *heredoc_end, int exp)
@@ -87,6 +87,8 @@ static int	heredoc_stop(t_app *app, void *input, int *fd)
 	close(app->heredocs[app->cur_hd]);
 	*fd = app->heredocs[app->cur_hd] = open(app->cur_hd_name,
 		O_RDONLY, 0600);
+	if (*fd < 0)
+		err_fatal_heredoc_io(app);
 	unlink(app->cur_hd_name);
 	free(app->cur_hd_name);
 	app->cur_hd_name = 0;
@@ -94,9 +96,9 @@ static int	heredoc_stop(t_app *app, void *input, int *fd)
 	return (1);
 }
 
-static int	err_reset_heredoc(t_app *app)
+static int	err_fatal_heredoc_io(t_app *app)
 {
 	write(2, "Fatal: File I/O error during heredocument fd acquisition.\n", 58);
-	app_reset_heredocs(app);
-	return (0);
+	app_destroy(app);
+	exit(1);
 }

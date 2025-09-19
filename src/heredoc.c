@@ -46,8 +46,17 @@ int do_prompt(t_app *app, t_token *hd, t_token *hd_end, char *heredoc_end)
 		hd_end->type = TOKEN_UNDEFINED; // Mark token as spent.
 		return (1); // Success!
 	}
-	else
-		return (0); // Failure!
+    if (fd >= 0)
+		close(fd);
+    if (app->cur_hd_name)
+	{
+		unlink(app->cur_hd_name);
+		free(app->cur_hd_name);
+		app->cur_hd_name = 0;
+	}
+    if (app->cur_hd < 16)
+		app->heredocs[app->cur_hd] = -1;
+	return (0); // Failure!
 }
 
 int	prompt_heredoc(t_app *app)
@@ -63,11 +72,10 @@ int	prompt_heredoc(t_app *app)
 			if (!do_prompt(app, app->token_list->tok[i],
 					app->token_list->tok[i + 1],
 					app->token_list->tok[i + 1]->token))
-				return (0);
+				return (0); // TODO: Abort prompt and error: Heredoc IO failure.
 		}
 		else if (is_bad_heredoc(app, i))
 		{
-
 		}
 		// Otherwise it has nothing to do with heredoc, do nothing.
 	}
