@@ -16,7 +16,10 @@ void	print_token_list(t_token_list *list)
 	};
 	for (unsigned int i = 0; i < list->len; i++)
 	{
-		__builtin_printf("%i: %s %s\r\n", i, e2str[list->tok[i]->type], list->tok[i]->token);
+		if ((list->tok[i]->type ^ TOKEN_HEREDOC) == 0)
+			__builtin_printf("%i: %s #%u\r\n", i, e2str[list->tok[i]->type], (int unsigned)list->tok[i]->token[0]);
+		else
+			__builtin_printf("%i: %s %s\r\n", i, e2str[list->tok[i]->type], list->tok[i]->token);
 	}
 }
 
@@ -36,6 +39,28 @@ void	print_token_list(t_token_list *list)
 // 	return EXIT_SUCCESS;
 // }
 
+/*
+	Debug only; do not ship.
+	$ Prints all of the heredocuments contents along with their id's.
+*/
+static void Debug_PrintAllHeredocumentContents( t_app * app )
+{
+	void * buf = __builtin_alloca(4096);
+
+	for ( int unsigned i = 0; i < 16; i++ )
+	{
+		if ( app->heredocs[i] != -1 )
+		{
+			__builtin_printf("Heredoc #%u:\r\n", i);
+			ssize_t bytesRead;
+			while ( (bytesRead = read(app->heredocs[i], buf, 4096)) > 0 )
+			{
+				write(STDOUT_FILENO, buf, bytesRead);
+			}
+		}
+	}
+}
+
 int	main(int argc, char const *argv[], char const *envp[])
 {
 	t_app app;
@@ -52,6 +77,8 @@ int	main(int argc, char const *argv[], char const *envp[])
 		token_resplit(&app);
 		print_token_list(app.token_list);
 		clear_token_list(app.token_list);
+		Debug_PrintAllHeredocumentContents(&app);
+		app_reset_heredocs(&app);
 		// write(1, &(char){'\n'}, 1);
 		free(line);
 	}
