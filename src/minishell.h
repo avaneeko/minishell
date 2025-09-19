@@ -287,6 +287,7 @@ typedef struct s_app
 	t_token_list	*token_list;
 	int	heredocs[16];
 	int unsigned	cur_hd;
+	char			*cur_hd_name;
 }	t_app;
 
 int		app_create(int argc, char const **argv, char const **envp,

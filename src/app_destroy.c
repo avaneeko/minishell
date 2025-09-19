@@ -11,6 +11,8 @@ void	close_heredocs(t_app *app)
 			close(app->heredocs[i]);
 	}
 	mset(app->heredocs, -1, 16);
+	free(app->cur_hd_name);
+	app->cur_hd_name = 0;
 }
 
 void app_reset_heredocs(t_app *app)
@@ -26,6 +28,8 @@ void app_reset_heredocs(t_app *app)
 			app->heredocs[i] = -1;
 		}
 	}
+	free(app->cur_hd_name);
+	app->cur_hd_name = 0;
 }
 
 void	app_destroy(t_app *app)

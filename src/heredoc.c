@@ -10,7 +10,7 @@ int	is_bad_heredoc(t_app *app, unsigned int i);
 int	is_good_heredoc(t_app *app, unsigned int i);
 
 // From heredoc_get_file_name.c
-char const	*get_heredoc_filename(int unsigned idx);
+char const	*get_heredoc_filename();
 
 // From heredoc_input.c
 int	get_heredoc_input(t_app *app, int *fd, char *heredoc_end, int exp);

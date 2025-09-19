@@ -85,9 +85,11 @@ int	heredoc_input_fd(t_app *app, int *fd, char const *heredoc_end, int exp)
 static int	heredoc_stop(t_app *app, void *input, int *fd)
 {
 	close(app->heredocs[app->cur_hd]);
-	*fd = app->heredocs[app->cur_hd] = open(get_heredoc_filename(app->cur_hd),
+	*fd = app->heredocs[app->cur_hd] = open(app->cur_hd_name,
 		O_RDONLY, 0600);
-	unlink(get_heredoc_filename(app->cur_hd));
+	unlink(app->cur_hd_name);
+	free(app->cur_hd_name);
+	app->cur_hd_name = 0;
 	free(input);
 	return (1);
 }
