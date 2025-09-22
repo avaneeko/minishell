@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+         #
+#    By: myli-pen <myli-pen@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/24 17:33:26 by losypenk          #+#    #+#              #
-#    Updated: 2025/09/17 15:59:01 by losypenk         ###   ########.fr        #
+#    Updated: 2025/09/22 15:53:57 by myli-pen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,6 +18,27 @@ SRC := src/main.c src/utils.c src/utils2.c src/utils3.c src/token.c \
 	src/heredoc.c src/expansion_utils.c src/heredoc_bad_good_heredoc.c \
 	src/heredoc_expand_prompt.c src/heredoc_get_file_name.c src/heredoc_input.c\
 	src/heredoc_open_write.c
+	src/Builtins/builtin_cd.c \
+	src/Builtins/builtin_echo.c \
+	src/Builtins/builtin_env.c \
+	src/Builtins/builtin_exit.c \
+	src/Builtins/builtin_export.c \
+	src/Builtins/builtin_pwd.c \
+	src/Builtins/builtin_unset.c \
+	src/Builtins/builtins_utils.c \
+	src/Builtins/env_helpers.c \
+	src/Execution/command_path.c \
+	src/Execution/execution_env.c \
+	src/Execution/execution_exec.c \
+	src/Execution/execution_resources.c \
+	src/Execution/execution_utils.c \
+	src/Execution/execution_utils2.c \
+	src/Execution/execution_utils3.c \
+	src/Execution/executor.c \
+	src/Execution/redirection.c \
+	src/Signals/exit_status.c \
+	src/Signals/signals.c \
+
 OBJ := $(SRC:src/%.c=obj/%.o)
 
 CC := cc
