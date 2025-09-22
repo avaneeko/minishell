@@ -299,8 +299,38 @@ void	app_destroy(t_app *app);
 void app_reset_heredocs(t_app *app);
 
 //
+//	Heredocument.
+//
+
+//
 //	Prompt the user for all the here documents inside the tokens.
 //
 int	prompt_heredoc(t_app *app);
+
+//
+//	Execution.
+//
+
+// Initial amount of entries reserved by `t_cmdarr`, in entries.
+# ifndef CMDARR_MEM_RESERVE
+#  define CMDARR_MEM_RESERVE 1024u
+# endif
+
+typedef struct s_redir
+{
+	int             type;     // e.g., TOKEN_REDIRECT_INPUT, TOKEN_REDIRECT_OUTPUT, etc.
+	char            *target;  // filename or heredoc delimiter
+	struct s_redir  *next;
+}   t_redir;
+
+typedef struct s_command
+{
+	char            	**argv;
+	t_redir         	*redirs;     // Linked list of redirections
+	int					infile;      // File descriptor for redirected input or -1
+    int 				outfile;     // File descriptor for redirected output or -1
+	int             	is_builtin;  // 1 if is builtin, 0 if not
+	struct s_command 	*next;      // Next command in pipeline
+}   t_command;
 
 #endif
