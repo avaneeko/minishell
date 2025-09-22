@@ -2,38 +2,37 @@
 # define EXECUTION_UTILS_H
 
 # include "minishell.h"
-// # include <stdlib.h>
-# include <string.h>
-// # include <unistd.h>
-# include <sys/stat.h>
-# include <errno.h>
-# include <fcntl.h>
-# include <stdio.h>
-# include <sys/types.h>
-// # include <signal.h>
-// # include <sys/wait.h>
 
-//libft function replicas
-char	**ft_split(const char *s, char c);
-size_t	ft_strlen(const char *s);
-int		ft_strncmp(const char *s1, const char *s2, size_t n);
-
-// Frees a NULL-terminated char** returned by ft_split.
-void	ft_split_free(char **array);
-
-static int is_executable_file(char *path);
-
-void	free_string_array(char **strs);
-
-// executor_helpers.c (for fork_command)
-static void	set_pipe_ends(t_command *cmd, int **pipes, int n_cmd, int idx);
-static void	set_redirs(t_command *cmd);
-// helpers for execute_pipeline function
-static void	init_pipeline_resources(int n_cmd, int ***pipes_ptr, pid_t **pids_ptr);
-static void	close_and_free_pipes(int n_cmd, int **pipes);
-static int	wait_pipeline(pid_t *pids, int n_cmd);
+/* libft-like */
+char			**ft_split(const char *s, char c);
+void			ft_split_free(char **array);
+void			free_string_array(char **strs);
 
 
+/* env serialization */
+char			**env_serialize(const t_env *env);
+void			env_free_serialized(char **envp);
+
+/* path resolution */
+char			*find_command_path(const char *cmd, const t_env *env);
+
+/* executor helpers */
+void			set_pipe_ends(t_command *cmd, int **pipes, int n_cmd, int idx);
+void			set_redirs(t_command *cmd);
+int				init_pipeline_resources(int n_cmd, int ***pipes_ptr, pid_t **pids_ptr);
+void			close_and_free_pipes(int n_cmd, int **pipes);
+int				wait_pipeline(pid_t *pids, int n_cmd);
+void			exec_command(t_command *cmd, t_env *env);
+int				execute_pipeline(t_command *cmd, t_env *env);
+
+/* path utils */
+int     is_executable_file(char *path);
+
+/* redirs prepare */
+int				prepare_fds_for_command(t_command *cmd);
+
+/* redirection setup (see Fix 6) */
+int     setup_redirections(t_redir *redirs, int *infd, int *outfd);
 
 
 #endif

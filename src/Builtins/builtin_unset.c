@@ -6,8 +6,8 @@ static int is_valid_key(char *key)
 {
     int i;
 
-    if (!key || !((key[0] >= 'A' && key <= 'Z') || key == '_'
-        || (key >= 'a' && key <= 'z')))
+    if (!key || !((key[0] >= 'A' && key[0] <= 'Z') || key[0] == '_'
+        || (key[0] >= 'a' && key[0] <= 'z')))
         return (0);
     i = 1;
     while (key[i])

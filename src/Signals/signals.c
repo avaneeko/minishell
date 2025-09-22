@@ -1,17 +1,21 @@
-
 #include "minishell.h"
+#include <readline/readline.h>
+#include <readline/history.h>
+#include <signal.h>
+#include <unistd.h>
 
 // = Bash convention for SIGINT
 void	sigint_handler(int signum)
 {
 	(void)signum;
 	write(1, "\n", 1);
-	rl_on_newline();
+	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
 	set_exit_status(130);
 }
 
+/* bash ignores SIGQUIT in interactive mode */
 void	sigquit_handler(int signum)
 {
 	(void)signum;

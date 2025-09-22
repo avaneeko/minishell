@@ -1,9 +1,9 @@
 #include "minishell.h"
 #include "./execution_utils.h"
-// #include <fcntl.h>
-// #include <unistd.h>
-// #include <stdio.h>
-// #include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 /*
 * Close fds if not -1.
@@ -22,35 +22,29 @@ void	close_redir_fds(int *in, int *out)
 	}
 }
 
-/*
-* Handle heredoc: Write user input until delimiter,
-* return fd ready to read, or -1 on error.
-*/
-int	open_heredoc(char *delim)
+int open_heredoc(char *delim)
 {
-	char	*line;
-	int		hd_pipe[2];
+    char *line;
+    int   hd_pipe[2];
 
-	if (pipe(hd_pipe) == -1)
-	{
-		return (-1);
-	}
-	while (1)
-	{
-		write(1, "> ", 2);
-		line = readline(NULL);
-		if (!line || streq(line, delim))
-		{
-			free(line);
-			break ;
-		}
-		write(hd_pipe[1], line, slen(line));
-		write(hd_pipe[1], "\n", 1);
-		free(line);
-	}
-	close(hd_pipe[1]);
-	return (hd_pipe);
+    if (pipe(hd_pipe) == -1)
+        return (-1);
+    while (1)
+    {
+        line = readline("> ");
+        if (!line || streq(line, delim))
+        {
+            free(line);
+            break;
+        }
+        write(hd_pipe[1], line, slen(line));
+        write(hd_pipe[1], "\n", 1);
+        free(line);
+    }
+    close(hd_pipe[1]);
+    return (hd_pipe);
 }
+
 
 /*
 * Helper function for setup_redirections

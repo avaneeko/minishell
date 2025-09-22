@@ -1,159 +1,97 @@
 #include "minishell.h"
-#include "./execution_utils.h"
-// #include <sys/wait.h>
-// #include <unistd.h>
+#include "execution_utils.h"
+#include <unistd.h> /* close */
+#include <stdio.h>  /* perror */
 
-/*
-* Close unused pipe ends in parent/child.
-* n_cmd: number of commands, pipes: array of n_cmd-1 pipefds.
-* except: index to keep (use -1 if keeping none).
-* is_write: 1 to keep only write, 0 for read.
-*/
-void	close_pipes_except(int **pipes, int n_cmd, int except, int is_write)
+/* Count commands in a pipeline */
+static int	count_commands(t_command *c)
 {
-	int	idx;
+	int	n;
 
-	idx = 0;
-	while (idx < n_cmd - 1)
+	n = 0;
+	while (c)
 	{
-		if (!(idx == except && is_write))
-			close(pipes[idx][1]);
-		if (!(idx == except && !is_write))
-			close(pipes[idx][0]);
-		idx++;
+		n++;
+		c = c->next;
 	}
+	return (n);
 }
 
-// // executor_helpers.c
-// static void	set_pipe_ends(t_command *cmd, int **pipes, int n_cmd, int idx)
-// {
-// 	if (idx > 0)
-// 		dup2(pipes[idx - 1], STDIN_FILENO);
-// 	if (cmd->next)
-// 		dup2(pipes[idx][1], STDOUT_FILENO);
-// }
+/* Common early-exit cleanup path for this unit */
+static int	abort_with(int n_cmd, int **pipes, pid_t *pids, const char *msg)
+{
+	perror(msg);
+	close_and_free_pipes(n_cmd, pipes);
+	free(pids);
+	return (1);
+}
 
-// static void	set_redirs(t_command *cmd)
-// {
-// 	if (cmd->infile != -1)
-// 	{
-// 		dup2(cmd->infile, STDIN_FILENO);
-// 		close(cmd->infile);
-// 	}
-// 	if (cmd->outfile != -1)
-// 	{
-// 		dup2(cmd->outfile, STDOUT_FILENO);
-// 		close(cmd->outfile);
-// 	}
-// }
+/*
+** Open all redirections and store fds on command before forking.
+** Returns 0 on success, -1 on failure.
+*/
+int	prepare_fds_for_command(t_command *cmd)
+{
+	int	infd;
+	int	outfd;
 
-// static void	exec_command(t_command *cmd, t_env *env)
-// {
-// 	if (cmd->is_builtin)
-// 		exit(exec_builtin(cmd->argv, env));
-// 	else
-// 	{
-// 		execvp(cmd->argv, cmd->argv);
-// 		perror(cmd->argv);
-// 		exit(127);
-// 	}
-// }
+	infd = -1;
+	outfd = -1;
+	if (setup_redirections(cmd->redirs, &infd, &outfd) == -1)
+		return (-1);
+	cmd->infile = infd;
+	cmd->outfile = outfd;
+	return (0);
+}
 
-pid_t	fork_command(t_command *cmd, t_env *env, int **pipes, int n_cmd, int idx)
+/* Fork a child, wire pipes/redirs/signals, then exec */
+static pid_t	fork_command(t_command *cmd, t_env *env, int **pipes, int n_cmd, int idx)
 {
 	pid_t	pid;
+	int		i;
 
 	pid = fork();
 	if (pid == 0)
 	{
+		set_child_signals();
 		set_pipe_ends(cmd, pipes, n_cmd, idx);
-		close_pipes_except(pipes, n_cmd, idx, 0);
+		i = 0;
+		while (i < n_cmd - 1)
+		{
+			close(pipes[i]);
+			close(pipes[i][1]);
+			i++;
+		}
 		set_redirs(cmd);
 		exec_command(cmd, env);
 	}
 	return (pid);
 }
 
-/*
-*	Helper function for "execute_pipeline"
-*/
-static void	init_pipeline_resources(int n_cmd, int ***pipes_ptr, pid_t **pids_ptr)
+/* ≤ 25 body lines, decls at top, only while/if */
+int execute_pipeline(t_command *cmd, t_env *env)
 {
-	int	**pipes;
-	pid_t	*pids;
-	int	i;
+    int         n_cmd;
+    t_command   *cur;
+    int         **pipes;
+    pid_t       *pids;
+    int         idx;
 
-	pipes = malloc(sizeof(int *) * (n_cmd - 1));
-	pids = malloc(sizeof(pid_t) * n_cmd);
-	i = 0;
-	while (i < n_cmd - 1)
-	{
-		pipes[i] = malloc(sizeof(int) * 2);
-		pipe(pipes[i]);
-		i++;
-	}
-	*pipes_ptr = pipes;
-	*pids_ptr = pids;
+    n_cmd = count_commands(cmd);
+    if (init_pipeline_resources(n_cmd, &pipes, &pids) == -1)
+        return (1);
+    cur = cmd;
+    idx = 0;
+    while (cur)
+    {
+        if (prepare_fds_for_command(cur) == -1)
+            return (abort_with(n_cmd, pipes, pids, "minishell: redirection"));
+        pids[idx] = fork_command(cur, env, pipes, n_cmd, idx);
+        if (pids[idx] < 0)
+            return (abort_with(n_cmd, pipes, pids, "minishell: fork"));
+        cur = cur->next;
+        idx++;
+    }
+    close_and_free_pipes(n_cmd, pipes);
+    return (wait_pipeline(pids, n_cmd));
 }
-
-// static void	close_and_free_pipes(int n_cmd, int **pipes)
-// {
-// 	int	i;
-
-// 	i = 0;
-// 	while (i < n_cmd - 1)
-// 	{
-// 		close(pipes[i]);
-// 		close(pipes[i][1]);
-// 		free(pipes[i]);
-// 		i++;
-// 	}
-// 	free(pipes);
-// }
-
-// static int	wait_pipeline(pid_t *pids, int n_cmd)
-// {
-// 	int	i;
-// 	int	status;
-// 	int	exit_code = 1;
-
-// 	i = 0;
-// 	while (i < n_cmd)
-// 	{
-// 		waitpid(pids[i], &status, 0);
-// 		if (WIFEXITED(status))
-// 			exit_code = WEXITSTATUS(status);
-// 		i++;
-// 	}
-// 	free(pids);
-// 	return (exit_code);
-// }
-
-int	execute_pipeline(t_command *cmd, t_env *env)
-{
-	int		n_cmd;
-	t_command	*cur;
-	int		**pipes;
-	pid_t		*pids;
-	int		idx;
-
-	n_cmd = 0;
-	cur = cmd;
-	while (cur)
-	{
-		n_cmd++;
-		cur = cur->next;
-	}
-	init_pipeline_resources(n_cmd, &pipes, &pids);
-	cur = cmd;
-	idx = 0;
-	while (cur)
-	{
-		pids[idx] = fork_command(cur, env, pipes, n_cmd, idx);
-		cur = cur->next;
-		idx++;
-	}
-	close_and_free_pipes(n_cmd, pipes);
-	return (wait_pipeline(pids, n_cmd));
-}
-

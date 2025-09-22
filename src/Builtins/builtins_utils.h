@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins_utils.h                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: myli-pen <myli-pen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 18:05:39 by jgueon            #+#    #+#             */
-/*   Updated: 2025/09/09 20:38:43 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/09/22 14:13:38 by myli-pen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,11 @@
 
 # include "minishell.h"
 # include <string.h>
-# include <perror.h>
-# include <limits.h>
+# include <linux/limits.h>
 # include <stdio.h>
+# include <unistd.h>
+# include <stdlib.h>
+# include "../Execution/execution_utils.h"
 
 
 // Change the current working directory to argv[1] (or HOME if none)
@@ -47,9 +49,10 @@ int env_set(t_env *env, char *key, char *value, int origin);
 int env_unset(t_env *env, char *key);
 
 // lifbt function replica
-int		ft_atoi(const char *str);
 char	*ft_strdup(const char *s1);
 
+int	is_builtin(const char *cmd);
+int	exec_builtin(char **argv, t_env *env);
 
 
 #endif

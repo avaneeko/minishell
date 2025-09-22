@@ -1,4 +1,3 @@
-
 #include "minishell.h"
 
 // Accessor/Mutator for Exit Status
