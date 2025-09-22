@@ -16,9 +16,6 @@
 # include "utils.h"
 # include "astr.h"
 
-extern int	g_exit_status; // Global variable for signals
-// int g_exit_status = 0;  // Define and initialize in one(main.c) file only
-
 enum e_token_type
 {
 	TOKEN_UNDEFINED,
@@ -47,6 +44,9 @@ typedef struct s_token_list
 	unsigned int	len;	// Count of valid tokens in .tok
 	t_token			*tok[];	// Token ptr array.
 }	t_token_list;
+
+// Max characters allowed in the prompt at a time.
+#define PROMPT_CHAR_LIMIT 1024
 
 //
 //	Instantiate a new token list, with set capacity.
@@ -201,7 +201,6 @@ void	destroy_env(t_env *env);
 //
 void	destroy_epair(t_epair const *pair);
 
-
 //
 //	TODO: Document.
 //
@@ -287,6 +286,8 @@ typedef struct s_app
 	t_env			env;
 	t_token_list	*token_list;
 	int	heredocs[16];
+	int unsigned	cur_hd;
+	char			*cur_hd_name;
 }	t_app;
 
 int		app_create(int argc, char const **argv, char const **envp,
@@ -294,18 +295,26 @@ int		app_create(int argc, char const **argv, char const **envp,
 
 void	app_destroy(t_app *app);
 
+// Closes all open fd's of app->heredoc.
+void app_reset_heredocs(t_app *app);
+
+//
+//	Heredocument.
+//
+
 //
 //	Prompt the user for all the here documents inside the tokens.
 //
 int	prompt_heredoc(t_app *app);
 
+//
+//	Execution.
+//
 
-// Signal and exit status infrastructure
-void	setup_signals(void);
-void	set_child_signals(void);
-int		get_exit_status(void);
-void	set_exit_status(int status);
-
+// Initial amount of entries reserved by `t_cmdarr`, in entries.
+# ifndef CMDARR_MEM_RESERVE
+#  define CMDARR_MEM_RESERVE 1024u
+# endif
 
 typedef struct s_redir
 {
@@ -323,6 +332,5 @@ typedef struct s_command
 	int             	is_builtin;  // 1 if is builtin, 0 if not
 	struct s_command 	*next;      // Next command in pipeline
 }   t_command;
-
 
 #endif
