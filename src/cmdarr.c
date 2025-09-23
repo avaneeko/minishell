@@ -16,6 +16,7 @@ typedef struct s_cmdarr
 }	t_cmdarr;
 
 /* Free argv vector and redirection list. */
+// Helper function for MIN-35 to comply with Norm
 static void	free_command_payload(char **argv, t_redir *redirs)
 {
 	unsigned int	i;
