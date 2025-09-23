@@ -16,6 +16,11 @@
 # include "utils.h"
 # include "astr.h"
 
+
+extern int	g_exit_status; // Global variable for signals
+// int g_exit_status = 0;  // Define and initialize in one(main.c) file only
+
+
 enum e_token_type
 {
 	TOKEN_UNDEFINED,
@@ -112,7 +117,22 @@ int		create_token(enum e_token_type type, char const *tok, t_token **out);
 //
 //	Same as create_token, but accepts a pointer with a size to allow for
 //	strings with no null termination as the token contents.
-//	Writes the new token to *out, only on success.
+//	Writes the new token to *out, only on success.typedef struct s_redir
+{
+	int             type;     // e.g., TOKEN_REDIRECT_INPUT, TOKEN_REDIRECT_OUTPUT, etc.
+	char            *target;  // filename or heredoc delimiter
+	struct s_redir  *next;
+}   t_redir;
+
+typedef struct s_command
+{
+	char            	**argv;
+	t_redir         	*redirs;     // Linked list of redirections
+	int					infile;      // File descriptor for redirected input or -1
+    int 				outfile;     // File descriptor for redirected output or -1
+	int             	is_builtin;  // 1 if is builtin, 0 if not
+	struct s_command 	*next;      // Next command in pipeline
+}   t_command;
 //	Returns 1 on success, 0 otherwise.
 //
 int		create_token2(enum e_token_type type, char const *tok, size_t tok_len,
@@ -138,7 +158,22 @@ void	destroy_token(t_token const *token);
 int		modify_token(t_token **token, char const *new_contents);
 
 //
-//	Environment.
+//	Environment.typedef struct s_redir
+{
+	int             type;     // e.g., TOKEN_REDIRECT_INPUT, TOKEN_REDIRECT_OUTPUT, etc.
+	char            *target;  // filename or heredoc delimiter
+	struct s_redir  *next;
+}   t_redir;
+
+typedef struct s_command
+{
+	char            	**argv;
+	t_redir         	*redirs;     // Linked list of redirections
+	int					infile;      // File descriptor for redirected input or -1
+    int 				outfile;     // File descriptor for redirected output or -1
+	int             	is_builtin;  // 1 if is builtin, 0 if not
+	struct s_command 	*next;      // Next command in pipeline
+}   t_command;
 //
 
 //
@@ -209,7 +244,22 @@ int	create_env_from_envp(char const **envp, t_env *out_env);
 //
 // Parses all of envp into `t_env`
 //
-int		parse_envp(t_env *env, char const **envp);
+int		parse_envp(t_env *env, char const **envp);typedef struct s_redir
+{
+	int             type;     // e.g., TOKEN_REDIRECT_INPUT, TOKEN_REDIRECT_OUTPUT, etc.
+	char            *target;  // filename or heredoc delimiter
+	struct s_redir  *next;
+}   t_redir;
+
+typedef struct s_command
+{
+	char            	**argv;
+	t_redir         	*redirs;     // Linked list of redirections
+	int					infile;      // File descriptor for redirected input or -1
+    int 				outfile;     // File descriptor for redirected output or -1
+	int             	is_builtin;  // 1 if is builtin, 0 if not
+	struct s_command 	*next;      // Next command in pipeline
+}   t_command;
 
 // Initial amount of entries reserved by `t_env`, in entries.
 # ifndef ENV_MEM_RESERVE
@@ -276,14 +326,44 @@ int token_resplit(t_app *app);
 
 //
 //	All things application.
-//
+//typedef struct s_redir
+{
+	int             type;     // e.g., TOKEN_REDIRECT_INPUT, TOKEN_REDIRECT_OUTPUT, etc.
+	char            *target;  // filename or heredoc delimiter
+	struct s_redir  *next;
+}   t_redir;
+
+typedef struct s_command
+{
+	char            	**argv;
+	t_redir         	*redirs;     // Linked list of redirections
+	int					infile;      // File descriptor for redirected input or -1
+    int 				outfile;     // File descriptor for redirected output or -1
+	int             	is_builtin;  // 1 if is builtin, 0 if not
+	struct s_command 	*next;      // Next command in pipeline
+}   t_command;
 
 //
 //	Application state.
 //
 typedef struct s_app
 {
-	t_env			env;
+	t_env			env;typedef struct s_redir
+{
+	int             type;     // e.g., TOKEN_REDIRECT_INPUT, TOKEN_REDIRECT_OUTPUT, etc.
+	char            *target;  // filename or heredoc delimiter
+	struct s_redir  *next;
+}   t_redir;
+
+typedef struct s_command
+{
+	char            	**argv;
+	t_redir         	*redirs;     // Linked list of redirections
+	int					infile;      // File descriptor for redirected input or -1
+    int 				outfile;     // File descriptor for redirected output or -1
+	int             	is_builtin;  // 1 if is builtin, 0 if not
+	struct s_command 	*next;      // Next command in pipeline
+}   t_command;
 	t_token_list	*token_list;
 	int	heredocs[16];
 	int unsigned	cur_hd;
@@ -316,6 +396,13 @@ int	prompt_heredoc(t_app *app);
 #  define CMDARR_MEM_RESERVE 1024u
 # endif
 
+// Signal and exit status infrastructure
+void	setup_signals(void);
+void	set_child_signals(void);
+int		get_exit_status(void);
+void	set_exit_status(int status);
+
+
 typedef struct s_redir
 {
 	int             type;     // e.g., TOKEN_REDIRECT_INPUT, TOKEN_REDIRECT_OUTPUT, etc.
@@ -332,5 +419,6 @@ typedef struct s_command
 	int             	is_builtin;  // 1 if is builtin, 0 if not
 	struct s_command 	*next;      // Next command in pipeline
 }   t_command;
+
 
 #endif

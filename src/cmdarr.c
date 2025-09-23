@@ -15,14 +15,118 @@ typedef struct s_cmdarr
 	int unsigned	len;
 }	t_cmdarr;
 
-int	cmdarr_create(t_cmdarr *self)
+/* Free argv vector and redirection list. */
+static void	free_command_payload(char **argv, t_redir *redirs)
 {
+	unsigned int	i;
+	t_redir			*r;
+	t_redir			*next;
+
+	i = 0;
+	if (argv)
+	{
+		while (argv[i])
+		{
+			free(argv[i]);
+			i++;
+		}
+		free(argv);
+	}
+	r = redirs;
+	while (r)
+	{
+		next = r->next;
+		free(r->target);
+		free(r);
+		r = next;
+	}
 }
 
-int	cmdarr_destroy(t_cmdarr *self)
+// FIXME [MIN-35]: This is a placeholder. Please implement destroy_command properly.
+// This does not belong here.
+/* MIN-35: deep free contents, not the struct itself. */
+static void	destroy_command(t_command *cmd)
 {
+	free_command_payload(cmd->argv, cmd->redirs);
+	if (cmd->infile != -1)
+		close(cmd->infile);
+	if (cmd->outfile != -1)
+		close(cmd->outfile);
+	cmd->argv = NULL;
+	cmd->redirs = NULL;
+	cmd->infile = -1;
+	cmd->outfile = -1;
+	cmd->is_builtin = 0;
+	cmd->next = NULL;
 }
 
-int	cmdarr_append(t_cmdarr *self)
+
+//
+//	Creates a new command array. Initial capacity is set to CMDARR_INIT_CAP.
+//	Returns 1 on success, 0 otherwise.
+//
+int		cmdarr_create(t_cmdarr *self)
 {
+	self->cmds = malloc(sizeof(t_command) * CMDARR_MEM_RESERVE);
+	if (!self->cmds)
+		return (0);
+	self->cap = CMDARR_MEM_RESERVE;
+	self->len = 0;
+	return (1);
+}
+
+//
+//	Destroys the command array, freeing all allocated memory.
+//	Does not free the commands inside the array.
+//	FIXME [MIN-34]: Make this deep free later.
+/* MIN-34: Deep-destroy array, then buffer. */
+void	cmdarr_destroy(t_cmdarr *self)
+{
+	unsigned int	i;
+
+	if (!self || !self->cmds)
+		return;
+	i = 0;
+	while (i < self->len)
+	{
+		destroy_command(&self->cmds[i]);
+		i++;
+	}
+	free(self->cmds);
+	mset(self, 0, sizeof(*self));
+}
+
+//
+//	Appends a command to the command array.
+//	Will resize the command array if needed.
+//	If free_on_fail is set to 1, the command will be freed using
+//	Placeholder_DestroyCommand() on failure.
+//	cmd is copied, but its contents are not deep-copied.
+//	Returns 1 on success, 0 otherwise.
+//
+int	cmdarr_append(t_cmdarr *self, t_command const *cmd, int const free_on_fail)
+{
+	t_command	*new_cmds;
+
+	// we cannot use realloc() so have to workaround with malloc() free().
+	if (self->len >= self->cap)
+	{
+		new_cmds = malloc(sizeof(t_command) * (self->cap
+					+ CMDARR_MEM_RESERVE));
+		if (!new_cmds)
+		{
+			if (free_on_fail)
+			{
+				cmdarr_destroy(self);
+				// Placeholder_DestroyCommand((t_command *)cmd);
+			}
+			return (0);
+		}
+		mcpy(new_cmds, self->cmds, sizeof(t_command) * self->len);
+		free(self->cmds);
+		self->cmds = new_cmds;
+		self->cap += CMDARR_MEM_RESERVE;
+	}
+	mcpy(self->cmds + self->len++, cmd, sizeof(t_command));
+	return (1);
 }
