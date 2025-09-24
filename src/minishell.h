@@ -316,6 +316,19 @@ int	prompt_heredoc(t_app *app);
 #  define CMDARR_MEM_RESERVE 1024u
 # endif
 
+//
+//	Command array
+//
+
+//$ Command array is the execution chain from the tokenizers output.
+//$ This executiuon chain is later executed by the execution unit itself.
+typedef struct s_cmdarr
+{
+	t_command *cmds;
+	int unsigned cap;
+	int unsigned len;
+} t_cmdarr;
+
 typedef struct s_redir
 {
 	int             type;     // e.g., TOKEN_REDIRECT_INPUT, TOKEN_REDIRECT_OUTPUT, etc.
