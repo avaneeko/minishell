@@ -12,6 +12,7 @@ int	app_create(int argc, char const **argv, char const **envp, t_app *out)
 		return (0);
 	}
 	mset(out->heredocs, -1, sizeof out->heredocs);
+	out->cur_hd_name = NULL;
 
 	return 1; // Success!
 }

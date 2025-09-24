@@ -4,24 +4,14 @@
 // While t_cmdarr is an array and t_command is a linked list, t_cmdarr ensures
 // that t_command's inside t_cmdarr->cmds form a valid linked list.
 
-//
-//	Initial memory allocation amount of t_command's on t_cmdarr creation.
-//
-
-typedef struct s_cmdarr
-{
-	t_command		*cmds;
-	int unsigned	cap;
-	int unsigned	len;
-}	t_cmdarr;
-
 /* Free argv vector and redirection list. */
 // Helper function for MIN-35 to comply with Norm
-static void	free_command_payload(char **argv, t_redir *redirs)
+// TODO: Fix this as t_command now has t_redir** instead of t_redir*
+static void free_command_payload(char **argv, t_redir *redirs)
 {
-	unsigned int	i;
-	t_redir			*r;
-	t_redir			*next;
+	unsigned int i;
+	t_redir *r;
+	t_redir *next;
 
 	i = 0;
 	if (argv)
@@ -37,16 +27,17 @@ static void	free_command_payload(char **argv, t_redir *redirs)
 	while (r)
 	{
 		next = r->next;
-		free(r->target);
+		if (r->type != TOKEN_HEREDOC) // Don't free the heredoc fd stored in target.
+			free(r->target);
 		free(r);
 		r = next;
 	}
 }
 
-// FIXME [MIN-35]: This is a placeholder. Please implement destroy_command properly.
 // This does not belong here.
-/* MIN-35: deep free contents, not the struct itself. */
-static void	destroy_command(t_command *cmd)
+// Should be careful about cmd->infile and cmd->outfile not being stdin/out/err
+// and accidentally closing them.
+static void destroy_command(t_command *cmd)
 {
 	free_command_payload(cmd->argv, cmd->redirs);
 	if (cmd->infile != -1)
@@ -61,12 +52,11 @@ static void	destroy_command(t_command *cmd)
 	cmd->next = NULL;
 }
 
-
 //
 //	Creates a new command array. Initial capacity is set to CMDARR_INIT_CAP.
 //	Returns 1 on success, 0 otherwise.
 //
-int		cmdarr_create(t_cmdarr *self)
+int cmdarr_create(t_cmdarr *self)
 {
 	self->cmds = malloc(sizeof(t_command) * CMDARR_MEM_RESERVE);
 	if (!self->cmds)
@@ -78,20 +68,20 @@ int		cmdarr_create(t_cmdarr *self)
 
 //
 //	Destroys the command array, freeing all allocated memory.
-//	Does not free the commands inside the array.
-//	FIXME [MIN-34]: Make this deep free later.
-/* MIN-34: Deep-destroy array, then buffer. */
-void	cmdarr_destroy(t_cmdarr *self)
+//
+void cmdarr_destroy(t_cmdarr *self)
 {
 	unsigned int	i;
 
-	if (!self || !self->cmds)
-		return;
+	if (!self->cmds)
+	{
+		mset(self, 0, sizeof(*self));
+		return ;
+	}
 	i = 0;
 	while (i < self->len)
 	{
-		destroy_command(&self->cmds[i]);
-		i++;
+		destroy_command(&self->cmds[i++]);
 	}
 	free(self->cmds);
 	mset(self, 0, sizeof(*self));
@@ -100,26 +90,24 @@ void	cmdarr_destroy(t_cmdarr *self)
 //
 //	Appends a command to the command array.
 //	Will resize the command array if needed.
-//	If free_on_fail is set to 1, the command will be freed using
-//	Placeholder_DestroyCommand() on failure.
+//	If destroy_on_fail is set to 1, the command will be freed using
+//	destroy_command() and self with destroy_command() on failure.
 //	cmd is copied, but its contents are not deep-copied.
 //	Returns 1 on success, 0 otherwise.
 //
-int	cmdarr_append(t_cmdarr *self, t_command const *cmd, int const free_on_fail)
+int cmdarr_append(t_cmdarr *self, t_command *cmd, int const destroy_on_fail)
 {
-	t_command	*new_cmds;
+	t_command *new_cmds;
 
-	// we cannot use realloc() so have to workaround with malloc() free().
 	if (self->len >= self->cap)
 	{
-		new_cmds = malloc(sizeof(t_command) * (self->cap
-					+ CMDARR_MEM_RESERVE));
+		new_cmds = malloc(sizeof(t_command) * (self->cap + CMDARR_MEM_RESERVE));
 		if (!new_cmds)
 		{
-			if (free_on_fail)
+			if (destroy_on_fail)
 			{
 				cmdarr_destroy(self);
-				// Placeholder_DestroyCommand((t_command *)cmd);
+				destroy_command(cmd);
 			}
 			return (0);
 		}
