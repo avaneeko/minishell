@@ -6,6 +6,7 @@
 
 /* Free argv vector and redirection list. */
 // Helper function for MIN-35 to comply with Norm
+// TODO: Fix this as t_command now has t_redir** instead of t_redir*
 static void free_command_payload(char **argv, t_redir *redirs)
 {
 	unsigned int i;
@@ -26,7 +27,8 @@ static void free_command_payload(char **argv, t_redir *redirs)
 	while (r)
 	{
 		next = r->next;
-		free(r->target);
+		if (r->type != TOKEN_HEREDOC) // Don't free the heredoc fd stored in target.
+			free(r->target);
 		free(r);
 		r = next;
 	}

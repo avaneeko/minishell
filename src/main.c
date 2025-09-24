@@ -62,6 +62,9 @@ static void Debug_PrintAllHeredocumentContents( t_app * app )
 	}
 }
 
+//! HOTWIRE
+int build_exec(t_app *app);
+
 int	main(int argc, char const *argv[], char const *envp[])
 {
 	t_app app;
@@ -77,6 +80,7 @@ int	main(int argc, char const *argv[], char const *envp[])
 		expand(&app.token_list, &app.env);
 		token_resplit(&app);
 		print_token_list(app.token_list);
+		build_exec(&app);
 		clear_token_list(app.token_list);
 		Debug_PrintAllHeredocumentContents(&app);
 		app_reset_heredocs(&app);
