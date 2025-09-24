@@ -320,6 +320,9 @@ int	prompt_heredoc(t_app *app);
 //	Command array
 //
 
+// Forward declare.
+typedef struct s_command t_command;
+
 //$ Command array is the execution chain from the tokenizers output.
 //$ This executiuon chain is later executed by the execution unit itself.
 typedef struct s_cmdarr
@@ -328,6 +331,27 @@ typedef struct s_cmdarr
 	int unsigned cap;
 	int unsigned len;
 } t_cmdarr;
+
+//
+//	Creates a new command array. Initial capacity is set to CMDARR_INIT_CAP.
+//	Returns 1 on success, 0 otherwise.
+//
+int cmdarr_create(t_cmdarr *self);
+
+//
+//	Destroys the command array, freeing all allocated memory.
+//
+void cmdarr_destroy(t_cmdarr *self);
+
+//
+//	Appends a command to the command array.
+//	Will resize the command array if needed.
+//	If destroy_on_fail is set to 1, the command will be freed using
+//	destroy_command() and self with destroy_command() on failure.
+//	cmd is copied, but its contents are not deep-copied.
+//	Returns 1 on success, 0 otherwise.
+//
+int cmdarr_append(t_cmdarr *self, t_command *cmd, int const destroy_on_fail);
 
 typedef struct s_redir
 {

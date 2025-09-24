@@ -32,9 +32,9 @@ static void free_command_payload(char **argv, t_redir *redirs)
 	}
 }
 
-// FIXME [MIN-35]: This is a placeholder. Please implement destroy_command properly.
 // This does not belong here.
-/* MIN-35: deep free contents, not the struct itself. */
+// Should be careful about cmd->infile and cmd->outfile not being stdin/out/err
+// and accidentally closing them.
 static void destroy_command(t_command *cmd)
 {
 	free_command_payload(cmd->argv, cmd->redirs);
@@ -66,20 +66,20 @@ int cmdarr_create(t_cmdarr *self)
 
 //
 //	Destroys the command array, freeing all allocated memory.
-//	Does not free the commands inside the array.
-//	FIXME [MIN-34]: Make this deep free later.
 //
 void cmdarr_destroy(t_cmdarr *self)
 {
 	unsigned int	i;
 
-	if (!self || !self->cmds)
-		return;
+	if (!self->cmds)
+	{
+		mset(self, 0, sizeof(*self));
+		return ;
+	}
 	i = 0;
 	while (i < self->len)
 	{
-		destroy_command(&self->cmds[i]);
-		i++;
+		destroy_command(&self->cmds[i++]);
 	}
 	free(self->cmds);
 	mset(self, 0, sizeof(*self));
@@ -88,25 +88,24 @@ void cmdarr_destroy(t_cmdarr *self)
 //
 //	Appends a command to the command array.
 //	Will resize the command array if needed.
-//	If free_on_fail is set to 1, the command will be freed using
-//	Placeholder_DestroyCommand() on failure.
+//	If destroy_on_fail is set to 1, the command will be freed using
+//	destroy_command() and self with destroy_command() on failure.
 //	cmd is copied, but its contents are not deep-copied.
 //	Returns 1 on success, 0 otherwise.
 //
-int cmdarr_append(t_cmdarr *self, t_command const *cmd, int const free_on_fail)
+int cmdarr_append(t_cmdarr *self, t_command *cmd, int const destroy_on_fail)
 {
 	t_command *new_cmds;
 
-	// we cannot use realloc() so have to workaround with malloc() free().
 	if (self->len >= self->cap)
 	{
 		new_cmds = malloc(sizeof(t_command) * (self->cap + CMDARR_MEM_RESERVE));
 		if (!new_cmds)
 		{
-			if (free_on_fail)
+			if (destroy_on_fail)
 			{
 				cmdarr_destroy(self);
-				// Placeholder_DestroyCommand((t_command *)cmd);
+				destroy_command(cmd);
 			}
 			return (0);
 		}

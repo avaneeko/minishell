@@ -6,7 +6,7 @@
 #    By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/24 17:33:26 by losypenk          #+#    #+#              #
-#    Updated: 2025/09/17 15:59:01 by losypenk         ###   ########.fr        #
+#    Updated: 2025/09/24 12:44:19 by losypenk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,7 @@ SRC := src/main.c src/utils.c src/utils2.c src/utils3.c src/token.c \
 	src/app_destroy.c src/env.c src/expansion.c src/astr.c src/token_resplit.c \
 	src/heredoc.c src/expansion_utils.c src/heredoc_bad_good_heredoc.c \
 	src/heredoc_expand_prompt.c src/heredoc_get_file_name.c src/heredoc_input.c\
-	src/heredoc_open_write.c
+	src/heredoc_open_write.c src/cmdarr.c
 OBJ := $(SRC:src/%.c=obj/%.o)
 
 CC := cc
