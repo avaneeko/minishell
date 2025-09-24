@@ -368,7 +368,7 @@ typedef struct s_redir
 typedef struct s_command
 {
 	char				**argv;
-	t_redir				**redirs;     // Linked list of redirections
+	t_redir				*redirs;     // Linked list of redirections
 	int					infile;      // File descriptor for redirected input or -1
     int					outfile;     // File descriptor for redirected output or -1
 	int					is_builtin;  // 1 if is builtin, 0 if not
