@@ -289,46 +289,6 @@ int token_resplit(t_app *app);
 //
 
 //
-//	Application state.
-//
-typedef struct s_app
-{
-	t_env			env;
-	t_token_list	*token_list;
-	int	heredocs[16];
-	int unsigned	cur_hd;
-	char			*cur_hd_name;
-}	t_app;
-
-int		app_create(int argc, char const **argv, char const **envp,
-	t_app *out);
-
-void	app_destroy(t_app *app);
-
-// Closes all open fd's of app->heredoc.
-void app_reset_heredocs(t_app *app);
-
-//
-//	Heredocument.
-//
-
-//
-//	Prompt the user for all the here documents inside the tokens.
-//
-int	prompt_heredoc(t_app *app);
-
-//
-//	Execution.
-//
-
-// Initial amount of entries reserved by `t_cmdarr`, in entries.
-# ifndef CMDARR_MEM_RESERVE
-#  define CMDARR_MEM_RESERVE 1024u
-# endif
-
-int build_exec(t_app *app);
-
-//
 //	Command array
 //
 
@@ -365,7 +325,46 @@ void cmdarr_destroy(t_cmdarr *self);
 //
 int cmdarr_append(t_cmdarr *self, t_command *cmd, int const destroy_on_fail);
 
-typedef struct s_redir
+//
+//	Application state.
+//
+typedef struct s_app
+{
+	t_env			env;
+	t_token_list	*token_list;
+	t_cmdarr		exec;
+	int				heredocs[16];
+	int unsigned	cur_hd;
+	char			*cur_hd_name;
+}	t_app;
+
+int		app_create(int argc, char const **argv, char const **envp,
+	t_app *out);
+
+void	app_destroy(t_app *app);
+
+// Closes all open fd's of app->heredoc.
+void app_reset_heredocs(t_app *app);
+
+//
+//	Heredocument.
+//
+
+//
+//	Prompt the user for all the here documents inside the tokens.
+//
+int	prompt_heredoc(t_app *app);
+
+//
+//	Execution.
+//
+
+// Initial amount of entries reserved by `t_cmdarr`, in entries.
+# ifndef CMDARR_MEM_RESERVE
+#  define CMDARR_MEM_RESERVE 1024u
+# endif
+
+int build_exec(t_app *app);
 typedef struct s_redir
 {
 	int				type;     // e.g., TOKEN_REDIRECT_INPUT, TOKEN_REDIRECT_OUTPUT, etc.
@@ -376,18 +375,28 @@ typedef struct s_redir
 typedef struct s_command
 {
 	char				**argv;
-	t_redir				*redirs;     // Linked list of redirections
+	t_redir				**redirs;     // Linked list of redirections
 	int					infile;      // File descriptor for redirected input or -1
     int					outfile;     // File descriptor for redirected output or -1
 	int					is_builtin;  // 1 if is builtin, 0 if not
 	struct s_command	*next;      // Next command in pipeline
 }   t_command;
 
-// Signal and exit status infrastructure
+
 void	setup_signals(void);
 void	set_child_signals(void);
 int		get_exit_status(void);
 void	set_exit_status(int status);
 
+
+/* Free the array form (nodes + their pointers array). */
+/* Leaves heredoc targets intact if they aren’t heap strings. */
+void	free_redir_array(t_redir **arr);
+
+
+/* Convert NULL-terminated t_redir ** to a linked list; return head or NULL. */
+t_redir	*redir_array_to_list(t_redir **arr);
+
+int	prepare_fds_for_command(t_command *cmd);
 
 #endif
