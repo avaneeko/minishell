@@ -1,7 +1,5 @@
 #include "minishell.h"
 
-int	tokenize(char *str, t_token_list *list);
-
 void	print_token_list(t_token_list *list)
 {
 	char const *e2str[] = {
@@ -62,9 +60,6 @@ static void Debug_PrintAllHeredocumentContents( t_app * app )
 	}
 }
 
-//! HOTWIRE
-int build_exec(t_app *app);
-
 int	main(int argc, char const *argv[], char const *envp[])
 {
 	t_app app;
@@ -74,7 +69,11 @@ int	main(int argc, char const *argv[], char const *envp[])
 	while ((line = readline("$ ")))
 	{
 		if (!tokenize(line, app.token_list))
+		{
 			write(1, "Tokenizer error.", sizeof "Tokenizer error." - 1);
+			free(line);
+			continue;
+		}
 		if (!prompt_heredoc(&app))
 			break;
 		expand(&app.token_list, &app.env);

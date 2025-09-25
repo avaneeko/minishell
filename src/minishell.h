@@ -265,6 +265,11 @@ char const *get_expansion_contents(t_env const* env, char const *s,
 typedef struct s_app t_app;
 
 //
+//	Tokenizer.
+//
+int	tokenize(char *str, t_token_list *list);
+
+//
 //	Token expansion.
 //
 int	expand(t_token_list **list, t_env const *env);
@@ -315,6 +320,8 @@ int	prompt_heredoc(t_app *app);
 # ifndef CMDARR_MEM_RESERVE
 #  define CMDARR_MEM_RESERVE 1024u
 # endif
+
+int build_exec(t_app *app);
 
 //
 //	Command array
