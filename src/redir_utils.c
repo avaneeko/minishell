@@ -18,7 +18,8 @@
 
 #include "minishell.h"
 
-/* Convert NULL-terminated t_redir ** to a linked list; return head or NULL. */
+//Convert NULL-terminated t_redir** into a singly linked list.
+//* Returns the head (arr[0]) or NULL if no redirections exist.
 t_redir	*redir_array_to_list(t_redir **arr)
 {
 	unsigned int	i;
