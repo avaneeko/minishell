@@ -284,46 +284,6 @@ int token_resplit(t_app *app);
 //
 
 //
-//	Application state.
-//
-typedef struct s_app
-{
-	t_env			env;
-	t_token_list	*token_list;
-	int	heredocs[16];
-	int unsigned	cur_hd;
-	char			*cur_hd_name;
-}	t_app;
-
-int		app_create(int argc, char const **argv, char const **envp,
-	t_app *out);
-
-void	app_destroy(t_app *app);
-
-// Closes all open fd's of app->heredoc.
-void app_reset_heredocs(t_app *app);
-
-//
-//	Heredocument.
-//
-
-//
-//	Prompt the user for all the here documents inside the tokens.
-//
-int	prompt_heredoc(t_app *app);
-
-//
-//	Execution.
-//
-
-// Initial amount of entries reserved by `t_cmdarr`, in entries.
-# ifndef CMDARR_MEM_RESERVE
-#  define CMDARR_MEM_RESERVE 1024u
-# endif
-
-int build_exec(t_app *app);
-
-//
 //	Command array
 //
 
@@ -360,6 +320,46 @@ void cmdarr_destroy(t_cmdarr *self);
 //
 int cmdarr_append(t_cmdarr *self, t_command *cmd, int const destroy_on_fail);
 
+//
+//	Application state.
+//
+typedef struct s_app
+{
+	t_env			env;
+	t_token_list	*token_list;
+	t_cmdarr		exec;
+	int				heredocs[16];
+	int unsigned	cur_hd;
+	char			*cur_hd_name;
+}	t_app;
+
+int		app_create(int argc, char const **argv, char const **envp,
+	t_app *out);
+
+void	app_destroy(t_app *app);
+
+// Closes all open fd's of app->heredoc.
+void app_reset_heredocs(t_app *app);
+
+//
+//	Heredocument.
+//
+
+//
+//	Prompt the user for all the here documents inside the tokens.
+//
+int	prompt_heredoc(t_app *app);
+
+//
+//	Execution.
+//
+
+// Initial amount of entries reserved by `t_cmdarr`, in entries.
+# ifndef CMDARR_MEM_RESERVE
+#  define CMDARR_MEM_RESERVE 1024u
+# endif
+
+int build_exec(t_app *app);
 typedef struct s_redir
 {
 	int				type;     // e.g., TOKEN_REDIRECT_INPUT, TOKEN_REDIRECT_OUTPUT, etc.

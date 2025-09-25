@@ -168,6 +168,18 @@ void Debug_PrintCommandArray(t_cmdarr const * arr)
 	}
 }
 
+// Ensures the command list is a linked list via ->next fields.
+static void	finalize_list(t_app *app)
+{
+	int unsigned	i;
+
+	i = ~0;
+	while (++i < app->exec.len - 1)
+	{
+		app->exec.cmds[i].next = &app->exec.cmds[i + 1];
+	}
+}
+
 int build_exec(t_app *app)
 {
 	int unsigned	i;
@@ -193,6 +205,8 @@ int build_exec(t_app *app)
 			return 0;
 		}
 	}
+	app->exec = cmdarr;
+	finalize_list(app);
 	/*//! DEBUG */ Debug_PrintCommandArray(&cmdarr); /*//! DEBUG */
 	return 1;
 }
