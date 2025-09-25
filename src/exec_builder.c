@@ -10,6 +10,10 @@ int	handle_redirect_token(t_command *cmd, t_token *t, char *redir_str,
 		int unsigned *cur_redir);
 
 // Mark every token after TOKEN_REDIRECT_* or as TOKEN_UNDEFINED.
+// This prevents the redirection targets from being treated as argv entries.
+// This is a prepass that must be done before counting argv entries.
+// This also prevents malformed commands such as "cat < > file" from being
+// treated as valid commands.
 static void token_redirect_prepass(t_token_list *list)
 {
 	int unsigned i;
@@ -170,7 +174,7 @@ int build_exec(t_app *app)
 	t_cmdarr		cmdarr;
 	t_command		cmd;
 
-	/*//! TESTING */token_redirect_prepass(app->token_list);/*//! TESTING */
+	token_redirect_prepass(app->token_list);
 	mset(&cmdarr, 0, sizeof(cmdarr));
 	if (!cmdarr_create(&cmdarr))
 		return 0;

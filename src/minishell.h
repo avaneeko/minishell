@@ -270,6 +270,11 @@ char const *get_expansion_contents(t_env const* env, char const *s,
 typedef struct s_app t_app;
 
 //
+//	Tokenizer.
+//
+int	tokenize(char *str, t_token_list *list);
+
+//
 //	Token expansion.
 //
 int	expand(t_token_list **list, t_env const *env);
@@ -321,6 +326,8 @@ int	prompt_heredoc(t_app *app);
 #  define CMDARR_MEM_RESERVE 1024u
 # endif
 
+int build_exec(t_app *app);
+
 //
 //	Command array
 //
@@ -359,6 +366,7 @@ void cmdarr_destroy(t_cmdarr *self);
 int cmdarr_append(t_cmdarr *self, t_command *cmd, int const destroy_on_fail);
 
 typedef struct s_redir
+typedef struct s_redir
 {
 	int				type;     // e.g., TOKEN_REDIRECT_INPUT, TOKEN_REDIRECT_OUTPUT, etc.
 	char			*target;  // filename or heredoc delimiter
@@ -380,5 +388,6 @@ void	setup_signals(void);
 void	set_child_signals(void);
 int		get_exit_status(void);
 void	set_exit_status(int status);
+
 
 #endif
