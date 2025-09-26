@@ -331,6 +331,7 @@ typedef struct s_app
 	int				heredocs[16];
 	int unsigned	cur_hd;
 	char			*cur_hd_name;
+	int				last_exit_code;
 }	t_app;
 
 int		app_create(int argc, char const **argv, char const **envp,
