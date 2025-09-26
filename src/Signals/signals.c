@@ -4,6 +4,7 @@
 #include <signal.h>
 #include <unistd.h>
 
+
 // = Bash convention for SIGINT
 void	sigint_handler(int signum)
 {
@@ -15,12 +16,14 @@ void	sigint_handler(int signum)
 	set_exit_status(130);
 }
 
-/* bash ignores SIGQUIT in interactive mode */
+/* Ignore SIGQUIT in interactive parent: do nothing and do not change $?. */
 void	sigquit_handler(int signum)
 {
 	(void)signum;
+	/* Intentionally empty to mirror bash in interactive mode.  */
 }
 
+/* Install parent handlers: Ctrl-C interactive behavior, ignore Ctrl-\ .     */
 void	setup_signals(void)
 {
 	signal(SIGINT, sigint_handler);

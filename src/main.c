@@ -1,5 +1,7 @@
 #include "minishell.h"
 
+int g_exit_status = 0;
+
 void	print_token_list(t_token_list *list)
 {
 	char const *e2str[] = {
@@ -63,6 +65,8 @@ static void Debug_PrintAllHeredocumentContents( t_app * app )
 int	main(int argc, char const *argv[], char const *envp[])
 {
 	t_app app;
+
+	setup_signals();
 	if (!app_create(argc, argv, envp, &app))
 		return EXIT_FAILURE;
 	char *line;
@@ -80,6 +84,7 @@ int	main(int argc, char const *argv[], char const *envp[])
 		token_resplit(&app);
 		print_token_list(app.token_list);
 		build_exec(&app);
+		execute_pipeline(&app.exec.cmds[0], &app.env);
 		clear_token_list(app.token_list);
 		Debug_PrintAllHeredocumentContents(&app);
 		app_reset_heredocs(&app);

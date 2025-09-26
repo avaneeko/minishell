@@ -70,6 +70,11 @@ int	heredoc_input_tty(t_app *app, int *fd, char const *heredoc_end, int exp)
 // TODO [MIN-33]: Implement heredoc_input_fd()
 int	heredoc_input_fd(t_app *app, int *fd, char const *heredoc_end, int exp)
 {
+	(void)app;
+	(void)fd;
+	(void)heredoc_end;
+	(void)exp;
+
 	char *const input = malloc(PROMPT_CHAR_LIMIT + 1);
 
 	if (!input)

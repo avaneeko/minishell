@@ -7,7 +7,7 @@
 /* Free argv vector and redirection list. */
 // Helper function for MIN-35 to comply with Norm
 // TODO: Fix this as t_command now has t_redir** instead of t_redir*
-static void free_command_payload(char **argv, t_redir *redirs)
+void free_command_payload(char **argv, t_redir *redirs)
 {
 	unsigned int i;
 	t_redir *r;
@@ -39,7 +39,7 @@ static void free_command_payload(char **argv, t_redir *redirs)
 // and accidentally closing them.
 static void destroy_command(t_command *cmd)
 {
-	free_command_payload(cmd->argv, cmd->redirs);
+	//free_command_payload(cmd->argv, cmd->redirs);
 	if (cmd->infile != -1)
 		close(cmd->infile);
 	if (cmd->outfile != -1)

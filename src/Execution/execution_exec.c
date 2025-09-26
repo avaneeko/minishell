@@ -1,5 +1,6 @@
 #include "minishell.h"
 #include "execution_utils.h"
+#include "Builtins/builtins_utils.h"
 #include <unistd.h> /* execve, _exit */
 #include <stdlib.h> /* exit, free */
 #include <stdio.h>  /* perror */
@@ -34,16 +35,17 @@ void exec_command(t_command *cmd, t_env *env)
     char **envp;
     char *path;
 
+    //add a check for argv[0] if it null
     if (cmd->is_builtin)
         exit(exec_builtin(cmd->argv, env));
     set_child_signals();
     envp = env_serialize(env);
     if (!envp)
         _exit(1);
-    path = find_command_path(cmd->argv, env);
-    if (!path && has_slash(cmd->argv))
-        do_exec_or_fail(cmd->argv, cmd->argv, envp);
+    path = find_command_path(cmd->argv[0], env);
+    if (!path && has_slash(cmd->argv[0]))
+        do_exec_or_fail(cmd->argv[0], cmd->argv, envp);
     if (!path)
-        cmd_not_found(cmd->argv, envp);
+        cmd_not_found(cmd->argv[0], envp);
     do_exec_or_fail(path, cmd->argv, envp);
 }

@@ -29,10 +29,13 @@ int				execute_pipeline(t_command *cmd, t_env *env);
 int     is_executable_file(char *path);
 
 /* redirs prepare */
-int				prepare_fds_for_command(t_command *cmd);
+// int				prepare_fds_for_command(t_command *cmd);
 
 /* redirection setup (see Fix 6) */
-int     setup_redirections(t_redir *redirs, int *infd, int *outfd);
+int	setup_redirections(t_app * app, t_redir *redirs, int *infd, int *outfd);
+int	handle_input_redirection(t_app * const app, t_redir *redir, int *infd);
+
+int	wait_pipeline(pid_t *pids, int n_cmd);
 
 
 #endif

@@ -11,7 +11,7 @@ static void free_pipes_partial(int **pipes, int made)
     i = 0;
     while (i < made)
     {
-        close(pipes[i]); /* read end */
+        close(*pipes[i]); /* read end */
         close(pipes[i][1]); /* write end */
         free(pipes[i]);
         i++;

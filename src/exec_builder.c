@@ -91,6 +91,22 @@ static void handle_word_token(t_command *cmd, t_token *token, int unsigned *cur_
 	cmd->argv[(*cur_argv)++] = token->token;
 }
 
+static void finalize_redir_list(t_redir **redirs, int unsigned count)
+{
+	int unsigned i;
+
+	if (!count)
+		return ;
+	i = 0;
+	while (i < count - 1)
+	{
+		redirs[i]->next = redirs[i + 1];
+		i++;
+	}
+	if (count > 0)
+		redirs[count - 1]->next = NULL;
+}
+
 // TODO: Ensure there are no hanging redirections/heredocs at the end of the token list, this function assumes there are none.
 static int build_cmd(t_command *cmd, t_token_list *list, int unsigned *idx)
 {
@@ -125,7 +141,12 @@ static int build_cmd(t_command *cmd, t_token_list *list, int unsigned *idx)
 			|| token->type == TOKEN_REDIRECT_OUTPUT_APPEND
 			|| token->type == TOKEN_HEREDOC)
 		{
-			handle_redirect_token(cmd, token, list->tok[*idx + 1]->token, &cur_redir);
+			if (!handle_redirect_token(cmd, token, list->tok[*idx + 1]->token,
+					&cur_redir))
+			{
+				// OOM failure.
+				return (0);
+			}
 		}
 		else if (token->type == TOKEN_PIPE)
 		{
@@ -134,6 +155,7 @@ static int build_cmd(t_command *cmd, t_token_list *list, int unsigned *idx)
 		}
 		(*idx)++;
 	}
+	finalize_redir_list(cmd->redirs, redir_count);
 	return (1);
 }
 
@@ -168,6 +190,20 @@ void Debug_PrintCommandArray(t_cmdarr const * arr)
 	}
 }
 
+// Ensures the command list is a linked list via ->next fields.
+static void	finalize_list(t_app *app)
+{
+	int unsigned	i;
+
+	i = ~0;
+	if (!app->exec.len)
+		return ;
+	while (++i < app->exec.len - 1)
+	{
+		app->exec.cmds[i].next = &app->exec.cmds[i + 1];
+	}
+}
+
 int build_exec(t_app *app)
 {
 	int unsigned	i;
@@ -193,6 +229,8 @@ int build_exec(t_app *app)
 			return 0;
 		}
 	}
+	app->exec = cmdarr;
+	finalize_list(app);
 	/*//! DEBUG */ Debug_PrintCommandArray(&cmdarr); /*//! DEBUG */
 	return 1;
 }

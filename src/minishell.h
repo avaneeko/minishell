@@ -13,6 +13,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 
+
 # include "utils.h"
 # include "astr.h"
 
@@ -162,6 +163,7 @@ typedef struct s_env
 	unsigned int	cap;
 	t_epair			*pairs;
 }	t_env;
+
 
 //
 //	Appends the epair entry into the env.
@@ -336,6 +338,7 @@ typedef struct s_app
 	int				heredocs[16];
 	int unsigned	cur_hd;
 	char			*cur_hd_name;
+	int				last_exit_code;
 }	t_app;
 
 int		app_create(int argc, char const **argv, char const **envp,
@@ -382,6 +385,8 @@ typedef struct s_command
 	struct s_command	*next;      // Next command in pipeline
 }   t_command;
 
+# include "Builtins/builtins_utils.h"
+# include "Execution/execution_utils.h"
 
 void	setup_signals(void);
 void	set_child_signals(void);
@@ -398,5 +403,6 @@ void	free_redir_array(t_redir **arr);
 t_redir	*redir_array_to_list(t_redir **arr);
 
 int	prepare_fds_for_command(t_command *cmd);
+
 
 #endif

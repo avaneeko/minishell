@@ -1,5 +1,6 @@
 #include "minishell.h"
 #include "execution_utils.h"
+#include "Builtins/builtins_utils.h"
 #include <unistd.h> /* close */
 #include <stdio.h>  /* perror */
 
@@ -26,24 +27,6 @@ static int	abort_with(int n_cmd, int **pipes, pid_t *pids, const char *msg)
 	return (1);
 }
 
-/*
-** Open all redirections and store fds on command before forking.
-** Returns 0 on success, -1 on failure.
-*/
-int	prepare_fds_for_command(t_command *cmd)
-{
-	int	infd;
-	int	outfd;
-
-	infd = -1;
-	outfd = -1;
-	if (setup_redirections(cmd->redirs, &infd, &outfd) == -1)
-		return (-1);
-	cmd->infile = infd;
-	cmd->outfile = outfd;
-	return (0);
-}
-
 /* Fork a child, wire pipes/redirs/signals, then exec */
 static pid_t	fork_command(t_command *cmd, t_env *env, int **pipes, int n_cmd, int idx)
 {
@@ -58,7 +41,7 @@ static pid_t	fork_command(t_command *cmd, t_env *env, int **pipes, int n_cmd, in
 		i = 0;
 		while (i < n_cmd - 1)
 		{
-			close(pipes[i]);
+			close(*pipes[i]);
 			close(pipes[i][1]);
 			i++;
 		}
@@ -68,7 +51,6 @@ static pid_t	fork_command(t_command *cmd, t_env *env, int **pipes, int n_cmd, in
 	return (pid);
 }
 
-/* ≤ 25 body lines, decls at top, only while/if */
 int execute_pipeline(t_command *cmd, t_env *env)
 {
     int         n_cmd;
