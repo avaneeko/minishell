@@ -231,6 +231,6 @@ int build_exec(t_app *app)
 	}
 	app->exec = cmdarr;
 	finalize_list(app);
-	/*//! DEBUG */ Debug_PrintCommandArray(&cmdarr); /*//! DEBUG */
+	///*//! DEBUG */ Debug_PrintCommandArray(&cmdarr); /*//! DEBUG */
 	return 1;
 }

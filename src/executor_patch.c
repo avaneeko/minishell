@@ -17,7 +17,7 @@
 
 #include "minishell.h"
 
-int	prepare_fds_for_command(t_command *cmd)
+int	prepare_fds_for_command(t_app * app, t_command *cmd)
 {
 	int		infd;
 	int		outfd;
@@ -25,9 +25,11 @@ int	prepare_fds_for_command(t_command *cmd)
 
 	infd = -1;
 	outfd = -1;
-	head = redir_array_to_list(cmd->redirs);
-	//if (setup_redirections(head, &infd, &outfd) == -1)
-	//	return (-1);
+	if (cmd->redirs[0] == NULL)
+		return (0);
+	head = cmd->redirs[0];
+	if (setup_redirections(app, head, &infd, &outfd) == -1)
+		return (-1);
 	cmd->infile = infd;
 	cmd->outfile = outfd;
 	return (0);

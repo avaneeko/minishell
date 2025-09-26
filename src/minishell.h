@@ -402,7 +402,4 @@ void	free_redir_array(t_redir **arr);
 /* Convert NULL-terminated t_redir ** to a linked list; return head or NULL. */
 t_redir	*redir_array_to_list(t_redir **arr);
 
-int	prepare_fds_for_command(t_command *cmd);
-
-
 #endif

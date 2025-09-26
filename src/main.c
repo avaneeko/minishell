@@ -82,11 +82,11 @@ int	main(int argc, char const *argv[], char const *envp[])
 			break;
 		expand(&app.token_list, &app.env);
 		token_resplit(&app);
-		print_token_list(app.token_list);
+		//print_token_list(app.token_list);
 		build_exec(&app);
-		execute_pipeline(&app.exec.cmds[0], &app.env);
+		execute_pipeline(&app, &app.exec.cmds[0], &app.env);
 		clear_token_list(app.token_list);
-		Debug_PrintAllHeredocumentContents(&app);
+		//Debug_PrintAllHeredocumentContents(&app);
 		app_reset_heredocs(&app);
 		// write(1, &(char){'\n'}, 1);
 		free(line);

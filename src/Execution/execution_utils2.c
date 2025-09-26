@@ -37,16 +37,18 @@ void	free_string_array(char **strs)
 	free(strs);
 }
 
+#include <assert.h>
+
 // executor_helpers.c(for fork_command)
 void	set_pipe_ends(t_command *cmd, int **pipes, int n_cmd, int idx)
 {
 	(void) n_cmd;
 	if (idx > 0)
 	{
-		dup2(pipes[idx - 1][0], STDIN_FILENO);
+		assert(dup2(pipes[idx - 1][0], STDIN_FILENO) != -1);
 	}
 	if (cmd->next)
-		dup2(pipes[idx][1], STDOUT_FILENO);
+		assert(dup2(pipes[idx][1], STDOUT_FILENO) != -1);
 }
 
 // executor_helpers.c(for fork_command)

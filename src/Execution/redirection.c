@@ -56,7 +56,7 @@ int	handle_input_redirection(t_app * const app, t_redir *redir, int *infd)
 
 	if (*infd != -1)
 		close(*infd);
-	if (redir->type != TOKEN_HEREDOC)
+	if (redir->type == TOKEN_HEREDOC)
 	{
 		fd = app->heredocs[(uintptr_t)redir->target];
 		if (fd < 0)

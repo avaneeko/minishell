@@ -51,7 +51,7 @@ static pid_t	fork_command(t_command *cmd, t_env *env, int **pipes, int n_cmd, in
 	return (pid);
 }
 
-int execute_pipeline(t_command *cmd, t_env *env)
+int execute_pipeline(t_app * app, t_command *cmd, t_env *env)
 {
     int         n_cmd;
     t_command   *cur;
@@ -66,7 +66,7 @@ int execute_pipeline(t_command *cmd, t_env *env)
     idx = 0;
     while (cur)
     {
-        if (prepare_fds_for_command(cur) == -1)
+        if (prepare_fds_for_command(app, cur) == -1)
             return (abort_with(n_cmd, pipes, pids, "minishell: redirection"));
         pids[idx] = fork_command(cur, env, pipes, n_cmd, idx);
         if (pids[idx] < 0)
