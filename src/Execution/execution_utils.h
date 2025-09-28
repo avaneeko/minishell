@@ -26,16 +26,23 @@ void			exec_command(t_command *cmd, t_env *env);
 int				execute_pipeline(t_app * app, t_command *cmd, t_env *env);
 
 /* path utils */
-int     is_executable_file(char *path);
+int     is_executable_file(char const *path);
 
-/* redirs prepare */
-// int				prepare_fds_for_command(t_command *cmd);
 
-/* redirection setup (see Fix 6) */
+
+
+/* redirection setup  */
 int	setup_redirections(t_app * app, t_redir *redirs, int *infd, int *outfd);
-int	handle_input_redirection(t_app * const app, t_redir *redir, int *infd);
+int	handle_input_redirection(t_app const *app, t_redir redir, int *infd);
 
+
+
+/* pipes */
 int	wait_pipeline(pid_t *pids, int n_cmd);
+
+/* FD helpers */
+void  close_if_valid(int *fd);
+void  close_pipe_pair(int pipefd[2]);
 
 
 #endif

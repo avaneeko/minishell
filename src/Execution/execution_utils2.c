@@ -1,19 +1,17 @@
-#include "execution_utils.h"
-#include "minishell.h"
-#include <sys/stat.h>
-#include <unistd.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                             execution_utils2.c                             */
+/*                                                                            */
+/*   Utility helpers: is_executable_file and array frees kept from EXECUTIONS.*/
+/*                                                                            */
+/* ************************************************************************** */
 
-void	ft_split_free(char **array)
-{
-	int i = 0;
-	if (!array)
-		return;
-	while (array[i])
-		free(array[i++]);
-	free(array);
-}
+#include <sys/stat.h>                   /* stat, S_ISREG                 */
+#include <unistd.h>                     /* access, X_OK                  */
+#include <stdlib.h>                     /* free                          */
 
-int	is_executable_file(char *path)
+/* Check that path is a regular file and is executable.  */
+int	is_executable_file(char const *path)
 {
 	struct stat	st;
 
@@ -21,48 +19,23 @@ int	is_executable_file(char *path)
 		return (0);
 	if (!S_ISREG(st.st_mode))
 		return (0);
-	return (access(path, X_OK) == 0);
+	if (access(path, X_OK) != 0)
+		return (0);
+	return (1);
 }
 
-void	free_string_array(char **strs)
+/* Free a NULL-terminated string array. */
+void	ft_split_free(char **array)
 {
-	unsigned int i;
+	unsigned int	i;
 
+	if (!array)
+		return ;
 	i = 0;
-	while (strs && strs[i])
+	while (array[i])
 	{
-		free(strs[i]);
-		i++;
+		free(array[i]);
+		i += 1;
 	}
-	free(strs);
+	free(array);
 }
-
-#include <assert.h>
-
-// executor_helpers.c(for fork_command)
-void	set_pipe_ends(t_command *cmd, int **pipes, int n_cmd, int idx)
-{
-	(void) n_cmd;
-	if (idx > 0)
-	{
-		assert(dup2(pipes[idx - 1][0], STDIN_FILENO) != -1);
-	}
-	if (cmd->next)
-		assert(dup2(pipes[idx][1], STDOUT_FILENO) != -1);
-}
-
-// executor_helpers.c(for fork_command)
-void	set_redirs(t_command *cmd)
-{
-	if (cmd->infile != -1)
-	{
-		dup2(cmd->infile, STDIN_FILENO);
-		close(cmd->infile);
-	}
-	if (cmd->outfile != -1)
-	{
-		dup2(cmd->outfile, STDOUT_FILENO);
-		close(cmd->outfile);
-	}
-}
-
