@@ -347,6 +347,12 @@ int		app_create(int argc, char const **argv, char const **envp,
 
 void	app_destroy(t_app *app);
 
+//
+//	Returns 1 if token list syntax is valid,
+//	0 otherwise with error printed to stderr.
+//
+int			is_syntax_valid(t_app *app);
+
 // Closes all open fd's of app->heredoc.
 void app_reset_heredocs(t_app *app);
 

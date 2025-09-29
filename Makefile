@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+         #
+#    By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/24 17:33:26 by losypenk          #+#    #+#              #
-#    Updated: 2025/09/29 18:07:37 by jgueon           ###   ########.fr        #
+#    Updated: 2025/09/29 19:59:02 by losypenk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,6 +21,7 @@ SRC := src/main.c src/utils.c src/utils2.c src/utils3.c src/token.c \
 	src/redir_utils.c \
 	src/executor_patch.c \
 	src/exec_handle_redir.c \
+	src/syntax_checker.c \
 	src/Builtins/builtin_cd.c \
 	src/Builtins/builtin_echo.c \
 	src/Builtins/builtin_env.c \

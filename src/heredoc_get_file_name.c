@@ -1,7 +1,7 @@
 #include "minishell.h"
 
 // This file defines:
-char	*get_heredoc_filename();
+char	*get_heredoc_filename(void);
 
 // // TODO: Make this respect TMPDIR and create heredocs there.
 // //! Designed for idx bound to 0..15

@@ -8,7 +8,7 @@ static int	heredoc_stop(t_app *app, void *input, int *fd);
 static int	err_fatal_heredoc_io(t_app *app);
 
 // From heredoc_get_file_name.c
-char const	*get_heredoc_filename(int unsigned idx);
+char const	*get_heredoc_filename(void);
 
 // From heredoc_expand_prompt.c
 int	expand_prompt(t_env const *env, char **input);
