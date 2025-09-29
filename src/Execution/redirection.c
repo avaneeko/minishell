@@ -12,14 +12,14 @@
 #include <fcntl.h>                      /* open flags                  */
 #include <unistd.h>                     /* close                       */
 
-/* Close redirection FDs if not -1. */
-void	closeredirfds(int in, int out)
-{
-	if (in != -1)
-		close(in);
-	if (out != -1)
-		close(out);
-}
+// /* Close redirection FDs if not -1. */
+// void	closeredirfds(int in, int out)
+// {
+// 	if (in != -1)
+// 		close(in);
+// 	if (out != -1)
+// 		close(out);
+// }
 
 /* Handle single input redirection or heredoc, updating infd. */
 int handle_input_redirection(t_app const *app, t_redir redir, int *infd)

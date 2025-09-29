@@ -147,3 +147,161 @@ int	execute_pipeline(t_app *app, t_command *head, t_env *env)
 	free(pids);
 	return (i);
 }
+
+
+// /* ------------------------------------------------------------------------- */
+// /* Helper: count how many commands are in the linked list.                   */
+// /* ------------------------------------------------------------------------- */
+// static int	count_commands(t_command *head)
+// {
+// 	int	n;
+
+// 	n = 0;
+// 	while (head)
+// 	{
+// 		n += 1;
+// 		head = head->next;
+// 	}
+// 	return (n);
+// }
+
+// /* ------------------------------------------------------------------------- */
+// /* Helper: child-side stdin selection (infile if present else tmp_in).       */
+// /* ------------------------------------------------------------------------- */
+// static void	child_apply_stdin(int infile, int tmp_in)
+// {
+// 	if (infile >= 0)
+// 	{
+// 		dup2(infile, STDIN_FILENO);
+// 		close_if_valid(&infile);
+// 	}
+// 	else if (tmp_in >= 0)
+// 	{
+// 		dup2(tmp_in, STDIN_FILENO);
+// 		close_if_valid(&tmp_in);
+// 	}
+// }
+
+// /* ------------------------------------------------------------------------- */
+// /* Helper: child-side stdout selection (outfile if present else pipe write).  */
+// /* ------------------------------------------------------------------------- */
+// static void	child_apply_stdout(int outfile, int is_last, int pipe_w)
+// {
+// 	if (outfile >= 0)
+// 	{
+// 		dup2(outfile, STDOUT_FILENO);
+// 		close_if_valid(&outfile);
+// 	}
+// 	else if (!is_last && pipe_w >= 0)
+// 	{
+// 		dup2(pipe_w, STDOUT_FILENO);
+// 		close_if_valid(&pipe_w);
+// 	}
+// }
+
+// /* Make pipe if not last; init io[1]=infd, io[2]=outfd, io[3]=is_last. */
+// static int	prepare_step(t_app *app, t_command *cmd, int pipefd[2], int io[4])
+// {
+// 	io[1] = -1;
+// 	io[2] = -1;
+// 	io[3] = 0;
+// 	if (!cmd->next)
+// 		io[3] = 1;
+// 	pipefd[0] = -1;
+// 	pipefd[1] = -1;
+// 	if (!io[3] && pipe(pipefd) < 0)
+// 		return (-1);
+// 	if (setup_redirections(app, cmd->redirs, &io[1], &io[2]) < 0)
+// 	{
+// 		close_if_valid(&pipefd[0]);
+// 		close_if_valid(&pipefd[1]);
+// 		return (-1);
+// 	}
+// 	return (0);
+// }
+
+// /* Child path after fork: set signals, wire FDs, and exec. */
+// static void	child_exec(t_command *cmd, t_env *env, int pipefd[2], int io[4])
+// {
+// 	set_child_signals();
+// 	child_apply_stdin(io[1], io[0]);
+// 	child_apply_stdout(io[2], io[3], pipefd[1]);
+// 	close_if_valid(&pipefd[0]);
+// 	close_if_valid(&pipefd[1]);
+// 	close_if_valid(&io[1]);
+// 	close_if_valid(&io[2]);
+// 	exec_command(cmd, env);
+// 	_exit(126);
+// }
+
+// /* Parent path after fork: close step FDs and advance tmp_in. */
+// static void	parent_after_fork(int *tmp_in, int pipefd[2], int io[4])
+// {
+// 	close_if_valid(&io[1]);
+// 	close_if_valid(&io[2]);
+// 	close_if_valid(&pipefd[1]);
+// 	close_if_valid(tmp_in);
+// 	*tmp_in = pipefd[0];
+// }
+
+// /* One pipeline step: open resources, fork, child/parent split, return pid. */
+// static pid_t	step_setup_and_fork(t_app *app, t_command *cmd, t_env *env, int *tmp_in)
+// {
+// 	int		pipefd[2];
+// 	int		io[4];
+// 	pid_t	pid;
+
+// 	io[0] = *tmp_in;
+// 	if (prepare_step(app, cmd, pipefd, io) < 0)
+// 		return (-1);
+// 	pid = fork();
+// 	if (pid == 0)
+// 		child_exec(cmd, env, pipefd, io);
+// 	parent_after_fork(tmp_in, pipefd, io);
+// 	return (pid);
+// }
+
+// /* Loop all commands: build steps, store pids, wait, return last status. */
+// static int	pipeline_run(t_app *app, t_env *env, t_command *head, pid_t *pids)
+// {
+// 	int			i;
+// 	int			tmp_in;
+// 	t_command	*cur;
+// 	pid_t		pid;
+
+// 	i = 0;
+// 	tmp_in = -1;
+// 	cur = head;
+// 	while (cur)
+// 	{
+// 		pid = step_setup_and_fork(app, cur, env, &tmp_in);
+// 		if (pid < 0)
+// 		{
+// 			close_if_valid(&tmp_in);
+// 			return (1);
+// 		}
+// 		pids[i] = pid;
+// 		cur = cur->next;
+// 		i += 1;
+// 	}
+// 	close_if_valid(&tmp_in);
+// 	return (wait_pipeline(pids, i));
+// }
+
+// /* Public entry: allocate pids, run pipeline, free pids, return status. */
+// int	execute_pipeline(t_app *app, t_command *head, t_env *env)
+// {
+// 	pid_t	*pids;
+// 	int		n;
+// 	int		code;
+
+// 	n = count_commands(head);
+// 	if (n <= 0)
+// 		return (0);
+// 	pids = (pid_t *)malloc(sizeof(pid_t) * n);
+// 	if (!pids)
+// 		return (1);
+// 	code = pipeline_run(app, env, head, pids);
+// 	free(pids);
+// 	return (code);
+// }

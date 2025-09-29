@@ -12,6 +12,8 @@
 #include <stdlib.h>                     /* malloc, free                  */
 
 /* Free partially created pipe pairs on failure.  */
+// (close both ends and free pair)
+// This is used on any partial failure during allocation/open.
 static void	free_pipes_partial(int **pipes, int made)
 {
 	int	i;
@@ -31,7 +33,10 @@ static void	free_pipes_partial(int **pipes, int made)
 	}
 }
 
-/* Allocate outer array for N-1 pipes if needed. */
+/* ************************************************************************** */
+/* Allocate the outer array of (n_cmd - 1) int[2] pointers when needed.       */
+/* Returns 0 on success, -1 on malloc failure.             					  */
+/* ************************************************************************** */
 static int	alloc_pipes_outer(int n_cmd, int ***pipes_ptr)
 {
 	int	**pipes;
@@ -47,7 +52,10 @@ static int	alloc_pipes_outer(int n_cmd, int ***pipes_ptr)
 	return (0);
 }
 
-/* Allocate pid array; free pipes on failure.  */
+/* ************************************************************************** */
+/* Allocate PIDs array; if it fails, free the outer pipes array (if any).     */
+/* Returns 0 on success, -1 on failure. 				                      */
+/* ************************************************************************** */
 static int	alloc_pids_or_cleanup(int n_cmd, int **pipes, pid_t **pids_ptr)
 {
 	pid_t	*pids;
@@ -63,32 +71,50 @@ static int	alloc_pids_or_cleanup(int n_cmd, int **pipes, pid_t **pids_ptr)
 	return (0);
 }
 
-/* Allocate and open all N-1 pipe pairs.  */
-static int	alloc_open_pipes(int n_cmd, int ***pipes_ptr, pid_t **pids_ptr)
+/* ************************************************************************** */
+/* Allocate one int[2] pair at index i of the pipes outer array.              */
+/* Returns 0 on success, -1 on malloc failure. 					              */
+/* ************************************************************************** */
+static int	alloc_one_pipe_pair(int i, int **pipes)
 {
-	int		i;
-	int		**pipes;
+	pipes[i] = (int *)malloc(sizeof(int) * 2);
+	if (!pipes[i])
+		return (-1);
+	return (0);
+}
 
-	(void)pids_ptr;
-	if (n_cmd <= 1)
+/* ************************************************************************** */
+/* Open the pipe for the allocated pair at index i (both ends).               */
+/* Returns 0 on success, -1 on pipe() failure. 					              */
+/* ************************************************************************** */
+static int	open_one_pipe_pair(int i, int **pipes)
+{
+	if (pipe(pipes[i]) < 0)
+		return (-1);
+	return (0);
+}
+
+/* ************************************************************************** */
+/* Create and open all (n_cmd - 1) pipe pairs; on failure, cleanup partial.   */
+/* Returns 0 on success, -1 on alloc/pipe failure. 					          */
+/* ************************************************************************** */
+static int	open_pipes_loop(int n_cmd, int **pipes)
+{
+	int	i;
+
+	if (n_cmd <= 1 || !pipes)
 		return (0);
-	pipes = *pipes_ptr;
 	i = 0;
 	while (i < n_cmd - 1)
 	{
-		pipes[i] = (int *)malloc(sizeof(int) * 2);
-		if (!pipes[i])
+		if (alloc_one_pipe_pair(i, pipes) < 0)
 		{
 			free_pipes_partial(pipes, i);
-			free(pipes);
-			*pipes_ptr = NULL;
 			return (-1);
 		}
-		if (pipe(pipes[i]) < 0)
+		if (open_one_pipe_pair(i, pipes) < 0)
 		{
 			free_pipes_partial(pipes, i + 1);
-			free(pipes);
-			*pipes_ptr = NULL;
 			return (-1);
 		}
 		i += 1;
@@ -96,7 +122,31 @@ static int	alloc_open_pipes(int n_cmd, int ***pipes_ptr, pid_t **pids_ptr)
 	return (0);
 }
 
-/* Public: allocate pids and legacy 2D pipes array.  */
+/* ************************************************************************** */
+/* Wrapper: assume outer array is allocated; open all pairs or fully cleanup. */
+/* On failure, free the outer array too and nullify the pointer. 			  */
+/* ************************************************************************** */
+static int	alloc_open_pipes(int n_cmd, int ***pipes_ptr, pid_t **pids_ptr)
+{
+	int	**pipes;
+
+	(void)pids_ptr;
+	pipes = *pipes_ptr;
+	if (n_cmd <= 1 || !pipes)
+		return (0);
+	if (open_pipes_loop(n_cmd, pipes) < 0)
+	{
+		free(pipes);
+		*pipes_ptr = NULL;
+		return (-1);
+	}
+	return (0);
+}
+
+/* ************************************************************************** */
+/* Public entry: allocate pids and the legacy 2D pipes matrix (N-1 pairs).    */
+/* Returns 0 on success, -1 on failure (with proper cleanup). 				  */
+/* ************************************************************************** */
 int	init_pipeline_resources(int n_cmd, int ***pipes_ptr, pid_t **pids_ptr)
 {
 	if (alloc_pipes_outer(n_cmd, pipes_ptr) < 0)
