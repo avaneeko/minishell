@@ -95,6 +95,8 @@ static void finalize_redir_list(t_redir **redirs, int unsigned count)
 {
 	int unsigned i;
 
+	if (!count)
+		return ;
 	i = 0;
 	while (i < count - 1)
 	{
@@ -193,6 +195,8 @@ static void	finalize_list(t_app *app)
 {
 	int unsigned	i;
 
+	if (!app->exec.len)
+		return ;
 	i = ~0;
 	while (++i < app->exec.len - 1)
 	{
