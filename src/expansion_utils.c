@@ -1,5 +1,8 @@
 #include "minishell.h"
 
+// From expand_last_err.c
+int	expand_last_err(t_app *app);
+
 //? Does this belong here? (x2)
 static int is_alphanum(char c)
 {
@@ -37,7 +40,6 @@ int get_val_len(char const *s, unsigned int *out)
 
 	if (*s == '$' && is_valid_var_name(s) == 2)
 	{
-		__builtin_debugtrap(/* UNIMPLEMENTED */);
 		*out = 2; // $?
 		return (1);
 	}
@@ -57,14 +59,16 @@ int get_val_len(char const *s, unsigned int *out)
 }
 
 // s cannot be null.
-char const *get_expansion_contents(t_env const* env, char const *s,
+char const *get_expansion_contents(t_app *app, char const *s,
 		unsigned int len)
 {
 	t_epair epair;
 
 	if (len == 0)
 		return ("$"); // Just a single $, no variable name.
-	else if (get_epair_by_key2(env, s, len, &epair))
+	else if (len == 1 && s[0] == '?' && expand_last_err(app))
+		return (app->last_exit_code_str);
+	else if (get_epair_by_key2(&app->env, s, len, &epair))
 		return (epair.value);
 	else
 		return (0);

@@ -261,15 +261,15 @@ int	is_valid_var_name(char const *s);
 // TODO: Handle $? - last exit code.
 int get_val_len(char const *s, unsigned int *out);
 
+// struct s_app;
+typedef struct s_app t_app;
+
 //
 //	Gets the contents based on the environment key `s`
 //*	`s` cannot be null.
 //
-char const *get_expansion_contents(t_env const* env, char const *s,
+char const *get_expansion_contents(t_app *app, char const *s,
 		unsigned int len);
-
-// struct s_app;
-typedef struct s_app t_app;
 
 //
 //	Tokenizer.
@@ -339,6 +339,7 @@ typedef struct s_app
 	int unsigned	cur_hd;
 	char			*cur_hd_name;
 	int				last_exit_code;
+	char			last_exit_code_str[12];
 }	t_app;
 
 int		app_create(int argc, char const **argv, char const **envp,

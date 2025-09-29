@@ -84,7 +84,10 @@ int	main(int argc, char const *argv[], char const *envp[])
 		token_resplit(&app);
 		//print_token_list(app.token_list);
 		build_exec(&app);
-		execute_pipeline(&app, &app.exec.cmds[0], &app.env);
+		if (app.exec.len)
+			app.last_exit_code = execute_pipeline(&app, &app.exec.cmds[0], &app.env);
+		else
+			app.last_exit_code = execute_pipeline(&app, NULL, &app.env);
 		clear_token_list(app.token_list);
 		//Debug_PrintAllHeredocumentContents(&app);
 		app_reset_heredocs(&app);
@@ -92,5 +95,5 @@ int	main(int argc, char const *argv[], char const *envp[])
 		free(line);
 	}
 
-	return (0);
+	return (app.last_exit_code);
 }

@@ -1,16 +1,16 @@
 #include "minishell.h"
 
 // This file declares:
-static int	expand_variable(char *str, t_env const *env, t_astr *a,
+static int	expand_variable(char *str, t_app *app, t_astr *a,
 							unsigned int **arg);
 static int	err_expand_prompt_astr_failure(void *input_ptr);
 static int	handle_char(char const *str, t_astr *a, int unsigned *i);
-int	expand_prompt(t_env const *env, char **input);
+int	expand_prompt(t_app *app, char **input);
 
 // Function that expands a heredoc prompt.
 // Will free `input` on failure.
 // Returns 1 on success, 0 otherwise.
-int	expand_prompt(t_env const *env, char **input)
+int	expand_prompt(t_app *app, char **input)
 {
 	unsigned int	var_len;
 	int unsigned	i;
@@ -23,7 +23,7 @@ int	expand_prompt(t_env const *env, char **input)
 	{
 		if (get_val_len(*input + i, &var_len))
 		{
-			if (!expand_variable(*input, env, &a,
+			if (!expand_variable(*input, app, &a,
 					(unsigned int *[]){&i, &var_len}))
 				return (0);
 		}
@@ -37,7 +37,7 @@ int	expand_prompt(t_env const *env, char **input)
 
 // arg[0] is *i
 // arg[1] is *var_len
-static int	expand_variable(char *str, t_env const *env, t_astr *a,
+static int	expand_variable(char *str, t_app *app, t_astr *a,
 							unsigned int **arg)
 {
 	char *const	var_name = malloc(arg[1][0] + 1);
@@ -49,7 +49,7 @@ static int	expand_variable(char *str, t_env const *env, t_astr *a,
 	}
 	mcpy(var_name, str + arg[0][0], arg[1][0]);
 	var_name[arg[1][0]] = '\0';
-	char const *val = get_expansion_contents(env, str + arg[0][0] + 1,
+	char const *val = get_expansion_contents(app, str + arg[0][0] + 1,
 			arg[1][0] - 1);
 	if (val && !astr_append2(a, val, slen(val)))
 	{
