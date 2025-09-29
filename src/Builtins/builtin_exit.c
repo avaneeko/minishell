@@ -49,6 +49,7 @@ int builtin_exit(char **argv)
             if (argv[1][i] < '0' || argv[1][i] > '9')
             {
                 write(2, "exit: numeric argument required\n", 32);
+                app_destroy(NULL);
                 exit(255);
             }
             i++;
