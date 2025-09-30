@@ -82,6 +82,7 @@ int	main(int argc, char const *argv[], char const *envp[])
 			break;
 		expand(&app.token_list, &app.env);
 		token_resplit(&app);
+		dequote_tokens(&app);
 		//print_token_list(app.token_list);
 		if (is_syntax_valid(&app))
 		{

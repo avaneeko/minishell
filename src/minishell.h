@@ -287,6 +287,14 @@ int	expand(t_token_list **list, t_env const *env);
 int token_resplit(t_app *app);
 
 //
+//	Dequotes all word tokens in the token list of the application.
+//	This function iterates through the token list stored in the
+//	`t_app` structure and dequotes each token of type `TOKEN_WORD`. This is
+//	achieved by calling the `dequote` function on each TOKEN_WORD token.
+//
+void	dequote_tokens(t_app *app);
+
+//
 //	All things application.
 //
 
