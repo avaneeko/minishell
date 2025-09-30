@@ -48,7 +48,8 @@ int	wait_pipeline(pid_t *pids, int n_cmd)
 	last_code = 0;
 	while (i < n_cmd)
 	{
-		if (waitpid(pids[i], &status, 0) > 0)
+		// if (waitpid(pids[i], &status, 0) > 0)
+		if (waitpid(-1, &status, 0))
 		{
 			if (i == n_cmd - 1)
 				last_code = translate_wait_status(status, 1);
