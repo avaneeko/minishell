@@ -2,10 +2,14 @@
 
 // arg[0] is *i
 // arg[1] is *var_len
+// HACK: Using fake app to call get_expansion_contents, as in this case we don't
+// have access to the real app struct, but we do have access to env, which is
+// the only thing we need.
 static int	expand_variable(t_token *token, t_env const *env, t_astr *a,
 							unsigned int **arg)
 {
 	char *const	var_name = malloc(arg[1][0] + 1);
+	t_app const fake_app = (t_app){ .env = *env };
 
 	if (!var_name)
 	{
@@ -14,7 +18,7 @@ static int	expand_variable(t_token *token, t_env const *env, t_astr *a,
 	}
 	mcpy(var_name, token->token + arg[0][0], arg[1][0]);
 	var_name[arg[1][0]] = '\0';
-	char const *val = get_expansion_contents(env, token->token + arg[0][0] + 1,
+	char const *val = get_expansion_contents((void *)&fake_app, token->token + arg[0][0] + 1,
 			arg[1][0] - 1);
 	if (val)
 	{
