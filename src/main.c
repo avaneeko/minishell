@@ -69,13 +69,12 @@ int	main(int argc, char const *argv[], char const *envp[])
 	setup_signals();
 	if (!app_create(argc, argv, envp, &app))
 		return EXIT_FAILURE;
-	char *line;
-	while ((line = readline("$ ")))
+	while (prompt(&app) > 0)
 	{
-		if (!tokenize(line, app.token_list))
+		if (!tokenize(app.prompt, app.token_list))
 		{
 			write(1, "Tokenizer error.", sizeof "Tokenizer error." - 1);
-			free(line);
+			free(app.prompt);
 			continue;
 		}
 		if (!prompt_heredoc(&app))
@@ -96,7 +95,8 @@ int	main(int argc, char const *argv[], char const *envp[])
 		//Debug_PrintAllHeredocumentContents(&app);
 		app_reset_heredocs(&app);
 		// write(1, &(char){'\n'}, 1);
-		free(line);
+		free(app.prompt);
+		app.prompt = NULL;
 	}
 
 	return (app.last_exit_code);

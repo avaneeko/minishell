@@ -348,6 +348,7 @@ typedef struct s_app
 	char			*cur_hd_name;
 	int				last_exit_code;
 	char			last_exit_code_str[12];
+	char			*prompt;
 }	t_app;
 
 int		app_create(int argc, char const **argv, char const **envp,
@@ -372,6 +373,12 @@ void app_reset_heredocs(t_app *app);
 //	Prompt the user for all the here documents inside the tokens.
 //
 int	prompt_heredoc(t_app *app);
+
+//
+// Display the prompt and read user input, adds it to history.
+// Returns 1 on success, 0 on EOF (Ctrl-D), -1 on error
+//
+int	prompt(t_app *app);
 
 //
 //	Execution.

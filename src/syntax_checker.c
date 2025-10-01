@@ -42,7 +42,8 @@ static int	redirection_without_target(t_app *app)
 			|| app->token_list->tok[i]->type == TOKEN_HEREDOC)
 		{
 			if (i + 1 >= app->token_list->len
-				|| app->token_list->tok[i + 1]->type != TOKEN_WORD)
+				|| (app->token_list->tok[i + 1]->type != TOKEN_WORD
+				&& app->token_list->tok[i + 1]->type != TOKEN_UNDEFINED))
 			{
 				write(2, "minishell: syntax error near unexpected token `newline'\n", 56);
 				app->last_exit_code = 2;
