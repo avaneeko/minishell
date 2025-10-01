@@ -5,11 +5,10 @@
 // HACK: Using fake app to call get_expansion_contents, as in this case we don't
 // have access to the real app struct, but we do have access to env, which is
 // the only thing we need.
-static int	expand_variable(t_token *token, t_env const *env, t_astr *a,
+static int	expand_variable(t_token *token, t_app *app, t_astr *a,
 							unsigned int **arg)
 {
 	char *const	var_name = malloc(arg[1][0] + 1);
-	t_app const fake_app = (t_app){ .env = *env };
 
 	if (!var_name)
 	{
@@ -18,7 +17,7 @@ static int	expand_variable(t_token *token, t_env const *env, t_astr *a,
 	}
 	mcpy(var_name, token->token + arg[0][0], arg[1][0]);
 	var_name[arg[1][0]] = '\0';
-	char const *val = get_expansion_contents((void *)&fake_app, token->token + arg[0][0] + 1,
+	char const *val = get_expansion_contents(app, token->token + arg[0][0] + 1,
 			arg[1][0] - 1);
 	if (val)
 	{
@@ -51,7 +50,7 @@ static int	handle_quoted_char(t_token *token, t_astr *a, char *q,
 }
 
 // q - current quote.
-int	do_str_expansion(t_token **t, t_env const *env)
+static int	do_str_expansion(t_app *app, t_token **t, t_env const *env)
 {
 	char			q;
 	unsigned int	i;
@@ -67,7 +66,7 @@ int	do_str_expansion(t_token **t, t_env const *env)
 		if (q != '\'' && get_val_len((*t)->token + i, &var_len))
 		{
 			// Variable expansion.
-			if (!expand_variable(*t, env, &a, (unsigned int *[]){&i, &var_len}))
+			if (!expand_variable(*t, app, &a, (unsigned int *[]){&i, &var_len}))
 				return (0);
 		}
 		else
@@ -79,7 +78,7 @@ int	do_str_expansion(t_token **t, t_env const *env)
 	return (modify_token(t, a.s));
 }
 
-int	expand(t_token_list **list, t_env const *env)
+int	expand(t_app *app, t_token_list **list, t_env const *env)
 {
 	int				ok;
 	unsigned int	i;
@@ -89,7 +88,7 @@ int	expand(t_token_list **list, t_env const *env)
 	while (ok && i < (*list)->len)
 	{
 		if ((*list)->tok[i]->type == TOKEN_WORD)
-			ok &= do_str_expansion((*list)->tok + i, env);
+			ok &= do_str_expansion(app, (*list)->tok + i, env);
 		i++;
 	}
 	return (ok);

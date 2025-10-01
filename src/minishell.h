@@ -279,7 +279,7 @@ int	tokenize(char *str, t_token_list *list);
 //
 //	Token expansion.
 //
-int	expand(t_token_list **list, t_env const *env);
+int	expand(t_app *app, t_token_list **list, t_env const *env);
 
 //
 //	Post-expansion token splitting.

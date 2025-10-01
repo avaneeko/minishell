@@ -79,7 +79,7 @@ int	main(int argc, char const *argv[], char const *envp[])
 		}
 		if (!prompt_heredoc(&app))
 			break;
-		expand(&app.token_list, &app.env);
+		expand(&app, &app.token_list, &app.env);
 		token_resplit(&app);
 		dequote_tokens(&app);
 		//print_token_list(app.token_list);

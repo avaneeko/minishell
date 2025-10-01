@@ -67,7 +67,7 @@ char const *get_expansion_contents(t_app *app, char const *s,
 	if (len == 0)
 		return ("$"); // Just a single $, no variable name.
 	else if (len == 1 && s[0] == '?' && expand_last_err(app))
-		return (app->last_exit_code_str);
+		return (app->last_exit_code_str); // WERONGGG!!!
 	else if (get_epair_by_key2(&app->env, s, len, &epair))
 		return (epair.value);
 	else
