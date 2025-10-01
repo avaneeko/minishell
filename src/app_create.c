@@ -15,6 +15,7 @@ int	app_create(int argc, char const **argv, char const **envp, t_app *out)
 	out->cur_hd_name = NULL;
 	out->last_exit_code = 0;
 	out->cur_hd = 0;
+	out->prompt = NULL;
 
 	return 1; // Success!
 }

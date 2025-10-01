@@ -41,4 +41,8 @@ void	app_destroy(t_app *app)
     destroy_env(&app->env);
     destroy_token_list_deep(app->token_list);
 	close_heredocs(app);
+	if (app->prompt)
+		free(app->prompt);
+	app->prompt = 0;
+	cmdarr_destroy(&app->exec);
 }
