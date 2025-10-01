@@ -34,7 +34,7 @@ void	sigint_handler(int signum)
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
-	set_exit_status(130);
+	// get_app()->last_exit_status = 130;
 }
 
 /* Ignore SIGQUIT in interactive parent: do nothing and do not change $?. */
