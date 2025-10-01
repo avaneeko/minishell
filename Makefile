@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+         #
+#    By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/24 17:33:26 by losypenk          #+#    #+#              #
-#    Updated: 2025/09/30 17:10:22 by losypenk         ###   ########.fr        #
+#    Updated: 2025/10/01 16:21:34 by jgueon           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 

@@ -18,8 +18,8 @@
 # include "astr.h"
 
 
-extern int	g_exit_status; // Global variable for signals
-// int g_exit_status = 0;  // Define and initialize in one(main.c) file only
+// extern int	g_exit_status; // Global variable for signals
+// // int g_exit_status = 0;  // Define and initialize in one(main.c) file only
 
 
 enum e_token_type

@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-int g_exit_status = 0;
+// int g_exit_status = 0;
 
 void	print_token_list(t_token_list *list)
 {
