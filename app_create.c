@@ -16,6 +16,7 @@ int	app_create(int argc, char const **argv, char const **envp, t_app *out)
 	out->last_exit_code = 0;
 	out->cur_hd = 0;
 	out->prompt = NULL;
+	out->skip_exec = 0;
 
 	return 1; // Success!
 }

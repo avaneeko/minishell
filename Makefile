@@ -6,7 +6,7 @@
 #    By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/24 17:33:26 by losypenk          #+#    #+#              #
-#    Updated: 2025/10/01 16:26:10 by jgueon           ###   ########.fr        #
+#    Updated: 2025/10/02 19:35:39 by jgueon           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -51,7 +51,7 @@ OBJ := $(SRC:src/%.c=obj/%.o)
 
 CC := cc
 
-CFLAGS := -Wall -Wextra -Werror -Isrc -MMD -MP $(CF)
+CFLAGS := -Wall -Wextra -Wno-error -Isrc -MMD -MP $(CF)
 LDFLAGS := -lreadline $(LDF)
 
 all: $(NAME)

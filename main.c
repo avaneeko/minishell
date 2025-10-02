@@ -1,6 +1,8 @@
 #include "minishell.h"
 
-// int g_exit_status = 0;
+// From signals.c
+void	set_default_signals(void);
+void	set_heredoc_signals(void);
 
 void	print_token_list(t_token_list *list)
 {
@@ -62,42 +64,50 @@ static void Debug_PrintAllHeredocumentContents( t_app * app )
 	}
 }
 
+t_app *get_app(void)
+{
+	static t_app app;
+	return (&app);
+}
+
 int	main(int argc, char const *argv[], char const *envp[])
 {
-	t_app app;
+	t_app *app = get_app();
 
-	setup_signals();
-	if (!app_create(argc, argv, envp, &app))
+	if (!app_create(argc, argv, envp, app))
 		return EXIT_FAILURE;
-	while (prompt(&app) > 0)
+	set_default_signals();
+	while (prompt(app) > 0)
 	{
-		if (!tokenize(app.prompt, app.token_list))
+		if (!tokenize(app->prompt, app->token_list))
 		{
-			write(1, "Tokenizer error.", sizeof "Tokenizer error." - 1);
-			free(app.prompt);
+			write(1, "Tokenizer error.\n", sizeof "Tokenizer error.\n" - 1);
+			free(app->prompt);
 			continue;
 		}
-		if (!prompt_heredoc(&app))
+		if (!prompt_heredoc(app))
 			break;
-		expand(&app.token_list, &app.env);
-		token_resplit(&app);
-		dequote_tokens(&app);
-		//print_token_list(app.token_list);
-		if (is_syntax_valid(&app))
+		expand(app, &app->token_list, &app->env);
+		token_resplit(app);
+		dequote_tokens(app);
+		//print_token_list(app->token_list);
+		if (is_syntax_valid(app) && !app->skip_exec)
 		{
-			build_exec(&app);
-			if (app.exec.len)
-				app.last_exit_code = execute_pipeline(&app, &app.exec.cmds[0], &app.env);
+			build_exec(app);
+			if (app->exec.len)
+				app->last_exit_code = execute_pipeline(app, &app->exec.cmds[0], &app->env);
 			else
-				app.last_exit_code = execute_pipeline(&app, NULL, &app.env);
+				app->last_exit_code = execute_pipeline(app, NULL, &app->env);
 		}
-		clear_token_list(app.token_list);
+		clear_token_list(app->token_list);
 		//Debug_PrintAllHeredocumentContents(&app);
-		app_reset_heredocs(&app);
+		app_reset_heredocs(app);
 		// write(1, &(char){'\n'}, 1);
-		free(app.prompt);
-		app.prompt = NULL;
+		free(app->prompt);
+		app->prompt = NULL;
+		app->skip_exec = 0;
 	}
 
-	return (app.last_exit_code);
+	app_destroy(app);
+	return (app->last_exit_code);
 }

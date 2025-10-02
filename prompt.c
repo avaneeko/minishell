@@ -2,6 +2,7 @@
 
 static int	prompt_tty(t_app *app)
 {
+	rl_done = 0;
 	app->prompt = readline("minishell$ ");
 	if (!app->prompt)
 		return (0); // EOF (Ctrl-D)
