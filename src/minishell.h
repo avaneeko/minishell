@@ -12,15 +12,10 @@
 # include <stdlib.h>
 # include <readline/readline.h>
 # include <readline/history.h>
-
-
 # include "utils.h"
 # include "astr.h"
 
-
-extern int	g_exit_status; // Global variable for signals
-// int g_exit_status = 0;  // Define and initialize in one(main.c) file only
-
+extern volatile	int g_signal;
 
 enum e_token_type
 {
@@ -349,6 +344,7 @@ typedef struct s_app
 	int				last_exit_code;
 	char			last_exit_code_str[12];
 	char			*prompt;
+	int				skip_exec;	// heredoc ctrl+c skip.
 }	t_app;
 
 int		app_create(int argc, char const **argv, char const **envp,

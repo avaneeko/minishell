@@ -4,34 +4,65 @@
 #include <signal.h>
 #include <unistd.h>
 
+t_app *get_app(void);
+
+volatile int g_signal = 0;
 
 // = Bash convention for SIGINT
-void	sigint_handler(int signum)
+static void	sigint_handler_default(int signum)
 {
-	(void)signum;
 	write(1, "\n", 1);
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
-	set_exit_status(130);
+	g_signal = 128 + signum;
+	get_app()->last_exit_code = g_signal;
+}
+
+static int	heredoc_event_hook(void)
+{
+	if (g_signal == 130)
+	{
+		rl_done = 1;
+		return (1);
+	}
+	return (0);
+}
+
+static void	sigint_handler_heredoc(int signum)
+{
+	rl_done = 1;
+	g_signal = 128 + signum;
+	get_app()->last_exit_code = g_signal;
 }
 
 /* Ignore SIGQUIT in interactive parent: do nothing and do not change $?. */
-void	sigquit_handler(int signum)
+static void	sigquit_handler(int signum)
 {
 	(void)signum;
 	/* Intentionally empty to mirror bash in interactive mode.  */
 }
 
 /* Install parent handlers: Ctrl-C interactive behavior, ignore Ctrl-\ .     */
-void	setup_signals(void)
+void	set_default_signals(void)
 {
-	signal(SIGINT, sigint_handler);
+	g_signal = 0;
+	rl_event_hook = NULL;
+	signal(SIGINT, sigint_handler_default);
 	signal(SIGQUIT, sigquit_handler);
+}
+
+void	set_heredoc_signals(void)
+{
+	g_signal = 0;
+	rl_event_hook = heredoc_event_hook;
+	signal(SIGINT, sigint_handler_heredoc);
+	signal(SIGQUIT, SIG_IGN);
 }
 
 void	set_child_signals(void)
 {
+	// g_signal = 0;
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 }
