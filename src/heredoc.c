@@ -59,10 +59,30 @@ int do_prompt(t_app *app, t_token *hd, t_token *hd_end, char *heredoc_end)
 	return (0); // Failure!
 }
 
+static int	too_many_heredocs(t_app *app)
+{
+	int unsigned	i;
+	int unsigned	count;
+
+	i = ~0;
+	count = 0;
+	while (++i < app->token_list->len) {
+		if (app->token_list->tok[i]->type == TOKEN_HEREDOC)
+		{
+			if (++count > 16)
+				return (1);
+		}
+	}
+	return (0);
+}
+
 int	prompt_heredoc(t_app *app)
 {
 	unsigned int	i;
 
+	if (too_many_heredocs(app))
+		return (write(2, "minishell: maximum here-document count exceeded\n"
+			, 48) != -1);
 	i = ~0;
 	while (++i < app->token_list->len) {
 		if (is_good_heredoc(app, i))

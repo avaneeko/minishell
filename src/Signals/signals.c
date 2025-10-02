@@ -49,7 +49,7 @@ void	set_default_signals(void)
 	g_signal = 0;
 	rl_event_hook = NULL;
 	signal(SIGINT, sigint_handler_default);
-	signal(SIGQUIT, sigquit_handler);
+	signal(SIGQUIT, SIG_IGN);
 }
 
 void	set_heredoc_signals(void)

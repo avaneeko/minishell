@@ -81,7 +81,7 @@ int	main(int argc, char const *argv[], char const *envp[])
 	{
 		if (!tokenize(app->prompt, app->token_list))
 		{
-			write(1, "Tokenizer error.", sizeof "Tokenizer error." - 1);
+			write(1, "Tokenizer error.\n", sizeof "Tokenizer error.\n" - 1);
 			free(app->prompt);
 			continue;
 		}
