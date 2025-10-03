@@ -6,7 +6,7 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 19:01:30 by jgueon            #+#    #+#             */
-/*   Updated: 2025/09/16 18:41:08 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/03 16:41:52 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,26 +64,56 @@ static void	update_pwd_vars(t_env *env, char *oldpwd, char *cwd)
 	env_set(env, "PWD", cwd, ORIGIN_ENV);
 }
 
-int	builtin_cd(char **argv, t_env *env)
+// int	builtin_cd(char **argv, t_env *env)
+// {
+// 	char	*target;
+// 	char	*oldpwd;
+// 	char	cwd[PATH_MAX];
+
+// 	target = 0;
+// 	oldpwd = 0;
+// 	if (!resolve_target(argv, &target))
+// 		return (1);
+// 	oldpwd = fetch_oldpwd(env);
+// 	if (chdir(target) != 0)
+// 	{
+// 		perror("cd");
+// 		return (1);
+// 	}
+// 	if (!capture_cwd(cwd, sizeof(cwd)))
+// 		return (1);
+// 	update_pwd_vars(env, oldpwd, cwd);
+// 	return (0);
+// }
+
+/* 
+** Main builtin cd function.
+** Implements argument count check, directory change with error handling,
+** captures and updates PWD variables.
+*/
+int builtin_cd(char **argv, t_env *env)
 {
-	char	*target;
-	char	*oldpwd;
-	char	cwd[PATH_MAX];
+    char *target;
+    char cwd[PATH_MAX];
+    char *oldpwd;
 
-	target = 0;
-	oldpwd = 0;
-	if (!resolve_target(argv, &target))
-		return (1);
-	oldpwd = fetch_oldpwd(env);
-	if (chdir(target) != 0)
-	{
-		perror("cd");
-		return (1);
+    if (argv[1] && argv[2])
+    {
+        write(2, "minishell: cd: too many arguments\n", 34);
+        return (1);
 	}
-	if (!capture_cwd(cwd, sizeof(cwd)))
-		return (1);
-	update_pwd_vars(env, oldpwd, cwd);
-	return (0);
+    target = 0;
+    if (!resolve_target(argv, &target))
+        return (1);
+    oldpwd = fetch_oldpwd(env);
+    if (chdir(target) != 0)
+    {
+        perror("minishell: cd");
+        return (1);
+    }
+    if (!capture_cwd(cwd, sizeof(cwd)))
+        return (1);
+    update_pwd_vars(env, oldpwd, cwd);
+    return (0);
 }
-
 

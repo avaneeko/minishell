@@ -1,60 +1,147 @@
+// =================================================
+/*
+** builtin_exit.c
+**
+** Goal:
+** - For "exit hello 5": print:
+**     exit
+**     minishell: exit: hello: numeric argument required
+**   then terminate with status 255.
+**
+** Behavior (bash-like, minishell scope):
+** - Always print "exit" when actually terminating the shell.
+** - If no argument: exit with 0 (or the tracked last status if integrated).
+** - If first argument is non-numeric: print error and exit 255 immediately.
+** - If first argument is numeric and there is a second argument: print
+**   "too many arguments" and do not exit (return 1).
+** - If exactly one numeric argument: exit with that value modulo 256.
+**/
+
 #include "minishell.h"
-#include "builtins_utils.h"
+#include <unistd.h>     /* write, _exit */
 
-/**
- * This function converts the initial portion of the string pointed to by str
- * to an integer representation. It skips all white-space characters at the
- * beginning, takes an optional plus or minus sign followed by as many digits
- * as possible, and interprets them as a numerical value.
- * ft_atoi - Converts a string to an integer
- *
- * @param str: The string to be converted
- * @return The converted integer value
- */
-int	ft_atoi(const char *str)
+/* ------------- small io helpers ------------- */
+
+static int	ms_strlen(char const *s)
 {
-	int		sign;
-	int		result;
+	int i;
 
-	sign = 1;
-	result = 0;
-	while (*str == ' ' || (*str >= 9 && *str <= 13))
-		str++;
-	if (*str == '-' || *str == '+')
-	{
-		if (*str == '-')
-			sign = -1;
-		str++;
-	}
-	while (*str >= '0' && *str <= '9')
-	{
-		result = result * 10 + (*str - '0');
-		str++;
-	}
-	return (result * sign);
+	i = 0;
+	while (s && s[i])
+		i++;
+	return (i);
 }
 
-int builtin_exit(char **argv)
+static void	ms_putstr_fd(char const *s, int fd)
 {
-    int exit_status;
+	if (s)
+		write(fd, s, ms_strlen(s));
+}
 
-    if (!argv[1])
-        exit_status = 0;
-    else
-    {
-        exit_status = 0;
-        int i = 0;
-        while (argv[1][i])
-        {
-            if (argv[1][i] < '0' || argv[1][i] > '9')
-            {
-                write(2, "exit: numeric argument required\n", 32);
-                app_destroy(NULL);
-                exit(255);
-            }
-            i++;
-        }
-        exit_status = ft_atoi(argv[1]);
-    }
-    exit(exit_status);
+static void	ms_print_exit(void)
+{
+	ms_putstr_fd("exit\n", 1);
+}
+
+/* ------------- numeric helpers (fast and strict) ------------- */
+
+static int	ms_is_sign(char c)
+{
+	if (c == '+' || c == '-')
+		return (1);
+	return (0);
+}
+
+/*
+** Returns 1 iff s is strictly a numeric token of the form:
+**   [ '+' | '-' ] DIGIT{1,}
+*/
+static int	ms_is_numeric(char const *s)
+{
+	int i;
+	int nd;
+
+	if (!s || !s[0])
+		return (0);
+	i = 0;
+	if (ms_is_sign(s[i]))
+		i++;
+	nd = 0;
+	while (s[i] >= '0' && s[i] <= '9')
+	{
+		nd++;
+		i++;
+	}
+	if (s[i] != '\0')
+		return (0);
+	if (nd == 0)
+		return (0);
+	return (1);
+}
+
+/*
+** Compute numeric value modulo 256 quickly.
+** Assumes ms_is_numeric(s) == 1.
+*/
+static unsigned char	ms_atoi_mod256(char const *s)
+{
+	int i;
+	int neg;
+	int d;
+	int acc;
+
+	i = 0;
+	neg = 0;
+	if (ms_is_sign(s[i]))
+	{
+		if (s[i] == '-')
+			neg = 1;
+		i++;
+	}
+	acc = 0;
+	while (s[i] >= '0' && s[i] <= '9')
+	{
+		d = s[i] - '0';
+		acc = ((acc * 10) + d) & 0xFF;
+		i++;
+	}
+	if (neg)
+		acc = ((256 - (acc % 256)) & 0xFF);
+	return ((unsigned char)acc);
+}
+
+/* ------------- builtin exit ------------- */
+/*
+** Contract:
+** - argv[0] == "exit"
+** - Print "exit" when leaving the shell.
+** - Non-numeric first arg => print error and exit 255 immediately.
+** - Numeric first arg with extra arg => print error and do not exit (return 1).
+** - One numeric arg => exit with that value modulo 256.
+*/
+int	builtin_exit(char **argv)
+{
+	unsigned char	code;
+
+	if (!argv || !argv[1])
+	{
+		ms_print_exit();
+		_exit(0);
+	}
+	if (!ms_is_numeric(argv[1]))
+	{
+		ms_print_exit();
+		ms_putstr_fd("minishell: exit: ", 2);
+		ms_putstr_fd(argv[1], 2);
+		ms_putstr_fd(": numeric argument required\n", 2);
+		_exit(255);
+	}
+	if (argv[2])
+	{
+		ms_putstr_fd("minishell: exit: too many arguments\n", 2);
+		return (1);
+	}
+	code = ms_atoi_mod256(argv[1]);
+	ms_print_exit();
+	_exit(code);
 }

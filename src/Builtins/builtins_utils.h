@@ -43,5 +43,8 @@ char	*ft_strdup(const char *s1);
 int	is_builtin(const char *cmd);
 int	exec_builtin(char **argv, t_env *env);
 
+//builtin in helpers
+int	ms_parse_ll(char const *s, long long *out);
+
 
 #endif

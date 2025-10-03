@@ -6,7 +6,7 @@
 #    By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/24 17:33:26 by losypenk          #+#    #+#              #
-#    Updated: 2025/10/02 19:35:39 by jgueon           ###   ########.fr        #
+#    Updated: 2025/10/03 17:12:41 by jgueon           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,6 +32,7 @@ SRC := src/main.c src/utils.c src/utils2.c src/utils3.c src/token.c \
 	src/Builtins/builtin_pwd.c \
 	src/Builtins/builtin_unset.c \
 	src/Builtins/builtins_utils.c \
+	src/Builtins/builtins_utils2.c \
 	src/Builtins/env_helpers.c \
 	src/Execution/command_path.c \
 	src/Execution/execution_env.c \
