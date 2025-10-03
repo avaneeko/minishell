@@ -15,6 +15,8 @@ static int	prompt_tty(t_app *app)
 // we might not need to ship it.
 static int	prompt_fd(t_app *app)
 {
+	//! So this function is simply broken. Please do not use this.
+	__builtin_debugtrap(/* BROKEN FUNCTION */);
 	char	*buffer;
 	char	*new_buffer;
 	ssize_t	bytes_read;
@@ -47,6 +49,12 @@ static int	prompt_fd(t_app *app)
 			buffer = new_buffer;
 		}
 	}
+	
+	if (bytes_read == 0)
+	{
+		free(buffer);
+		return (0); // EOF
+	}
 
 	// Handle read error
 	if (bytes_read == -1)
@@ -70,5 +78,6 @@ int	prompt(t_app *app)
 {
 	int (*const dispatch[2])(t_app *app) = {prompt_fd, prompt_tty};
 
+	return dispatch[1](app);
 	return dispatch[isatty(STDOUT_FILENO)](app);
 }
