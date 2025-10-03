@@ -79,7 +79,7 @@ int	do_str_expansion(t_token **t, t_env const *env)
 	return (modify_token(t, a.s));
 }
 
-int	expand(t_token_list **list, t_env const *env)
+int	expand(t_app *app, t_token_list **list, t_env const *env)
 {
 	int				ok;
 	unsigned int	i;
