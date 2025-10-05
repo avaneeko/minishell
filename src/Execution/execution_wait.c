@@ -37,24 +37,48 @@ static int	translate_wait_status(int wstatus, int is_last)
 	return (1);
 }
 
-//* Wait each pid directly; return status of the last pid in the pipeline. */
-int	wait_pipeline(pid_t *pids, int n_cmd)
-{
-	int		i;
-	int		status;
-	int		last_code;
+// //* Wait each pid directly; return status of the last pid in the pipeline. */
+// int	wait_pipeline(pid_t *pids, int n_cmd)
+// {
+// 	int		i;
+// 	int		status;
+// 	int		last_code;
 
-	i = 0;
-	last_code = 0;
-	while (i < n_cmd)
-	{
-		// if (waitpid(pids[i], &status, 0) > 0)  /// use the bottom to prevent zombies "echo a | sleep 60 | sleep 5 | echo d"
-		if (waitpid(-1, &status, 0))
-		{
-			if (i == n_cmd - 1)
-				last_code = translate_wait_status(status, 1);
-		}
-		i += 1;
-	}
-	return (last_code);
+// 	(void)pids;
+// 	i = 0;
+// 	last_code = 0;
+// 	while (i < n_cmd)
+// 	{
+// 		// if (waitpid(pids[i], &status, 0) > 0)
+// 		if (waitpid(-1, &status, 0))
+// 		{
+// 			if (i == n_cmd - 1)
+// 				last_code = translate_wait_status(status, 1);
+// 		}
+// 		i += 1;
+// 	}
+// 	return (last_code);
+// }
+
+int wait_pipeline(pid_t *pids, int n_cmd)
+{
+    int   waited;
+    int   status;
+    int   last_code;
+    pid_t last;
+    pid_t pid;
+
+    waited = 0;
+    last_code = 0;
+    last = pids[n_cmd - 1];
+    while (waited < n_cmd)
+    {
+        pid = waitpid(-1, &status, 0);
+        if (pid <= 0)
+            break; /* error or unexpected */
+        if (pid == last)
+            last_code = translate_wait_status(status, 1);
+        waited += 1;
+    }
+    return (last_code);
 }

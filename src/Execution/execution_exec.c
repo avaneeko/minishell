@@ -53,7 +53,7 @@ static void	do_exec_or_fail(char const *path, char **argv, char **envp)
 }
 
 /* Execute one command in the child: builtin or external with PATH lookup. */
-void	exec_command(t_command *cmd, t_env *env)
+void	exec_command(t_app *app, t_command *cmd, t_env *env)
 {
 	char	**envp;
 	char	*path;
@@ -61,7 +61,7 @@ void	exec_command(t_command *cmd, t_env *env)
 	if (!cmd || !cmd->argv || !cmd->argv[0])
 		exit(0);
 	if (is_builtin(cmd->argv[0]))
-		exit(exec_builtin(cmd->argv, env));
+		exit(exec_builtin(app, cmd->argv, env));
 	envp = env_serialize(env);
 	if (!envp)
 		exit(1);

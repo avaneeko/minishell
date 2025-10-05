@@ -338,10 +338,10 @@
 /* externs (declared in other units) */
 int   setup_redirections(t_app *app, t_redir *redirs, int *infd, int *outfd);
 void  set_child_signals(void);
-void  exec_command(t_command *cmd, t_env *env);
+void  exec_command(t_app *app, t_command *cmd, t_env *env);
 int   wait_pipeline(pid_t *pids, int n_cmd);
 void  close_if_valid(int *fd);
-int   exec_builtin(char **argv, t_env *env);
+int   exec_builtin(t_app *app, char **argv, t_env *env);
 int   streq(char const *a, char const *b);
 
 /* ======================== Small utilities ======================== */
@@ -462,7 +462,7 @@ static int	try_run_parent_builtin(t_app *app, t_command *cmd, t_env *env, int *s
 		return (1);
 	}
 	parent_apply_redirs(infd, outfd);
-	*status = exec_builtin(cmd->argv, env);
+	*status = exec_builtin(app, cmd->argv, env);
 	restore_stdio(saved);
 	return (1);
 }
@@ -491,7 +491,7 @@ static int	prepare_step(t_app *app, t_command *cmd, int pipefd[2], int io[4])
 }
 
 /* Child code path: set signals, wire FDs, and exec command. */
-static void	child_exec(t_command *cmd, t_env *env, int pipefd[2], int io[4])
+static void	child_exec(t_app *app, t_command *cmd, t_env *env, int pipefd[2], int io[4])
 {
 	set_child_signals();
 	child_apply_stdin(io[1], io[0]);
@@ -500,7 +500,7 @@ static void	child_exec(t_command *cmd, t_env *env, int pipefd[2], int io[4])
 	close_if_valid(&pipefd[1]);
 	close_if_valid(&io[1]);
 	close_if_valid(&io[2]);
-	exec_command(cmd, env);
+	exec_command(app, cmd, env);
 	_exit(126);
 }
 
@@ -526,7 +526,7 @@ static pid_t	step_setup_and_fork(t_app *app, t_command *cmd, t_env *env, int *tm
 		return (-1);
 	pid = fork();
 	if (pid == 0)
-		child_exec(cmd, env, pipefd, io);
+		child_exec(app, cmd, env, pipefd, io);
 	parent_after_fork(tmp_in, pipefd, io);
 	return (pid);
 }

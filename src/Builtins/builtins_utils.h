@@ -14,7 +14,7 @@
 // Change the current working directory to argv[1] (or HOME if none)
 int	builtin_cd(char **argv, t_env *env);
 
-// Print its arguments to stdout, separated by spaces, ending with newline 
+// Print its arguments to stdout, separated by spaces, ending with newline
 int	builtin_echo(char **argv);
 
 // Print the current working directory to stdout
@@ -30,7 +30,8 @@ int	builtin_export(char **argv, t_env *env);
 int	builtin_unset(char **argv, t_env *env);
 
 // Exit the shell. Accepts optional numeric status argument.
-int	builtin_exit(char **argv);
+// int	builtin_exit(char **argv);
+int	builtin_exit(t_app *app, char **argv);
 
 // env helpers
 int env_find_key(t_env *env, char *key);
@@ -41,10 +42,11 @@ int env_unset(t_env *env, char *key);
 char	*ft_strdup(const char *s1);
 
 int	is_builtin(const char *cmd);
-int	exec_builtin(char **argv, t_env *env);
+// int	exec_builtin(char **argv, t_env *env);
 
-//builtin in helpers
-int	ms_parse_ll(char const *s, long long *out);
+int	exec_builtin(t_app *app, char **argv, t_env *env);
 
+/* helper function for builtin exit */
+void	app_destroy_safe(t_app *app);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:36:28 by jgueon            #+#    #+#             */
-/*   Updated: 2025/09/16 16:58:19 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/05 17:56:39 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,21 +64,56 @@ int	is_builtin(const char *cmd)
 	);
 }
 
-int	exec_builtin(char **argv, t_env *env)
+// int	exec_builtin(char **argv, t_env *env)
+// {
+// 	if (streq(*argv, "cd"))
+// 		return (builtin_cd(argv, env));
+// 	 if (streq(*argv, "echo"))
+//         return (builtin_echo(argv));
+//     if (streq(*argv, "pwd"))
+//         return (builtin_pwd());
+//     if (streq(*argv, "export"))
+//         return (builtin_export(argv, env));
+//     if (streq(*argv, "unset"))
+//         return (builtin_unset(argv, env));
+//     if (streq(*argv, "env"))
+//         return (builtin_env(env));
+//     if (streq(*argv, "exit"))
+//         return (builtin_exit(argv));
+//     return (0);
+// }
+
+/*
+** app_destroy_safe:
+** - Make cleanup NULL-safe so calling it with NULL never dereferences a null
+**   pointer, preventing segfaults on the error path [web:4][attached_file:20].
+** - If you already have app_destroy(app), add a NULL check inside it instead.
+*/
+void	app_destroy_safe(t_app *app)
 {
-	if (streq(*argv, "cd"))
+	if (app == NULL)
+		return ;
+	/* free fields of app here, guarding each as needed [attached_file:20] */
+	/* ... */
+}
+
+int	exec_builtin(t_app *app, char **argv, t_env *env)
+{
+	if (!argv || !argv[0])
+		return (0);
+	if (streq(argv[0], "cd"))
 		return (builtin_cd(argv, env));
-	 if (streq(*argv, "echo"))
-        return (builtin_echo(argv));
-    if (streq(*argv, "pwd"))
-        return (builtin_pwd());
-    if (streq(*argv, "export"))
-        return (builtin_export(argv, env));
-    if (streq(*argv, "unset"))
-        return (builtin_unset(argv, env));
-    if (streq(*argv, "env"))
-        return (builtin_env(env));
-    if (streq(*argv, "exit"))
-        return (builtin_exit(argv));
-    return (0);
+	if (streq(argv[0], "echo"))
+		return (builtin_echo(argv));
+	if (streq(argv[0], "pwd"))
+		return (builtin_pwd());
+	if (streq(argv[0], "export"))
+		return (builtin_export(argv, env));
+	if (streq(argv[0], "unset"))
+		return (builtin_unset(argv, env));
+	if (streq(argv[0], "env"))
+		return (builtin_env(env));
+	if (streq(argv[0], "exit"))
+		return (builtin_exit(app, argv));
+	return (0);
 }

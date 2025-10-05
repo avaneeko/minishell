@@ -6,7 +6,7 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 19:01:30 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/03 16:41:52 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/04 21:41:48 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ static void	update_pwd_vars(t_env *env, char *oldpwd, char *cwd)
 // 	return (0);
 // }
 
-/* 
+/*
 ** Main builtin cd function.
 ** Implements argument count check, directory change with error handling,
 ** captures and updates PWD variables.

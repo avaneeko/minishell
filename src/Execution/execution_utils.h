@@ -22,7 +22,7 @@ void			set_redirs(t_command *cmd);
 int				init_pipeline_resources(int n_cmd, int ***pipes_ptr, pid_t **pids_ptr);
 void			close_and_free_pipes(int n_cmd, int **pipes);
 int				wait_pipeline(pid_t *pids, int n_cmd);
-void			exec_command(t_command *cmd, t_env *env);
+void			exec_command(t_app *app, t_command *cmd, t_env *env);
 int				execute_pipeline(t_app * app, t_command *cmd, t_env *env);
 
 /* path utils */
