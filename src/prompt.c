@@ -56,6 +56,12 @@ static int	prompt_fd(t_app *app)
 		return (0); // EOF
 	}
 
+	if (bytes_read == 0)
+	{
+		free(buffer);
+		return (0); // EOF
+	}
+
 	// Handle read error
 	if (bytes_read == -1)
 	{

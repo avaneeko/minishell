@@ -6,7 +6,11 @@
 #    By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/24 17:33:26 by losypenk          #+#    #+#              #
+<<<<<<< HEAD
 #    Updated: 2025/10/05 19:41:32 by jgueon           ###   ########.fr        #
+=======
+#    Updated: 2025/10/04 19:00:08 by jgueon           ###   ########.fr        #
+>>>>>>> refs/remotes/origin/ImJustAnIntern
 #                                                                              #
 # **************************************************************************** #
 
