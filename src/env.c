@@ -39,6 +39,7 @@ int		create_pair(char const *str, t_epair *out)
 {
 	unsigned int const	e = get_char_idx(str, '=');
 	t_epair				pair;
+	size_t				lv;
 
 	if (e == ~0u)
 		return (0);
@@ -46,12 +47,14 @@ int		create_pair(char const *str, t_epair *out)
 	if (!pair.key)
 		return (0);
 	pair.key[e] = 0;
-	pair.value = mclone(str + e + 1, slen(str + e + 1));
+	lv = slen(str + e + 1); //ADDED 05.10: WHY: allocate lv+1 and copy null terminator to avoid garbage when printing.
+	pair.value = mclone(str + e + 1, lv + 1);//slen(str + e + 1));
 	if (!pair.value)
 	{
 		free(pair.key);
 		return (0);
 	}
+	pair.value[lv] = 0; // ADDED 05.10: WHY: explicit terminate for safety
 	pair.origin = ORIGIN_ENV;
 	*out = pair;
 	return (1);
