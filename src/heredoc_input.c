@@ -1,4 +1,5 @@
 #include "minishell.h"
+#include "get_next_line.h"
 
 // This file defines:
 int	get_heredoc_input(t_app *app, int *fd, char *heredoc_end, int exp);
@@ -101,19 +102,40 @@ int	heredoc_input_tty(t_app *app, int *fd, char const *heredoc_end, int exp)
 // TODO [MIN-33]: Implement heredoc_input_fd()
 int	heredoc_input_fd(t_app *app, int *fd, char const *heredoc_end, int exp)
 {
-	(void)app;
-	(void)fd;
-	(void)heredoc_end;
-	(void)exp;
+	char	*input;
 
-	char *const input = malloc(PROMPT_CHAR_LIMIT + 1);
-
-	if (!input)
-		return (0);
 	while (1)
 	{
+		// TODO [MIN-32]: Signals for readline here.
+		input = get_next_line(STDIN_FILENO);
+		if (!input)
+		{
+			write(2, "Warning: heredoc delimited by end-of-file (wanted `",
+				48);
+			// CTRL+D
+			// Simply stop. Keep whatever was written to the file `*fd`
+			// Discard current `input` prompt.
+			return heredoc_stop(app, input, fd);
+		}
+		else if (streq(input, heredoc_end))
+		{
+			// Found end of heredoc.
+			return heredoc_stop(app, input, fd);
+		}
+		else if (input && exp)
+		{
+			// Expand and write the input.
+			if (!expand_prompt(&app->env, &input)
+					|| !write_heredoc(fd, input, 1))
+				return (0); // Convey error: OOM during expansion.
+		}
+		else
+		{
+			// Simply write the input, no expansion.
+			if (!write_heredoc(fd, input, 1))
+				return (0);
+		}
 	}
-	free(input);
 	return (1);
 }
 
