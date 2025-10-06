@@ -36,4 +36,5 @@ void		app_reset_exec(t_app *app)
 		if (app->exec.cmds[i].redirs)
 			free_redirections(app->exec.cmds[i].redirs);
 	}
+	app->exec.len = 0;
 }
