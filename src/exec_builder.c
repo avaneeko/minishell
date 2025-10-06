@@ -207,30 +207,21 @@ static void	finalize_list(t_app *app)
 int build_exec(t_app *app)
 {
 	int unsigned	i;
-	t_cmdarr		cmdarr;
 	t_command		cmd;
 
 	token_redirect_prepass(app->token_list);
-	mset(&cmdarr, 0, sizeof(cmdarr));
-	if (!cmdarr_create(&cmdarr))
-		return 0;
 	i = 0;
 	while (i < app->token_list->len)
 	{
 		mset(&cmd, 0, sizeof(cmd));
 		if (!build_cmd(&cmd, app->token_list, &i))
-		{
-			cmdarr_destroy(&cmdarr);
 			return 0;
-		}
-		if (!cmdarr_append(&cmdarr, &cmd, 1))
+		if (!cmdarr_append(&app->exec, &cmd, 1))
 		{
-			cmdarr_destroy(&cmdarr);
 			return 0;
 		}
 	}
-	app->exec = cmdarr;
 	finalize_list(app);
-	///*//! DEBUG */ Debug_PrintCommandArray(&cmdarr); /*//! DEBUG */
+	///*//! DEBUG */ Debug_PrintCommandArray(&app->exec); /*//! DEBUG */
 	return 1;
 }

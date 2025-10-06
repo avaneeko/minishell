@@ -11,6 +11,12 @@ int	app_create(int argc, char const **argv, char const **envp, t_app *out)
 		destroy_env(&out->env);
 		return (0);
 	}
+	if (!cmdarr_create(&out->exec))
+	{
+		destroy_env(&out->env);
+		destroy_token_list(out->token_list);
+		return (0);
+	}
 	mset(out->heredocs, -1, sizeof out->heredocs);
 	out->cur_hd_name = NULL;
 	out->last_exit_code = 0;
@@ -18,5 +24,5 @@ int	app_create(int argc, char const **argv, char const **envp, t_app *out)
 	out->prompt = NULL;
 	out->skip_exec = 0;
 
-	return 1; // Success!
+	return (1); // Success!
 }
