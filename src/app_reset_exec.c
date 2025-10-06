@@ -8,21 +8,20 @@
 
 static void	free_redirections(t_redir **redirs)
 {
-	t_redir	*redir;
-	t_redir	*next;
+	int unsigned	i;
 
-	redir = *redirs;
-	while (redir)
+	if (!redirs)
+		return ;
+	i = ~0;
+	while (redirs[++i])
 	{
-		next = redir->next;
-		free(redir->target);
-		free(redir);
-		redir = next;
+		free(redirs[i]->target);
+		free(redirs[i]);
 	}
-	*redirs = NULL;
+	free(redirs);
 }
 
-void	app_reset_exec(t_app *app)
+void		app_reset_exec(t_app *app)
 {
 	int unsigned	i;
 
