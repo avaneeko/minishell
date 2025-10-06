@@ -102,6 +102,7 @@ int	main(int argc, char const *argv[], char const *envp[])
 		clear_token_list(app->token_list);
 		//Debug_PrintAllHeredocumentContents(&app);
 		app_reset_heredocs(app);
+		app_reset_exec(app);
 		// write(1, &(char){'\n'}, 1);
 		free(app->prompt);
 		app->prompt = NULL;

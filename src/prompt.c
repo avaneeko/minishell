@@ -16,7 +16,7 @@ static int	prompt_fd(t_app *app)
 {
 	app->prompt = get_next_line(STDIN_FILENO);
 	if (!app->prompt)
-		return (0); // EOF (Ctrl-D)
+		return (0); // EOF
 	return (1);
 }
 

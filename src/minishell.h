@@ -352,14 +352,21 @@ int		app_create(int argc, char const **argv, char const **envp,
 
 void	app_destroy(t_app *app);
 
+// Closes all open fd's of app->heredoc.
+void app_reset_heredocs(t_app *app);
+
+// Resets the execution state of the app, freeing all allocated memory
+// related to execution (app->exec).
+void	app_reset_exec(t_app *app);
+
+// Resets the tokenizer, which stores the tokens at app->token_list.
+void	app_reset_tokenizer(t_app *app);
+
 //
 //	Returns 1 if token list syntax is valid,
 //	0 otherwise with error printed to stderr.
 //
 int			is_syntax_valid(t_app *app);
-
-// Closes all open fd's of app->heredoc.
-void app_reset_heredocs(t_app *app);
 
 //
 //	Heredocument.

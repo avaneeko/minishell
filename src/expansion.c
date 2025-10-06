@@ -75,7 +75,13 @@ static int	do_str_expansion(t_app *app, t_token **t, t_env const *env)
 				return (0);
 		}
 	}
-	return (modify_token(t, a.s));
+	if (modify_token(t, a.s))
+	{
+		astr_destroy(&a);
+		return (1);
+	}
+	astr_destroy(&a);
+	return (0);
 }
 
 int	expand(t_app *app, t_token_list **list, t_env const *env)
