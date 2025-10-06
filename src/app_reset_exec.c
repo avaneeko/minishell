@@ -6,6 +6,10 @@
  * Resets the command list in app->exec.
  */
 
+/**
+ * Free the redirections array, remember that redirs[i]->target is not owned
+ * by the t_redir, so it is not freed here.
+ */
 static void	free_redirections(t_redir **redirs)
 {
 	int unsigned	i;
@@ -15,7 +19,6 @@ static void	free_redirections(t_redir **redirs)
 	i = ~0;
 	while (redirs[++i])
 	{
-		free(redirs[i]->target);
 		free(redirs[i]);
 	}
 	free(redirs);
