@@ -462,6 +462,13 @@ static int	try_run_parent_builtin(t_app *app, t_command *cmd, t_env *env, int *s
 		return (1);
 	}
 	parent_apply_redirs(infd, outfd);
+	if (streq(cmd->argv[0], "exit"))		// ADDED 7.10
+	{
+		*status = builtin_exit_parent(app, cmd->argv);		//ADDED 7.10
+		restore_stdio(saved);
+		return (1);
+
+	}
 	*status = exec_builtin(app, cmd->argv, env);
 	restore_stdio(saved);
 	return (1);
@@ -470,8 +477,10 @@ static int	try_run_parent_builtin(t_app *app, t_command *cmd, t_env *env, int *s
 /* ====================== One-step child lifecycle ====================== */
 
 /* Prepare one step: set is_last, create pipe if needed, open redirs. */
+/* prepare_step — do not open redirs here; only set up pipes and flags        */
 static int	prepare_step(t_app *app, t_command *cmd, int pipefd[2], int io[4])
 {
+	(void)app;
 	io[1] = -1;
 	io[2] = -1;
 	io[3] = 0;
@@ -481,25 +490,31 @@ static int	prepare_step(t_app *app, t_command *cmd, int pipefd[2], int io[4])
 	pipefd[1] = -1;
 	if (!io[3] && pipe(pipefd) < 0)
 		return (-1);
-	if (setup_redirections(app, *cmd->redirs, &io[1], &io[2]) < 0)
-	{
-		close_if_valid(&pipefd[0]);
-		close_if_valid(&pipefd[1]);
-		return (-1);
-	}
 	return (0);
 }
 
 /* Child code path: set signals, wire FDs, and exec command. */
-static void	child_exec(t_app *app, t_command *cmd, t_env *env, int pipefd[2], int io[4])
+static void	child_exec(t_app *app, t_command *cmd, t_env *env,
+                       int pipefd[2], int io[4])
 {
+	int infd;
+	int outfd;
+
 	set_child_signals();
-	child_apply_stdin(io[1], io[0]);
-	child_apply_stdout(io[2], io[3], pipefd[1]);
+	infd = -1;
+	outfd = -1;
+	if (setup_redirections(app, *cmd->redirs, &infd, &outfd) < 0)
+	{
+		close_if_valid(&pipefd[0]);
+		close_if_valid(&pipefd[1]);
+		_exit(1);
+	}
+	child_apply_stdin(infd, io[0]);
+	child_apply_stdout(outfd, io[3], pipefd[1]);
 	close_if_valid(&pipefd[0]);
 	close_if_valid(&pipefd[1]);
-	close_if_valid(&io[1]);
-	close_if_valid(&io[2]);
+	close_if_valid(&infd);
+	close_if_valid(&outfd);
 	exec_command(app, cmd, env);
 	_exit(126);
 }

@@ -1,199 +1,230 @@
-// #include "minishell.h"
-// #include "builtins_utils.h"
 
-// /**
-//  * This function converts the initial portion of the string pointed to by str
-//  * to an integer representation. It skips all white-space characters at the
-//  * beginning, takes an optional plus or minus sign followed by as many digits
-//  * as possible, and interprets them as a numerical value.
-//  * ft_atoi - Converts a string to an integer
-//  *
-//  * @param str: The string to be converted
-//  * @return The converted integer value
-//  */
-// int	ft_atoi(const char *str)
-// {
-// 	int		sign;
-// 	int		result;
+#include "minishell.h"    /* t_app, slen, app_destroy, etc. */
+#include <unistd.h>       /* write */
+#include <stdlib.h>       /* exit */
+#include <limits.h>       /* LLONG_MAX, LLONG_MIN [*/
 
-// 	sign = 1;
-// 	result = 0;
-// 	while (*str == ' ' || (*str >= 9 && *str <= 13))
-// 		str++;
-// 	if (*str == '-' || *str == '+')
-// 	{
-// 		if (*str == '-')
-// 			sign = -1;
-// 		str++;
-// 	}
-// 	while (*str >= '0' && *str <= '9')
-// 	{
-// 		result = result * 10 + (*str - '0');
-// 		str++;
-// 	}
-// 	return (result * sign);
-// }
+/* ------------------------ printing helpers (unchanged) ------------------- */
 
-// int builtin_exit(char **argv)
-// {
-//     int exit_status;
-
-//     if (!argv[1])
-//         exit_status = 0;
-//     else
-//     {
-//         exit_status = 0;
-//         int i = 0;
-//         while (argv[1][i])
-//         {
-//             if (argv[1][i] < '0' || argv[1][i] > '9')
-//             {
-//                 write(2, "exit: numeric argument required\n", 32);
-//                 app_destroy(NULL);
-//                 exit(255);
-//             }
-//             i++;
-//         }
-//         exit_status = ft_atoi(argv[1]);
-//     }
-//     exit(exit_status);
-// }
-
-#include "minishell.h"
-#include "builtins_utils.h"
-#include <unistd.h>
-#include <stdlib.h>
-
-/*
-** SIMPLE UTILS:
-** - ft_is_space: treat standard ASCII whitespaces as spaces, matching what
-** - ft_strlen: used to avoid hardcoding byte counts in write() calls [attached_file:20].
-*/
-
-static int	ft_is_space(char c)
+/* Safe write helper using project slen() for consistency.  */
+static void	print_str(int fd, const char *s)
 {
-	if (c == ' ' || (c >= 9 && c <= 13))
-		return (1);
-	return (0);
+	if (s != NULL)
+		write(fd, s, (int)slen(s));
 }
 
-static size_t	ft_strlen(const char *s)
+/* Matches bash error text for non-numeric exit arguments. */
+static void	print_err_numeric(const char *arg)
 {
-	size_t	len;
-
-	len = 0;
-	while (s[len] != '\0')
-		len++;
-	return (len);
+	print_str(2, "minishell: exit: ");
+	print_str(2, arg);
+	print_str(2, ": numeric argument required\n");
 }
 
-/*
-** is_numeric_with_sign:
-** - Accept optional leading spaces and one optional '+' or '-' followed by
-**   digits only, emulating what exit expects for its numeric argument [web:11].
-** - Returns 1 if valid, 0 otherwise [web:11].
-*/
-static int	is_numeric_with_sign(const char *s)
+/* Matches bash behavior for too many args: do not exit, status 1.  */
+static void	print_err_many(void)
 {
-	int	i;
+	print_str(2, "minishell: exit: too many arguments\n");
+}
 
-	i = 0;
-	while (s[i] && ft_is_space(s[i]))
-		i++;
-	if (s[i] == '+' || s[i] == '-')
-		i++;
-	if (s[i] < '0' || s[i] > '9')
+
+
+/* Accept optional sign and then only digits, at least one digit. */
+static int	is_str_numeric(const char *s)
+{
+	int i;
+
+	if (s == NULL || s[0] == '\0')
 		return (0);
-	while (s[i] >= '0' && s[i] <= '9')
-		i++;
-	while (s[i] && ft_is_space(s[i]))
-		i++;
-	return (s[i] == '\0');
+	i = 0;
+	if (s[i] == '+' || s[i] == '-')
+		i += 1;
+	if (s[i] == '\0')
+		return (0);
+	while (s[i] != '\0')
+	{
+		if (s[i] < '0' || s[i] > '9')
+			return (0);
+		i += 1;
+	}
+	return (1);
 }
 
-/*
-** to_exit_status:
-** - Parse a long long and reduce to the least-significant 8 bits to match
-**   shell exit status behavior (0–255) [web:17].
-** - This uses simple accumulation with sign; overflow handling can be added
-**   if desired, but reducing to 8 bits matches common shell semantics [web:17].
-*/
-static int	to_exit_status(const char *s)
+/* Extracts optional +/-, sets starting index, rejects empty after sign. */
+static int	parse_sign(const char *s, int *idx, int *sign)
 {
-	long long	sign;
-	long long	val;
-
-	sign = 1;
-	val = 0;
-	while (*s && ft_is_space(*s))
-		s++;
-	if (*s == '+' || *s == '-')
+	*sign = 1;
+	*idx = 0;
+	if (s[*idx] == '+' || s[*idx] == '-')
 	{
-		if (*s == '-')
-			sign = -1;
-		s++;
+		if (s[*idx] == '-')
+			*sign = -1;
+		*idx += 1;
 	}
-	while (*s >= '0' && *s <= '9')
-	{
-		val = val * 10 + (*s - '0');
-		s++;
-	}
-	val *= sign;
-	return ((unsigned char)val);
+	if (s[*idx] == '\0')
+		return (0);
+	return (1);
 }
 
-// /*
-// ** app_destroy_safe:
-// ** - Make cleanup NULL-safe so calling it with NULL never dereferences a null
-// **   pointer, preventing segfaults on the error path [web:4][attached_file:20].
-// ** - If you already have app_destroy(app), add a NULL check inside it instead.
-// */
-// static void	app_destroy_safe(t_app *app)
-// {
-// 	if (app == NULL)
-// 		return ;
-// 	/* free fields of app here, guarding each as needed [attached_file:20] */
-// 	/* ... */
-// }
-
-/*
-** builtin_exit:
-** - Behavior aligned with Bash expectations used as reference by minishell:
-**   1) No args: exit with status 0 [attached_file:20].
-**   2) One arg:
-**      - If not a valid signed number: print "numeric argument required"
-**        to stderr and exit with 255 after cleanup [web:11][attached_file:20].
-**      - Else exit with status reduced to 0–255 [web:17][attached_file:20].
-**   3) More than one arg and first is numeric: print "too many arguments"
-**      to stderr, do NOT exit, return 1 so the shell continues [web:7][attached_file:20].
-** - IMPORTANT: Never call app_destroy with NULL; use app pointer from state
-**   or make destroy function NULL-safe to avoid segfaults [web:4][attached_file:20].
-*/
-int	builtin_exit(t_app *app, char **argv)
+/* For positive: lim = LLONG_MAX; for negative: lim = (unsigned)LLONG_MAX + 1 */
+static int	compute_limit_for_sign(int sign, unsigned long long *lim)
 {
-	int	argc;
+	if (lim == NULL)
+		return (0);
+	if (sign == 1)
+		*lim = (unsigned long long)LLONG_MAX;
+	else
+		*lim = (unsigned long long)LLONG_MAX + 1ULL;
+	return (1);
+}
 
-	argc = 0;
-	while (argv && argv[argc])
-		argc++;
-	if (argc == 1)
+/* Accumulates one decimal digit with overflow guard under bound 'lim'. */
+static int	add_digit_check(unsigned long long *acc, unsigned long long lim, int d)
+{
+	unsigned long long u;
+
+	if (acc == NULL)
+		return (0);
+	if (d < 0 || d > 9)
+		return (0);
+	u = (unsigned long long)d;
+	if (*acc > (lim - u) / 10ULL)
+		return (0);
+	*acc = (*acc * 10ULL) + u;
+	return (1);
+}
+
+/* Converts accumulated magnitude to signed result, with LLONG_MIN case. */
+static void	assign_signed_result(int sign, unsigned long long acc,
+		unsigned long long lim, long long *out)
+{
+	if (out == NULL)
+		return ;
+	if (sign == 1)
+		*out = (long long)acc;
+	else if (acc == lim)
+		*out = LLONG_MIN;
+	else
+		*out = -(long long)acc;
+}
+
+/* Core digit parser: loop over digits, check overflow per step, then sign. */
+static int	parse_digits_core(const char *s, int start, int sign, long long *out)
+{
+	unsigned long long acc;
+	unsigned long long lim;
+	int i;
+	int d;
+
+	acc = 0;
+	if (!compute_limit_for_sign(sign, &lim))
+		return (0);
+	i = start;
+	while (s[i] != '\0')
 	{
-		app_destroy_safe(app);
-		exit(0);
+		d = s[i] - '0';
+		if (!add_digit_check(&acc, lim, d))
+			return (0);
+		i += 1;
 	}
-	if (!is_numeric_with_sign(argv[1]))
+	assign_signed_result(sign, acc, lim, out);
+	return (1);
+}
+
+/* ------------------------ top-level integer parsing ---------------------- */
+
+/* Public helper: parse optional sign, accumulate digits with overflow. */
+static int	parse_ll(const char *s, long long *out)
+{
+	int sign;
+	int idx;
+
+	if (!parse_sign(s, &idx, &sign))
+		return (0);
+	return (parse_digits_core(s, idx, sign, out));
+}
+
+/* --------------------------- small arg helpers --------------------------- */
+
+/* Counts non-program arguments for builtin logic. */
+static int	count_args(char **argv)
+{
+	int n;
+	int i;
+
+	if (argv == NULL)
+		return (0);
+	n = 0;
+	i = 1;
+	while (argv[i] != NULL)
 	{
-		write(2, "exit\nminishell: exit: numeric argument required\n",
-			ft_strlen("exit\nminishell: exit: numeric argument required\n"));
-		app_destroy_safe(app);
-		exit(255);
+		n += 1;
+		i += 1;
 	}
-	if (argc > 2)
+	return (n);
+}
+
+/* Bash-compatible cast to unsigned char for modulo 256 behavior. */
+static int	to_status(long long v)
+{
+	unsigned char uc;
+
+	uc = (unsigned char)v;
+	return ((int)uc);
+}
+
+/* ----------------------- core exit decision logic ----------------------- */
+
+/* Mirrors bash: no args => last code; bad numeric => 2; many args => 1. */
+static int	resolve_exit_status(t_app *app, char **argv, int *must_exit)
+{
+	int argc;
+	long long val;
+
+	*must_exit = 1;
+	argc = count_args(argv);
+	if (argc == 0)
+		return ((int)((unsigned char)app->last_exit_code));
+	if (!is_str_numeric(argv[1]) || !parse_ll(argv[1], &val))
 	{
-		write(2, "exit: too many arguments\n",
-			ft_strlen("exit: too many arguments\n"));
+		print_err_numeric(argv[1]);
+		return (2);
+	}
+	if (argc > 1)
+	{
+		print_err_many();
+		*must_exit = 0;
 		return (1);
 	}
-	app_destroy_safe(app);
-	exit(to_exit_status(argv[1]));
+	return (to_status(val));
+}
+
+/* ---------------------- child and parent entry points -------------------- */
+
+/* Used in child path: compute code; caller will _exit(code). */
+int	builtin_exit_child(t_app *app, char **argv)
+{
+	int must_exit;
+	int status;
+
+	status = resolve_exit_status(app, argv, &must_exit);
+	return (status);
+}
+
+/* Used in parent fast-path: print, cleanup, and exit; or keep running. */
+int	builtin_exit_parent(t_app *app, char **argv)
+{
+	int must_exit;
+	int status;
+
+	status = resolve_exit_status(app, argv, &must_exit);
+	if (!must_exit)
+	{
+		app->last_exit_code = status;
+		return (status);
+	}
+	print_str(1, "exit\n");
+	app_destroy(app);
+	exit(status);
+	return (0);
 }

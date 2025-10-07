@@ -18,7 +18,9 @@ int	builtin_cd(char **argv, t_env *env);
 int	builtin_echo(char **argv);
 
 // Print the current working directory to stdout
-int	builtin_pwd(void);
+// int	builtin_pwd(void);
+int	builtin_pwd(char **argv, t_env *env);
+
 
 // Print the environment to stdout (one KEY=VALUE pair per line)
 int	builtin_env(t_env *env);
@@ -31,7 +33,10 @@ int	builtin_unset(char **argv, t_env *env);
 
 // Exit the shell. Accepts optional numeric status argument.
 // int	builtin_exit(char **argv);
-int	builtin_exit(t_app *app, char **argv);
+// int	builtin_exit(t_app *app, char **argv);
+// int	builtin_exit(t_app *app, char **argv, int print_prefix);
+int	builtin_exit_child(t_app *app, char **argv);
+int	builtin_exit_parent(t_app *app, char **argv);
 
 // env helpers
 int env_find_key(t_env *env, char *key);

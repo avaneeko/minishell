@@ -4,7 +4,7 @@
 /*  - If the last died by SIGQUIT, print "Quit (core dumped)".                */
 /*                                                                            */
 /*  Notes:                                                                    */
-/*  - Parent keeps custom handlers; children use SIG_DFL (see set_child_signals). */
+/* Parent keeps custom handlers; children use SIG_DFL (see set_child_signals).*/
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,48 +37,28 @@ static int	translate_wait_status(int wstatus, int is_last)
 	return (1);
 }
 
-// //* Wait each pid directly; return status of the last pid in the pipeline. */
-// int	wait_pipeline(pid_t *pids, int n_cmd)
-// {
-// 	int		i;
-// 	int		status;
-// 	int		last_code;
-
-// 	(void)pids;
-// 	i = 0;
-// 	last_code = 0;
-// 	while (i < n_cmd)
-// 	{
-// 		// if (waitpid(pids[i], &status, 0) > 0)
-// 		if (waitpid(-1, &status, 0))
-// 		{
-// 			if (i == n_cmd - 1)
-// 				last_code = translate_wait_status(status, 1);
-// 		}
-// 		i += 1;
-// 	}
-// 	return (last_code);
-// }
-
-int wait_pipeline(pid_t *pids, int n_cmd)
+int	wait_pipeline(pid_t *pids, int n_cmd)
 {
-    int   waited;
-    int   status;
-    int   last_code;
-    pid_t last;
-    pid_t pid;
+	int i;
+	int status;
+	int final;
+	pid_t last;
+	pid_t got;
 
-    waited = 0;
-    last_code = 0;
-    last = pids[n_cmd - 1];
-    while (waited < n_cmd)
-    {
-        pid = waitpid(-1, &status, 0);
-        if (pid <= 0)
-            break; /* error or unexpected */
-        if (pid == last)
-            last_code = translate_wait_status(status, 1);
-        waited += 1;
-    }
-    return (last_code);
+	if (n_cmd <= 0)
+		return (0);
+	last = pids[n_cmd - 1];
+	final = 0;
+	i = 0;
+	while (i < n_cmd)
+	{
+		got = waitpid(-1, &status, 0);
+		if (got == last)
+			final = translate_wait_status(status, 1);
+        else
+            (void)translate_wait_status(status, 0);
+		i += 1;
+	}
+	return (final);
 }
+

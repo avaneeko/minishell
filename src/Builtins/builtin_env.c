@@ -6,6 +6,8 @@ int builtin_env(t_env *env)
 {
     unsigned int i;
 
+    if (!env)
+		return (0);
     i = 0;
     while (i < env->len)
     {

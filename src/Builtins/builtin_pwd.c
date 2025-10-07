@@ -6,7 +6,7 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 19:20:35 by jgueon            #+#    #+#             */
-/*   Updated: 2025/09/16 18:43:10 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/07 22:03:37 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,17 +16,114 @@
 #include <linux/limits.h>   // PATH_MAX
 #include <stdlib.h>         //perror
 
-// Print the current working directory
-int builtin_pwd(void)
-{
-    char cwd[PATH_MAX];
 
-    if (getcwd(cwd, sizeof(cwd)) == NULL)
-    {
-        perror("pwd");
-        return (1);
-    }
-    write(1, cwd, slen(cwd));
-    write(1, "\n", 1);
-    return (0);
+static void	print_str_fd(int fd, char const *s)
+{
+	if (s != NULL)
+		write(fd, s, (int)slen(s));
+}
+
+static int	print_line(int fd, char const *s)
+{
+	if (!s)
+		return (0);
+	write(fd, s, (int)slen(s));
+	write(fd, "\n", 1);
+	return (1);
+}
+
+/* -------- env helper -------- */
+
+static char	*env_get_value(t_env *env, char const *key)
+{
+	t_epair p;
+
+	if (!env || !key)
+		return (0);
+	if (get_epair_by_key(env, key, &p))
+		return (p.value);
+	return (0);
+}
+
+/* -------- physical printer (-P) -------- */
+
+static int	print_physical(void)
+{
+	char *cwd;
+
+	cwd = getcwd(NULL, 0);                 /* physical resolution */
+	if (!cwd)
+	{
+		print_str_fd(2, "minishell: pwd: getcwd failed\n");
+		return (1);
+	}
+	print_line(1, cwd);
+	free(cwd);
+	return (0);
+}
+
+/* -------- logical printer (-L default) -------- */
+/* If PWD exists, print it even if getcwd would fail (bash logical mode) */
+
+static int	print_logical_or_fallback(t_env *env)
+{
+	char *pwd;
+
+	pwd = env_get_value(env, "PWD");
+	if (pwd)
+	{
+		if (print_line(1, pwd))
+			return (0);
+		/* if printing failed, fall through to try physical */
+	}
+	return (print_physical());
+}
+
+/* -------- option parsing -------- */
+/* Sets *is_physical=1 if -P seen, 0 for -L (default); returns 2 on invalid opt */
+
+static int	parse_pwd_opts(char **argv, int *is_physical)
+{
+	int i;
+	int j;
+
+	*is_physical = 0;
+	if (!argv || !argv[1] || argv[1][0] != '-')
+		return (0);
+	i = 1;
+	while (argv[i] && argv[i][0] == '-' && argv[i][1])
+	{
+		j = 1;
+		while (argv[i][j])
+		{
+			if (argv[i][j] == 'P')
+				*is_physical = 1;
+			else if (argv[i][j] == 'L')
+				*is_physical = 0;
+			else
+			{
+				print_str_fd(2, "minishell: pwd: invalid option\n");
+				return (2);
+			}
+			j += 1;
+		}
+		break ;
+	}
+	return (0);
+}
+
+/* -------- entry point -------- */
+/* Default to logical (-L) to match bash; -P uses getcwd */
+
+int	builtin_pwd(char **argv, t_env *env)
+{
+	int is_physical;
+	int parse_status;
+
+	parse_status = parse_pwd_opts(argv, &is_physical);
+	if (parse_status != 0)
+		return (parse_status);
+	if (is_physical)
+		return (print_physical());
+	return (print_logical_or_fallback(env));
 }

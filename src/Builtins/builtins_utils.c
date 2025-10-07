@@ -6,7 +6,7 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:36:28 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/05 17:56:39 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/07 22:04:50 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,25 +64,6 @@ int	is_builtin(const char *cmd)
 	);
 }
 
-// int	exec_builtin(char **argv, t_env *env)
-// {
-// 	if (streq(*argv, "cd"))
-// 		return (builtin_cd(argv, env));
-// 	 if (streq(*argv, "echo"))
-//         return (builtin_echo(argv));
-//     if (streq(*argv, "pwd"))
-//         return (builtin_pwd());
-//     if (streq(*argv, "export"))
-//         return (builtin_export(argv, env));
-//     if (streq(*argv, "unset"))
-//         return (builtin_unset(argv, env));
-//     if (streq(*argv, "env"))
-//         return (builtin_env(env));
-//     if (streq(*argv, "exit"))
-//         return (builtin_exit(argv));
-//     return (0);
-// }
-
 /*
 ** app_destroy_safe:
 ** - Make cleanup NULL-safe so calling it with NULL never dereferences a null
@@ -106,7 +87,7 @@ int	exec_builtin(t_app *app, char **argv, t_env *env)
 	if (streq(argv[0], "echo"))
 		return (builtin_echo(argv));
 	if (streq(argv[0], "pwd"))
-		return (builtin_pwd());
+		return (builtin_pwd(argv, env));
 	if (streq(argv[0], "export"))
 		return (builtin_export(argv, env));
 	if (streq(argv[0], "unset"))
@@ -114,6 +95,6 @@ int	exec_builtin(t_app *app, char **argv, t_env *env)
 	if (streq(argv[0], "env"))
 		return (builtin_env(env));
 	if (streq(argv[0], "exit"))
-		return (builtin_exit(app, argv));
+		return (builtin_exit_child(app, argv));
 	return (0);
 }

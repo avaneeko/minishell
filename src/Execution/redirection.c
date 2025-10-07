@@ -10,18 +10,27 @@
 
 #include "minishell.h"                  /* t_redir, token kinds, t_app */
 #include <fcntl.h>                      /* open flags                  */
-#include <unistd.h>                     /* close                       */
+#include <unistd.h>                     /* close / write               */
+#include <string.h>						/* strerror */
+#include <stdint.h>						/* uintptr_t*/
+#include <errno.h>						/* O_* */
 
-// /* Close redirection FDs if not -1. */
-// void	closeredirfds(int in, int out)
-// {
-// 	if (in != -1)
-// 		close(in);
-// 	if (out != -1)
-// 		close(out);
-// }
+/* Print: minishell: <target>: <strerror(errno)>\n */
+static void print_open_error(char const *target)
+{
+    char const *msg;
 
-/* Handle single input redirection or heredoc, updating infd. */
+    write(2, "minishell: ", 11);
+    if (target)
+        write(2, target, (int)slen(target));
+    write(2, ": ", 2);
+    msg = strerror(errno);
+    if (msg)
+        write(2, msg, (int)slen(msg));
+    write(2, "\n", 1);
+}
+
+/* Handle single input redirection or heredoc, updating infd; print on error. */
 int handle_input_redirection(t_app const *app, t_redir redir, int *infd)
 {
     int             fd;
@@ -38,14 +47,19 @@ int handle_input_redirection(t_app const *app, t_redir redir, int *infd)
         fd = app->heredocs[idx];
     }
     else
+	{
         fd = open(redir.target, O_RDONLY);
-    if (fd < 0)
-        return (-1);
+    	if (fd < 0)
+		{
+			print_open_error(redir.target);
+			return (-1);
+		}
+	}
     *infd = fd;
     return (0);
 }
 
-/* Handle single output redirection (truncate or append), updating outfd. */
+/* Handle single output redirection (truncate or append), updating outfd; print on error. */
 static int	handle_output_redirection(t_redir redir, int *outfd)
 {
 	int	fd;
@@ -60,7 +74,10 @@ static int	handle_output_redirection(t_redir redir, int *outfd)
 	else
 		fd = open(redir.target, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (fd < 0)
+	{
+		print_open_error(redir.target);
 		return (-1);
+	}
 	*outfd = fd;
 	return (0);
 }
