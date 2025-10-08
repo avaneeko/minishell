@@ -334,22 +334,22 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <stdlib.h>
+#include "../Builtins/builtins_utils.h"
 
 /* externs (declared in other units) */
-int   setup_redirections(t_app *app, t_redir *redirs, int *infd, int *outfd);
-void  set_child_signals(void);
-void  exec_command(t_app *app, t_command *cmd, t_env *env);
-int   wait_pipeline(pid_t *pids, int n_cmd);
-void  close_if_valid(int *fd);
-int   exec_builtin(t_app *app, char **argv, t_env *env);
-int   streq(char const *a, char const *b);
+// int   setup_redirections(t_app *app, t_redir *redirs, int *infd, int *outfd);
+// void  set_child_signals(void);
+// void  exec_command(t_app *app, t_command *cmd, t_env *env);
+// int   wait_pipeline(pid_t *pids, int n_cmd);
+// void  close_if_valid(int *fd);
+// int   exec_builtin(t_app *app, char **argv, t_env *env);
+// int   streq(char const *a, char const *b);
+// int   builtin_exit_parent(t_app *app, char **argv);
 
-/* ======================== Small utilities ======================== */
 
-/* Count commands in the linked list. */
 static int	count_commands(t_command *head)
 {
-	int	n;
+	int n;
 
 	n = 0;
 	while (head)
@@ -361,23 +361,48 @@ static int	count_commands(t_command *head)
 }
 
 /* Save and restore stdio for redirections in parent fast path. */
+// static void	save_stdio(int saved[2])
+// {
+// 	saved[0] = dup(STDIN_FILENO);
+// 	saved[1] = dup(STDOUT_FILENO);
+// }
+// ADDED 8th OCTOBER for fd open issue
 static void	save_stdio(int saved[2])
 {
+	saved[0] = -1;
+	saved[1] = -1;
 	saved[0] = dup(STDIN_FILENO);
 	saved[1] = dup(STDOUT_FILENO);
 }
 
-static void	restore_stdio(int saved[2])
+// static void	restore_stdio(int saved[2])
+// {
+// 	if (saved[0] >= 0)
+// 		dup2(saved[0], STDIN_FILENO);
+// 	if (saved[1] >= 0)
+// 		dup2(saved[1], STDOUT_FILENO);
+// 	if (saved[0] >= 0)
+// 		close(saved[0]);
+// 	if (saved[1] >= 0)
+// 		close(saved[1]);
+// }
+// ADDED 8th OCTOBER for fd open issue
+void restore_stdio(int saved[2])
 {
-	if (saved[0] >= 0)
-		dup2(saved[0], STDIN_FILENO);
-	if (saved[1] >= 0)
-		dup2(saved[1], STDOUT_FILENO);
-	if (saved[0] >= 0)
-		close(saved[0]);
-	if (saved[1] >= 0)
-		close(saved[1]);
+    if (saved[0] >= 0)
+    {
+        dup2(saved[0], STDIN_FILENO);
+        close(saved[0]);
+        saved[0] = -1;
+    }
+    if (saved[1] >= 0)
+    {
+        dup2(saved[1], STDOUT_FILENO);
+        close(saved[1]);
+        saved[1] = -1;
+    }
 }
+
 
 /* Choose stdin in child (infile else tmp_in). */
 static void	child_apply_stdin(int infile, int tmp_in)
@@ -442,7 +467,40 @@ static void	parent_apply_redirs(int infd, int outfd)
 	}
 }
 
+
 /* Try to handle a single parent-builtin; returns 1 if handled (status set). */
+// static int	try_run_parent_builtin(t_app *app, t_command *cmd, t_env *env, int *status)
+// {
+// 	int saved[2];
+// 	int infd;
+// 	int outfd;
+
+// 	if (!cmd || !cmd->argv || !cmd->argv[0])
+// 		return (0);
+// 	if (!is_parent_builtin(cmd->argv[0]) || cmd->next != NULL)
+// 		return (0);
+// 	save_stdio(saved);
+// 	infd = -1;
+// 	outfd = -1;
+// 	if (setup_redirections(app, *cmd->redirs, &infd, &outfd) < 0)
+// 	{
+// 		restore_stdio(saved);
+// 		return (1);
+// 	}
+// 	parent_apply_redirs(infd, outfd);
+// 	if (streq(cmd->argv[0], "exit"))		// ADDED 7.10
+// 	{
+// 		*status = builtin_exit_parent(app, cmd->argv);		//ADDED 7.10
+// 		restore_stdio(saved);
+// 		return (1);
+
+// 	}
+// 	*status = exec_builtin(app, cmd->argv, env);
+// 	restore_stdio(saved);
+// 	return (1);
+// }
+// ADDED 8th OCTOBER for fd open issue
+/* Handle single parent-builtin; returns 1 if handled (status set). */
 static int	try_run_parent_builtin(t_app *app, t_command *cmd, t_env *env, int *status)
 {
 	int saved[2];
@@ -462,17 +520,20 @@ static int	try_run_parent_builtin(t_app *app, t_command *cmd, t_env *env, int *s
 		return (1);
 	}
 	parent_apply_redirs(infd, outfd);
-	if (streq(cmd->argv[0], "exit"))		// ADDED 7.10
+	if (streq(cmd->argv[0], "exit"))
 	{
-		*status = builtin_exit_parent(app, cmd->argv);		//ADDED 7.10
+		/* Critical: restore stdio BEFORE a builtin that may exit(). */
 		restore_stdio(saved);
+		// app_reset_exec(app); //ADDED 08.10 FOR: Leak in parent
+		*status = builtin_exit_parent(app, cmd->argv);
 		return (1);
-
 	}
 	*status = exec_builtin(app, cmd->argv, env);
 	restore_stdio(saved);
 	return (1);
 }
+
+
 
 /* ====================== One-step child lifecycle ====================== */
 

@@ -35,14 +35,3 @@ int	prepare_fds_for_command(t_app * app, t_command *cmd)
 	return (0);
 }
 
-/* ************************************************************************** */
-/*                                                                            */
-/*   Optional: free fix for builder side (when destroying a command)          */
-/*                                                                            */
-/*   - LEON.c has a TODO because t_command now holds t_redir ** [1].          */
-/*   - Use free_redir_array when cleaning a command made by the builder.      */
-/*                                                                            */
-/* ************************************************************************** */
-
-/* Example drop-in: replace redir free logic with free_redir_array(cmd->redirs) */
-/* while ensuring cmd->redirs is set to NULL afterward [1].                     */

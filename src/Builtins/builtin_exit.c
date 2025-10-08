@@ -217,14 +217,18 @@ int	builtin_exit_parent(t_app *app, char **argv)
 	int must_exit;
 	int status;
 
+	must_exit = 0;
 	status = resolve_exit_status(app, argv, &must_exit);
 	if (!must_exit)
-	{
-		app->last_exit_code = status;
 		return (status);
-	}
+	// if (!must_exit)
+	// {
+	// 	app->last_exit_code = status;
+	// 	return (status);
+	// }
+	app_reset_exec(app);
 	print_str(1, "exit\n");
 	app_destroy(app);
 	exit(status);
-	return (0);
+	return (status);
 }
