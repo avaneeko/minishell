@@ -213,6 +213,12 @@ int	create_env_from_envp(char const **envp, t_env *out_env);
 //
 int		parse_envp(t_env *env, char const **envp);
 
+
+// Added 9.10 for Werror flag(used in builtin_export.c; set_env_replace)
+int		create_pair(char const *str, t_epair *out);
+
+
+
 // Initial amount of entries reserved by `t_env`, in entries.
 # ifndef ENV_MEM_RESERVE
 #  define ENV_MEM_RESERVE 1024u

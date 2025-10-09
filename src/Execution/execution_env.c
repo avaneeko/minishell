@@ -1,8 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                               execution_env.c                               */
-/*                                                                            */
-/*   Environment serialization to NULL-terminated array of "KEY=VALUE" pairs. */
+/*                                                        :::      ::::::::   */
+/*   execution_env.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/09 19:49:02 by jgueon            #+#    #+#             */
+/*   Updated: 2025/10/09 19:49:25 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -10,6 +14,13 @@
 #include <stdlib.h>                     /* malloc, free                    */
 #include "execution_utils.h"
 
+/* ************************************************************************** */
+/*                                                                            */
+/*                               execution_env.c                              */
+/*                                                                            */
+/*   Environment serialization to NULL-terminated array of "KEY=VALUE" pairs. */
+/*                                                                            */
+/* ************************************************************************** */
 /* Build "KEY=VALUE" heap string.  */
 static char	*join_kv(char const *k, char const *v)
 {
@@ -71,4 +82,3 @@ char	**env_serialize(t_env const *env)
 	out[j] = NULL;
 	return (out);
 }
-

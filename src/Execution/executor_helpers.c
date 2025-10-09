@@ -1,15 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                             executor_helpers.c                             */
-/*                                                                            */
-/*   Legacy helpers used by the previous matrix-pipes implementation; kept so */
-/*   existing code that references them still compiles and behaves the same.  */
+/*                                                        :::      ::::::::   */
+/*   executor_helpers.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/09 20:06:38 by jgueon            #+#    #+#             */
+/*   Updated: 2025/10/09 20:06:57 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>                     /* dup2, close   */
 #include "minishell.h"                  /* t_command     */
 
+/* ************************************************************************** */
+/*                                                                            */
+/*                             executor_helpers.c                             */
+/*                                                                            */
+/*   Legacy helpers used by the previous matrix-pipes implementation; kept so */
+/*   existing code that references them still compiles and behaves the same.  */
+/*                                                                            */
+/* ************************************************************************** */
 /* Wire stdin/stdout from the legacy pipes matrix for command idx. */
 void	set_pipe_ends(t_command *cmd, int **pipes, int n_cmd, int idx)
 {

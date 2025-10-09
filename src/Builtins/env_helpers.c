@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_helpers.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/09 19:37:04 by jgueon            #+#    #+#             */
+/*   Updated: 2025/10/09 19:43:00 by jgueon           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 #include "builtins_utils.h"
 
@@ -67,6 +79,7 @@ static void	free_pair_values(t_epair *pair)
 	if (pair->value)
 		free(pair->value);
 }
+
 /* Append a new key/value pair. */
 /* - Allocates key/value strings; frees them on any failure to avoid leaks. */
 /* - Delegates growth/ownership to try_append_epair on success. */

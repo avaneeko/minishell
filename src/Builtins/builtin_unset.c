@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtin_unset.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/09 19:30:33 by jgueon            #+#    #+#             */
+/*   Updated: 2025/10/09 19:33:00 by jgueon           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "minishell.h"
 #include "builtins_utils.h"
@@ -10,7 +21,7 @@ static void	print_str_fd(int fd, char const *s)
 		write(fd, s, (int)slen(s));
 }
 
-/* Print the standard minishell-style error for invalid identifiers.           */
+/* Print the standard minishell-style error for invalid identifiers.          */
 static void	print_unset_error(char const *arg)
 {
 	print_str_fd(2, "minishell: unset: `");
@@ -19,7 +30,7 @@ static void	print_unset_error(char const *arg)
 }
 
 /* --------------------------- identifier validation ------------------------ */
-/* First char must be alpha or underscore.                                     */
+/* First char must be alpha or underscore.                                    */
 static int	is_name_start(char c)
 {
 	if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
@@ -29,7 +40,7 @@ static int	is_name_start(char c)
 	return (0);
 }
 
-/* Subsequent chars must be alnum or underscore.                               */
+/* Subsequent chars must be alnum or underscore.                              */
 static int	is_name_char(char c)
 {
 	if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
@@ -39,10 +50,10 @@ static int	is_name_char(char c)
 	return (0);
 }
 
-/* Validate an unset key: KEY must match [A-Za-z_][A-Za-z0-9_]* strictly.      */
+/* Validate an unset key: KEY must match [A-Za-z_][A-Za-z0-9_]* strictly.     */
 static int	is_valid_unset_key(char const *s)
 {
-	int i;
+	int	i;
 
 	if (!s || !s[0])
 		return (0);
@@ -59,11 +70,11 @@ static int	is_valid_unset_key(char const *s)
 }
 
 /* -------------------------------- entry point ----------------------------- */
-/* Iterate args and remove valid keys; print error for invalid ones.           */
+/* Iterate args and remove valid keys; print error for invalid ones.          */
 int	builtin_unset(char **argv, t_env *env)
 {
-	int i;
-	int status;
+	int	i;
+	int	status;
 
 	if (!argv || !argv[0] || !env)
 		return (0);

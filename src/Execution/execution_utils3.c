@@ -1,15 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                             executionutils3.c                               */
-/*                                                                            */
-/*   Small cross-file utilities: FD closers, env_free_serialized, and legacy   */
-/*   close_and_free_pipes for the old pipe-matrix implementation.              */
+/*                                                        :::      ::::::::   */
+/*   execution_utils3.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/09 20:04:08 by jgueon            #+#    #+#             */
+/*   Updated: 2025/10/09 20:04:44 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>                     /* close  */
 #include <stdlib.h>                     /* free   */
 
+/* ************************************************************************** */
+/*                                                                            */
+/*                             executionutils3.c                              */
+/*                                                                            */
+/*   Small cross-file utilities: FD closers, env_free_serialized, and legacy  */
+/*   close_and_free_pipes for the old pipe-matrix implementation.             */
+/*                                                                            */
+/* ************************************************************************** */
 /* Close fd if valid and set to -1. */
 void	close_if_valid(int *fd)
 {

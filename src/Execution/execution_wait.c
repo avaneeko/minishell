@@ -1,10 +1,12 @@
 /* ************************************************************************** */
-/*					execution_wait.c										  */
-/*  - While waiting, if the last died by SIGINT, print a newline.             */
-/*  - If the last died by SIGQUIT, print "Quit (core dumped)".                */
 /*                                                                            */
-/*  Notes:                                                                    */
-/* Parent keeps custom handlers; children use SIG_DFL (see set_child_signals).*/
+/*                                                        :::      ::::::::   */
+/*   execution_wait.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/09 20:04:52 by jgueon            #+#    #+#             */
+/*   Updated: 2025/10/09 20:06:10 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +17,15 @@
 #include <errno.h>       /* EINTR */
 #include <stdlib.h>      /* free */
 
+/* ************************************************************************** */
+/*					execution_wait.c										  */
+/*  - While waiting, if the last died by SIGINT, print a newline.             */
+/*  - If the last died by SIGQUIT, print "Quit (core dumped)".                */
+/*                                                                            */
+/*  Notes:                                                                    */
+/* Parent keeps custom handlers; children use SIG_DFL (see set_child_signals).*/
+/*                                                                            */
+/* ************************************************************************** */
 /* Translate a wait status to a shell exit code; print once for last proc.    */
 static int	translate_wait_status(int wstatus, int is_last)
 {
@@ -39,11 +50,11 @@ static int	translate_wait_status(int wstatus, int is_last)
 
 int	wait_pipeline(pid_t *pids, int n_cmd)
 {
-	int i;
-	int status;
-	int final;
-	pid_t last;
-	pid_t got;
+	int		i;
+	int		status;
+	int		final;
+	pid_t	last;
+	pid_t	got;
 
 	if (n_cmd <= 0)
 		return (0);
@@ -55,10 +66,9 @@ int	wait_pipeline(pid_t *pids, int n_cmd)
 		got = waitpid(-1, &status, 0);
 		if (got == last)
 			final = translate_wait_status(status, 1);
-        else
-            (void)translate_wait_status(status, 0);
+		else
+			(void)translate_wait_status(status, 0);
 		i += 1;
 	}
 	return (final);
 }
-

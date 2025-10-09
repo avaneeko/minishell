@@ -6,7 +6,7 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 19:14:04 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/07 21:59:00 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/09 17:25:24 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,13 @@ static int	is_echo_n(char const *s)
 	int	i;
 
 	if (!s)
-		return (0); /* no flag */
+		return (0);
 	if (s[0] != '-' || s[1] != 'n')
-		return (0); /* wrong start */
+		return (0);
 	i = 2;
 	while (s[i] == 'n')
-		i++; /* accept any count of 'n' */
-	return (s[i] == '\0'); /* reject if any other char appears */
+		i++;
+	return (s[i] == '\0');
 }
 
 int	builtin_echo(char **argv)
@@ -39,17 +39,17 @@ int	builtin_echo(char **argv)
 	newline = 1;
 	while (argv[i] && is_echo_n(argv[i]))
 	{
-		newline = 0; /* saw -n style flag */
+		newline = 0;
 		i++;
 	}
 	while (argv[i])
 	{
-		write(1, argv[i], slen(argv[i])); /* print word  */
+		write(1, argv[i], slen(argv[i]));
 		if (argv[i + 1])
-			write(1, " ", 1); /* single space between words */
+			write(1, " ", 1);
 		i++;
 	}
 	if (newline)
-		write(1, "\n", 1); /* default newline when no -n  */
+		write(1, "\n", 1);
 	return (0);
 }

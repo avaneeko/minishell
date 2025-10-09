@@ -1,5 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   executor_patch.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/09 21:09:00 by jgueon            #+#    #+#             */
+/*   Updated: 2025/10/09 21:16:39 by jgueon           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-
+#include "minishell.h"
+#include "execution_utils.h"
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -14,10 +26,7 @@
 /*     but the signature takes t_redir * (list), not t_redir ** (array) [2].  */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "minishell.h"
-
-int	prepare_fds_for_command(t_app * app, t_command *cmd)
+int	prepare_fds_for_command(t_app *app, t_command *cmd)
 {
 	int		infd;
 	int		outfd;
@@ -34,4 +43,3 @@ int	prepare_fds_for_command(t_app * app, t_command *cmd)
 	cmd->outfile = outfd;
 	return (0);
 }
-

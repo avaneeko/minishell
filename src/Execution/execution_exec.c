@@ -1,9 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                              execution_exec.c                               */
-/*                                                                            */
-/*   Child-side command execution: handle builtins, PATH lookup, and execve,  */
-/*   matching the behavior shown in EXECUTIONS.c.                             */
+/*                                                        :::      ::::::::   */
+/*   execution_exec.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/09 19:49:48 by jgueon            #+#    #+#             */
+/*   Updated: 2025/10/09 19:50:18 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +17,18 @@
 #include "execution_utils.h"
 #include "Builtins/builtins_utils.h"
 
+/* ************************************************************************** */
+/*                                                                            */
+/*                              execution_exec.c                              */
+/*                                                                            */
+/*   Child-side command execution: handle builtins, PATH lookup, and execve,  */
+/*   matching the behavior shown in EXECUTIONS.c.                             */
+/*                                                                            */
+/* ************************************************************************** */
 /* Has any slash in the string. */
 static int	has_slash(char const *s)
 {
-	int i;
+	int	i;
 
 	if (!s)
 		return (0);

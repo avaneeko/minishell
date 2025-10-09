@@ -4,9 +4,9 @@
 #include <signal.h>
 #include <unistd.h>
 
-t_app *get_app(void);
+t_app	*get_app(void);
 
-volatile int g_signal = 0;
+volatile int	g_signal = 0;
 
 // = Bash convention for SIGINT
 static void	sigint_handler_default(int signum)
@@ -36,13 +36,6 @@ static void	sigint_handler_heredoc(int signum)
 	get_app()->last_exit_code = g_signal;
 }
 
-/* Ignore SIGQUIT in interactive parent: do nothing and do not change $?. */
-static void	sigquit_handler(int signum)
-{
-	(void)signum;
-	/* Intentionally empty to mirror bash in interactive mode.  */
-}
-
 /* Install parent handlers: Ctrl-C interactive behavior, ignore Ctrl-\ .     */
 void	set_default_signals(void)
 {
@@ -66,7 +59,6 @@ void	set_child_signals(void)
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 }
-
 
 // int	main(int argc, char const *argv[], char const *envp[])
 // {

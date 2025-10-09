@@ -1,9 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                             execution_resources.c                           */
-/*                                                                            */
-/*   Legacy pipeline resource allocation helpers used by old matrix-pipes     */
-/*   implementation; kept for compatibility and tests that still reference it.*/
+/*                                                        :::      ::::::::   */
+/*   execution_resources.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/09 19:59:28 by jgueon            #+#    #+#             */
+/*   Updated: 2025/10/09 19:59:59 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -11,6 +14,14 @@
 #include <unistd.h>                     /* pipe, close                   */
 #include <stdlib.h>                     /* malloc, free                  */
 
+/* ************************************************************************** */
+/*                                                                            */
+/*                             execution_resources.c                          */
+/*                                                                            */
+/*   Legacy pipeline resource allocation helpers used by old matrix-pipes     */
+/*   implementation; kept for compatibility and tests that still reference it.*/
+/*                                                                            */
+/* ************************************************************************** */
 /* Free partially created pipe pairs on failure.  */
 // (close both ends and free pair)
 // This is used on any partial failure during allocation/open.

@@ -1,8 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                             execution_utils2.c                             */
-/*                                                                            */
-/*   Utility helpers: is_executable_file and array frees kept from EXECUTIONS.*/
+/*                                                        :::      ::::::::   */
+/*   execution_utils2.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/09 20:03:33 by jgueon            #+#    #+#             */
+/*   Updated: 2025/10/09 20:03:52 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -10,6 +14,13 @@
 #include <unistd.h>                     /* access, X_OK                  */
 #include <stdlib.h>                     /* free                          */
 
+/* ************************************************************************** */
+/*                                                                            */
+/*                             execution_utils2.c                             */
+/*                                                                            */
+/*   Utility helpers: is_executable_file and array frees kept from EXECUTIONS.*/
+/*                                                                            */
+/* ************************************************************************** */
 /* Check that path is a regular file and is executable.  */
 int	is_executable_file(char const *path)
 {

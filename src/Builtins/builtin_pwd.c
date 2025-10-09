@@ -6,7 +6,7 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 19:20:35 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/07 22:03:37 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/09 19:30:09 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 #include <unistd.h>     // getcwd
 #include <linux/limits.h>   // PATH_MAX
 #include <stdlib.h>         //perror
-
 
 static void	print_str_fd(int fd, char const *s)
 {
@@ -36,7 +35,7 @@ static int	print_line(int fd, char const *s)
 
 static char	*env_get_value(t_env *env, char const *key)
 {
-	t_epair p;
+	t_epair	p;
 
 	if (!env || !key)
 		return (0);
@@ -46,12 +45,11 @@ static char	*env_get_value(t_env *env, char const *key)
 }
 
 /* -------- physical printer (-P) -------- */
-
 static int	print_physical(void)
 {
-	char *cwd;
+	char	*cwd;
 
-	cwd = getcwd(NULL, 0);                 /* physical resolution */
+	cwd = getcwd(NULL, 0); /* physical resolution */
 	if (!cwd)
 	{
 		print_str_fd(2, "minishell: pwd: getcwd failed\n");
@@ -64,10 +62,9 @@ static int	print_physical(void)
 
 /* -------- logical printer (-L default) -------- */
 /* If PWD exists, print it even if getcwd would fail (bash logical mode) */
-
 static int	print_logical_or_fallback(t_env *env)
 {
-	char *pwd;
+	char	*pwd;
 
 	pwd = env_get_value(env, "PWD");
 	if (pwd)
@@ -81,11 +78,10 @@ static int	print_logical_or_fallback(t_env *env)
 
 /* -------- option parsing -------- */
 /* Sets *is_physical=1 if -P seen, 0 for -L (default); returns 2 on invalid opt */
-
 static int	parse_pwd_opts(char **argv, int *is_physical)
 {
-	int i;
-	int j;
+	int	i;
+	int	j;
 
 	*is_physical = 0;
 	if (!argv || !argv[1] || argv[1][0] != '-')
@@ -114,11 +110,10 @@ static int	parse_pwd_opts(char **argv, int *is_physical)
 
 /* -------- entry point -------- */
 /* Default to logical (-L) to match bash; -P uses getcwd */
-
 int	builtin_pwd(char **argv, t_env *env)
 {
-	int is_physical;
-	int parse_status;
+	int	is_physical;
+	int	parse_status;
 
 	parse_status = parse_pwd_opts(argv, &is_physical);
 	if (parse_status != 0)

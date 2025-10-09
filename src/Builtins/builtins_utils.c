@@ -6,7 +6,7 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:36:28 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/07 22:04:50 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/09 19:33:55 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,7 @@ void	app_destroy_safe(t_app *app)
 {
 	if (app == NULL)
 		return ;
-	/* free fields of app here, guarding each as needed [attached_file:20] */
-	/* ... */
+	/* free fields of app here, guarding each as needed */
 }
 
 int	exec_builtin(t_app *app, char **argv, t_env *env)

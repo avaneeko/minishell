@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtin_export.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/09 19:20:36 by jgueon            #+#    #+#             */
+/*   Updated: 2025/10/09 19:25:36 by jgueon           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 #include "builtins_utils.h"
 #include <unistd.h>  /* write */
@@ -11,8 +23,6 @@
 /*      * Invalid identifiers: print error, continue, final status 1 if any.  */
 /*                                                                            */
 /* ************************************************************************** */
-
-
 /* ---------------------------- small I/O helpers --------------------------- */
 /* print_str_fd: safe writer using slen from your utils.                      */
 static void	print_str_fd(int fd, char const *s)
@@ -53,7 +63,7 @@ static int	is_name_char(char c)
 /* scan_key_body: walk past a valid NAME, stop at '=' or '+=' or end. */
 static int	scan_key_body(char const *arg, int start)
 {
-	int i;
+	int	i;
 
 	i = start;
 	while (arg[i] && arg[i] != '=' && !(arg[i] == '+' && arg[i + 1] == '='))
@@ -66,9 +76,10 @@ static int	scan_key_body(char const *arg, int start)
 }
 
 /* parse_key_mode: now short; sets key_len, is_append, has_eq or fails. */
-static int	parse_key_mode(char const *arg, int *key_len, int *is_append, int *has_eq)
+static int	parse_key_mode(char const *arg, int *key_len, int *is_append,
+		int *has_eq)
 {
-	int i;
+	int	i;
 
 	*is_append = 0;
 	*has_eq = 0;
@@ -106,7 +117,7 @@ static size_t	strlen_or_zero(char const *s)
 /* copy_bytes: append src bytes to dst at index pointer.                      */
 static void	copy_bytes(char *dst, size_t *idx, char const *src)
 {
-	size_t i;
+	size_t	i;
 
 	i = 0;
 	if (!src)
@@ -122,10 +133,10 @@ static void	copy_bytes(char *dst, size_t *idx, char const *src)
 /* join_kv: allocate "KEY=VALUE" string for create_pair.                      */
 static char	*join_kv(char const *k, char const *v)
 {
-	size_t kl;
-	size_t vl;
-	char *s;
-	size_t i;
+	size_t	kl;
+	size_t	vl;
+	char	*s;
+	size_t	i;
 
 	kl = slen(k);
 	vl = strlen_or_zero(v);
@@ -145,9 +156,9 @@ static char	*join_kv(char const *k, char const *v)
 /* set_env_replace: remove existing key and set to value.                     */
 static int	set_env_replace(t_env *env, char const *key, char const *val)
 {
-	t_epair pair;
-	char *kv;
-	int ok;
+	t_epair	pair;
+	char	*kv;
+	int		ok;
 
 	remove_epair_by_key(env, key);
 	kv = join_kv(key, val);
@@ -165,10 +176,10 @@ static int	set_env_replace(t_env *env, char const *key, char const *val)
 /* set_env_append: key+=val or fallback to replace if key missing.            */
 static int	set_env_append(t_env *env, char const *key, char const *val)
 {
-	t_epair cur;
-	char *merged;
-	size_t len;
-	size_t idx;
+	t_epair	cur;
+	char	*merged;
+	size_t	len;
+	size_t	idx;
 
 	if (!get_epair_by_key(env, key, &cur))
 		return (set_env_replace(env, key, val));
@@ -192,7 +203,7 @@ static int	set_env_append(t_env *env, char const *key, char const *val)
 /* exists_key: returns 1 if key is present in env.                            */
 static int	exists_key(t_env *env, char const *key)
 {
-	t_epair tmp;
+	t_epair	tmp;
 
 	if (get_epair_by_key(env, key, &tmp))
 		return (1);
@@ -203,7 +214,7 @@ static int	exists_key(t_env *env, char const *key)
 /* count_strv: count serialized env entries.                                  */
 static int	count_strv(char **v)
 {
-	int n;
+	int	n;
 
 	n = 0;
 	if (!v)
@@ -216,7 +227,7 @@ static int	count_strv(char **v)
 /* cmp_str: lexicographic compare for sort.                                   */
 static int	cmp_str(char const *a, char const *b)
 {
-	size_t i;
+	size_t	i;
 
 	i = 0;
 	while (a[i] && b[i] && a[i] == b[i])
@@ -227,7 +238,7 @@ static int	cmp_str(char const *a, char const *b)
 /* swap_ptr: swap two pointers for bubble sort.                               */
 static void	swap_ptr(char **a, char **b)
 {
-	char *t;
+	char	*t;
 
 	t = *a;
 	*a = *b;
@@ -237,8 +248,8 @@ static void	swap_ptr(char **a, char **b)
 /* bubble_one_pass: one pass of bubble sort and report if swapped.            */
 static int	bubble_one_pass(char **v, int n)
 {
-	int j;
-	int swapped;
+	int	j;
+	int	swapped;
 
 	if (!v || n <= 1)
 		return (0);
@@ -259,7 +270,7 @@ static int	bubble_one_pass(char **v, int n)
 /* sort_lex: bubble until no swaps to keep code simple and Norm-compliant.    */
 static void	sort_lex(char **v, int n)
 {
-	int changed;
+	int	changed;
 
 	changed = 1;
 	while (changed)
@@ -271,7 +282,7 @@ static void	sort_lex(char **v, int n)
 /* print_one_decl: prints 'declare -x KEY="VALUE"' for a serialized entry.    */
 static void	print_one_decl(char const *kv)
 {
-	int i;
+	int	i;
 
 	print_str_fd(1, "declare -x ");
 	i = 0;
@@ -297,9 +308,9 @@ static void	print_one_decl(char const *kv)
 /* print_export_noargs: serialize, sort, and print all variables.             */
 static int	print_export_noargs(t_env const *env)
 {
-	char **envp;
-	int n;
-	int i;
+	char	**envp;
+	int		n;
+	int		i;
 
 	envp = env_serialize(env);
 	if (!envp)
@@ -331,8 +342,8 @@ static int	handle_export_noeq(t_env *env, char const *key)
 /* alloc_key_copy: make a heap copy of KEY substring (length key_len).        */
 static char	*alloc_key_copy(char const *arg, int key_len)
 {
-	char *key;
-	int i;
+	char	*key;
+	int		i;
 
 	key = (char *)malloc((size_t)key_len + 1);
 	if (!key)
@@ -348,9 +359,10 @@ static char	*alloc_key_copy(char const *arg, int key_len)
 }
 
 /* val_ptr_after_key: compute pointer to value after '=' or '+='.             */
-static char const	*val_ptr_after_key(char const *arg, int key_len, int is_append)
+static char const	*val_ptr_after_key(char const *arg, int key_len,
+				int is_append)
 {
-	int off;
+	int	off;
 
 	off = 1;
 	if (is_append)
@@ -377,9 +389,9 @@ static int	apply_set_or_append(t_env *env, char const *key,
 static int	handle_export_with_eq(t_env *env, char const *arg,
 		int key_len, int is_append)
 {
-	char *key;
-	char const *val;
-	int ret;
+	char		*key;
+	char const	*val;
+	int			ret;
 
 	key = alloc_key_copy(arg, key_len);
 	if (!key)
@@ -393,9 +405,9 @@ static int	handle_export_with_eq(t_env *env, char const *arg,
 /* process_one_export_arg: validate and dispatch no-eq vs with-eq             */
 static int	process_one_export_arg(t_env *env, char const *arg)
 {
-	int key_len;
-	int is_append;
-	int has_eq;
+	int	key_len;
+	int	is_append;
+	int	has_eq;
 
 	if (!parse_key_mode(arg, &key_len, &is_append, &has_eq))
 	{
@@ -407,11 +419,10 @@ static int	process_one_export_arg(t_env *env, char const *arg)
 	return (handle_export_with_eq(env, arg, key_len, is_append));
 }
 
-
 int	builtin_export(char **argv, t_env *env)
 {
-	int i;
-	int status;
+	int	i;
+	int	status;
 
 	if (!argv || !argv[0] || !env)
 		return (0);

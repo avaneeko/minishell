@@ -1,10 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                               redirection.c                                */
-/*                                                                            */
-/*   Opens and wires input/output files and heredocs for a command, returning */
-/*   prepared infile/outfile FDs to the caller, as established in EXECUTIONS. */
-/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redirection.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/09 20:16:09 by jgueon            #+#    #+#             */
+/*   Updated: 2025/10/09 20:19:06 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,48 +17,57 @@
 #include <stdint.h>						/* uintptr_t*/
 #include <errno.h>						/* O_* */
 
+/* ************************************************************************** */
+/*                                                                            */
+/*                               redirection.c                                */
+/*                                                                            */
+/*   Opens and wires input/output files and heredocs for a command, returning */
+/*   prepared infile/outfile FDs to the caller, as established in EXECUTIONS. */
+/*                                                                            */
+/*                                                                            */
+/* ************************************************************************** */
 /* Print: minishell: <target>: <strerror(errno)>\n */
-static void print_open_error(char const *target)
+static void	print_open_error(char const *target)
 {
-    char const *msg;
+	char const	*msg;
 
-    write(2, "minishell: ", 11);
-    if (target)
-        write(2, target, (int)slen(target));
-    write(2, ": ", 2);
-    msg = strerror(errno);
-    if (msg)
-        write(2, msg, (int)slen(msg));
-    write(2, "\n", 1);
+	write(2, "minishell: ", 11);
+	if (target)
+		write(2, target, (int)slen(target));
+	write(2, ": ", 2);
+	msg = strerror(errno);
+	if (msg)
+		write(2, msg, (int)slen(msg));
+	write(2, "\n", 1);
 }
 
 /* Handle single input redirection or heredoc, updating infd; print on error. */
-int handle_input_redirection(t_app const *app, t_redir redir, int *infd)
+int	handle_input_redirection(t_app const *app, t_redir redir, int *infd)
 {
-    int             fd;
-    unsigned int    idx;
+	int				fd;
+	unsigned int	idx;
 
-    if (*infd != -1)
-    {
-        close(*infd);
-        *infd = -1;
-    }
-    if (redir.type == TOKEN_HEREDOC)
-    {
-        idx = (unsigned int)(uintptr_t)redir.target;
-        fd = app->heredocs[idx];
-    }
-    else
+	if (*infd != -1)
 	{
-        fd = open(redir.target, O_RDONLY);
-    	if (fd < 0)
+		close(*infd);
+		*infd = -1;
+	}
+	if (redir.type == TOKEN_HEREDOC)
+	{
+		idx = (unsigned int)(uintptr_t)redir.target;
+		fd = app->heredocs[idx];
+	}
+	else
+	{
+		fd = open(redir.target, O_RDONLY);
+		if (fd < 0)
 		{
 			print_open_error(redir.target);
 			return (-1);
 		}
 	}
-    *infd = fd;
-    return (0);
+	*infd = fd;
+	return (0);
 }
 
 /* Handle single output redirection (truncate or append), updating outfd; print on error. */

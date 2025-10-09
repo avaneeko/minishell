@@ -1,3 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   command_path.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/09 19:47:11 by jgueon            #+#    #+#             */
+/*   Updated: 2025/10/09 19:48:16 by jgueon           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"                  /* t_env, t_epair, get_epair_by_key */
+#include <stdlib.h>                     /* malloc, free                      */
+#include "execution_utils.h"
+
 /* ****************************************************************************/
 /*                                                                            */
 /*                               commandpath.c                                */
@@ -6,11 +22,6 @@
 /*   ft_split on ':', then checks each candidate with is_executable_file.     */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "minishell.h"                  /* t_env, t_epair, get_epair_by_key */
-#include <stdlib.h>                     /* malloc, free                      */
-#include "execution_utils.h"
-
 /* Join dir and file with '/', allocating a new string. [attached_file:1] */
 static char	*join_path(char const *dir, char const *file)
 {
@@ -76,9 +87,9 @@ static char	*search_in_paths(char **paths, char const *cmd)
 /* Resolve a command to an absolute path using PATH, or return NULL. */
 char	*find_command_path(char const *cmd, t_env const *env)
 {
-	t_epair	pathvar;
-	char	**paths;
-	unsigned int i;
+	t_epair			pathvar;
+	char			**paths;
+	unsigned int	i;
 
 	if (!cmd || !cmd[0])
 		return (NULL);
