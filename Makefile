@@ -6,7 +6,7 @@
 #    By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/24 17:33:26 by losypenk          #+#    #+#              #
-#    Updated: 2025/10/08 13:52:18 by jgueon           ###   ########.fr        #
+#    Updated: 2025/10/09 21:21:08 by jgueon           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,8 +22,6 @@ SRC := src/main.c src/utils.c src/utils2.c src/utils3.c src/token.c \
 	src/app_reset_exec.c \
 	src/prompt.c \
 	src/dequoter.c \
-	src/redir_utils.c \
-	src/executor_patch.c \
 	src/exec_handle_redir.c \
 	src/syntax_checker.c \
 	src/Builtins/builtin_cd.c \
@@ -44,9 +42,10 @@ SRC := src/main.c src/utils.c src/utils2.c src/utils3.c src/token.c \
 	src/Execution/execution_utils3.c \
 	src/Execution/execution_wait.c \
 	src/Execution/executor_helpers.c \
+	src/Execution/executor_patch.c \
 	src/Execution/executor.c \
+	src/Execution/redir_utils.c \
 	src/Execution/redirection.c \
-	src/Signals/exit_status.c \
 	src/Signals/signals.c \
 
 OBJ := $(SRC:src/%.c=obj/%.o)
