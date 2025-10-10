@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 22:22:36 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/10 17:45:27 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/10/10 21:06:51 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -413,6 +413,7 @@ static void	child_exec(t_app *app, t_command *cmd, t_env *env, t_child_io_ctx *c
 	{
 		close_if_valid(&c->pipefd[0]);
 		close_if_valid(&c->pipefd[1]);
+		app_destroy(app);
 		_exit(1);
 	}
 	child_apply_stdin(infd, c->io[0]);

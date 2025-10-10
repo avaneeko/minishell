@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor_patch.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 21:09:00 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/09 21:16:39 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/10 21:08:23 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,9 @@
 /* ************************************************************************** */
 int	prepare_fds_for_command(t_app *app, t_command *cmd)
 {
+	/* DEAD CODE? */
+	write(2, "DeadCode called: prepare_fds_for_command().\r\n", 45);
+	__builtin_debugtrap(/* DEAD CODE? */);
 	int		infd;
 	int		outfd;
 	t_redir	*head;

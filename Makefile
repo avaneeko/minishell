@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+         #
+#    By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/24 17:33:26 by losypenk          #+#    #+#              #
-#    Updated: 2025/10/09 21:34:23 by jgueon           ###   ########.fr        #
+#    Updated: 2025/10/10 21:09:25 by losypenk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -44,7 +44,6 @@ SRC := src/main.c src/utils.c src/utils2.c src/utils3.c src/token.c \
 	src/Execution/executor_helpers.c \
 	src/Execution/executor_patch.c \
 	src/Execution/executor.c \
-	src/Execution/redir_utils.c \
 	src/Execution/redirection.c \
 	src/Signals/signals.c \
 
@@ -52,7 +51,7 @@ OBJ := $(SRC:src/%.c=obj/%.o)
 
 CC := cc
 
-CFLAGS := -Wall -Wextra -Wno-error -Isrc -MMD -MP $(CF)
+CFLAGS := -Wall -Wextra -Werror -Isrc -MMD -MP $(CF)
 LDFLAGS := -lreadline $(LDF)
 
 all: $(NAME)

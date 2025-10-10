@@ -425,14 +425,4 @@ void	set_child_signals(void);
 int		get_exit_status(void);
 void	set_exit_status(int status);
 
-
-/* Free the array form (nodes + their pointers array). */
-/* Leaves heredoc targets intact if they aren’t heap strings. */
-void	free_redir_array(t_redir **arr);
-
-
-/* Convert NULL-terminated t_redir ** to a linked list; return head or NULL. */
-t_redir	*redir_array_to_list(t_redir **arr);
-
-
 #endif
