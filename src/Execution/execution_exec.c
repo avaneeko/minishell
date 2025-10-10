@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution_exec.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 19:49:48 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/09 19:50:18 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/10 17:43:53 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,23 +43,25 @@ static int	has_slash(char const *s)
 }
 
 /* Print "command not found" and exit 127. */
-static void	cmd_not_found(char const *cmd, char **envp)
+static void	cmd_not_found(t_app *app, char const *cmd, char **envp)
 {
 	write(2, "minishell: command not found: ", 30);
 	write(2, cmd, (int)slen(cmd));
 	write(2, "\n", 1);
 	env_free_serialized(envp);
+	app_destroy(app);
 	exit(127);
 }
 
 /* Try execve and exit 126 on error with perror-like message. */
-static void	do_exec_or_fail(char const *path, char **argv, char **envp)
+static void	do_exec_or_fail(t_app *app, char const *path, char **argv, char **envp)
 {
 	execve(path, argv, envp);
 	write(2, "minishell: exec error: ", 23);
 	write(2, path, (int)slen(path));
 	write(2, "\n", 1);
 	env_free_serialized(envp);
+	app_destroy(app);
 	exit(126);
 }
 
@@ -68,18 +70,29 @@ void	exec_command(t_app *app, t_command *cmd, t_env *env)
 {
 	char	**envp;
 	char	*path;
+	int		status;
 
 	if (!cmd || !cmd->argv || !cmd->argv[0])
+	{
+		app_destroy(app);
 		exit(0);
+	}
 	if (is_builtin(cmd->argv[0]))
-		exit(exec_builtin(app, cmd->argv, env));
+	{
+		status = exec_builtin(app, cmd->argv, env);
+		app_destroy(app);
+		exit(status);
+	}
 	envp = env_serialize(env);
 	if (!envp)
+	{
+		app_destroy(app);
 		exit(1);
+	}
 	path = find_command_path(cmd->argv[0], env);
 	if (!path && has_slash(cmd->argv[0]))
-		do_exec_or_fail(cmd->argv[0], cmd->argv, envp);
+		do_exec_or_fail(app, cmd->argv[0], cmd->argv, envp);
 	if (!path)
-		cmd_not_found(cmd->argv[0], envp);
-	do_exec_or_fail(path, cmd->argv, envp);
+		cmd_not_found(app, cmd->argv[0], envp);
+	do_exec_or_fail(app, path, cmd->argv, envp);
 }

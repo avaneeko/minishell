@@ -351,6 +351,7 @@ typedef struct s_app
 	char			last_exit_code_str[12];
 	char			*prompt;
 	int				skip_exec;	// heredoc ctrl+c skip.
+	pid_t			*pids;		// Array of child pids for exec.
 }	t_app;
 
 int		app_create(int argc, char const **argv, char const **envp,

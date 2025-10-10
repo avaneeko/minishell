@@ -45,4 +45,6 @@ void	app_destroy(t_app *app)
 		free(app->prompt);
 	app->prompt = 0;
 	cmdarr_destroy(&app->exec);
+	free(app->pids);
+	app->pids = 0;
 }

@@ -7,31 +7,22 @@
 /* Free argv vector and redirection list. */
 // Helper function for MIN-35 to comply with Norm
 // TODO: Fix this as t_command now has t_redir** instead of t_redir*
-void free_command_payload(char **argv, t_redir *redirs)
+void free_command_payload(char **argv, t_redir *redirs, void *freethis)
 {
-	unsigned int i;
 	t_redir *r;
 	t_redir *next;
 
-	i = 0;
-	if (argv)
-	{
-		while (argv[i])
-		{
-			free(argv[i]);
-			i++;
-		}
-		free(argv);
-	}
+	free(argv);
+	argv = 0;
 	r = redirs;
 	while (r)
 	{
 		next = r->next;
 		if (r->type != TOKEN_HEREDOC) // Don't free the heredoc fd stored in target.
 			free(r->target);
-		free(r);
 		r = next;
 	}
+	free(freethis);
 }
 
 // This does not belong here.
@@ -39,7 +30,7 @@ void free_command_payload(char **argv, t_redir *redirs)
 // and accidentally closing them.
 static void destroy_command(t_command *cmd)
 {
-	//free_command_payload(cmd->argv, cmd->redirs);
+	free_command_payload(cmd->argv, cmd->redirs[0], cmd->redirs);
 	if (cmd->infile != -1)
 		close(cmd->infile);
 	if (cmd->outfile != -1)

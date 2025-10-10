@@ -46,6 +46,7 @@ int	app_create(int argc, char const **argv, char const **envp, t_app *out)
 	out->cur_hd = 0;
 	out->prompt = NULL;
 	out->skip_exec = 0;
+	out->pids = NULL;
 
 	return (1); // Success!
 }

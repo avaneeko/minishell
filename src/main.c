@@ -106,6 +106,8 @@ int	main(int argc, char const *argv[], char const *envp[])
 		// write(1, &(char){'\n'}, 1);
 		free(app->prompt);
 		app->prompt = NULL;
+		free(app->pids);
+		app->pids = NULL;
 		app->skip_exec = 0;
 	}
 

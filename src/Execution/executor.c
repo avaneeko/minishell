@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 22:22:36 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/09 22:27:37 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/10 17:45:27 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -498,7 +498,6 @@ static int	pipeline_run(t_app *app, t_env *env, t_command *head, pid_t *pids)
 /* Public entry: parent-builtin fast path, else forked pipeline. */
 int	execute_pipeline(t_app *app, t_command *head, t_env *env)
 {
-	pid_t	*pids;
 	int		n;
 	int		code;
 
@@ -512,10 +511,11 @@ int	execute_pipeline(t_app *app, t_command *head, t_env *env)
 	n = count_commands(head);
 	if (n <= 0)
 		return (0);
-	pids = (pid_t *)malloc(sizeof(pid_t) * n);
-	if (!pids)
+	app->pids = (pid_t *)malloc(sizeof(pid_t) * n);
+	if (!app->pids)
 		return (1);
-	code = pipeline_run(app, env, head, pids);
-	free(pids);
+	code = pipeline_run(app, env, head, app->pids);
+	free(app->pids);
+	app->pids = NULL;
 	return (code);
 }
