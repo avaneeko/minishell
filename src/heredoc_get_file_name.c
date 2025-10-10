@@ -31,6 +31,7 @@ char	*get_heredoc_filename(void)
 				mem[i] = ";~ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef"
 				"ghijklmnopqrstuvwxyz0123456789"[(unsigned)mem[i] % 64];
 			mem[64] = 0;
+			close(fd);
 			return (mem);
 		}
 	}
