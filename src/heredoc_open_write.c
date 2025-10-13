@@ -1,17 +1,31 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   heredoc_open_write.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/13 16:28:39 by losypenk          #+#    #+#             */
+/*   Updated: 2025/10/13 16:30:05 by losypenk         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 // This file defines:
-int	try_open_heredoc(t_app *app, int /*out*/ *fd);
-int	write_heredoc(int *fd, char *input, int const nl);
+int			try_open_heredoc(t_app *app, int *fd);
+int			write_heredoc(int *fd, char *input, int const nl);
 static int	write_heredoc_failure(int *fd, void *input);
 static void	err_heredoc_io(t_app *app);
 
 // From heredoc_get_file_name.c
-char	*get_heredoc_filename(void);
+char		*get_heredoc_filename(void);
 
 // Try to open a new heredoc. Opens a file to be used for heredoc.
 // fd - heredoc fd.
-int	try_open_heredoc(t_app *app, int /*out*/ *fd)
+// This function does not unlink because the file needs to be reopened later.
+// Unlinking happens later.
+int	try_open_heredoc(t_app *app, int *fd)
 {
 	int unsigned	i;
 
@@ -19,7 +33,7 @@ int	try_open_heredoc(t_app *app, int /*out*/ *fd)
 	while (++i < 16)
 	{
 		if (app->heredocs[i] == -1)
-			break;
+			break ;
 	}
 	if (i >= 16)
 	{
@@ -31,12 +45,11 @@ int	try_open_heredoc(t_app *app, int /*out*/ *fd)
 	if (!app->cur_hd_name)
 		err_heredoc_io(app);
 	app->heredocs[i] = open(app->cur_hd_name, O_RDWR | O_CREAT | O_EXCL,
-		0600);
+			0600);
 	app->cur_hd = i;
 	if (app->heredocs[i] == -1)
 		err_heredoc_io(app);
 	*fd = app->heredocs[i];
-	// can't unlink here cuz the file needs to be re-opened later.
 	return (1);
 }
 
