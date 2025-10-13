@@ -159,7 +159,6 @@ typedef struct s_env
 	t_epair			*pairs;
 }	t_env;
 
-
 //
 //	Appends the epair entry into the env.
 //! Will free `env->pairs` and `pair` on failure.
@@ -202,6 +201,9 @@ void	destroy_env(t_env *env);
 //	Assumes epair ptr is not malloc()'ed. (Current design)
 //
 void	destroy_epair(t_epair const *pair);
+
+// Will free() `env->pairs` on failure.
+int		grow_env(t_env *env);
 
 //
 //	TODO: Document.
