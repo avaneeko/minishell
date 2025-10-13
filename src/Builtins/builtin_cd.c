@@ -6,16 +6,12 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 19:01:30 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/13 21:39:16 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/13 21:47:33 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "builtins_utils.h"
-// #include <unistd.h>   // chdir, getcwd, write
-// #include <stdlib.h>   // getenv
-// #include <stdio.h>    // perror
-// #include <linux/limits.h>   // PATH_MAX
 
 static int	resolve_target(t_env const *env, char **argv, char **out)
 {
@@ -35,7 +31,6 @@ static int	resolve_target(t_env const *env, char **argv, char **out)
 	*out = pair.value;
 	return (1);
 }
-
 
 static char	*fetch_oldpwd(t_env *env)
 {

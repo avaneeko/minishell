@@ -6,48 +6,19 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 19:30:33 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/09 19:33:00 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/13 22:56:58 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "builtins_utils.h"
 
-/* ---------------------------- small I/O helpers --------------------------- */
-/* Print a string to a file descriptor using project slen() for length.       */
-static void	print_str_fd(int fd, char const *s)
-{
-	if (s != NULL)
-		write(fd, s, (int)slen(s));
-}
-
 /* Print the standard minishell-style error for invalid identifiers.          */
 static void	print_unset_error(char const *arg)
 {
-	print_str_fd(2, "minishell: unset: `");
-	print_str_fd(2, arg);
-	print_str_fd(2, "': not a valid identifier\n");
-}
-
-/* --------------------------- identifier validation ------------------------ */
-/* First char must be alpha or underscore.                                    */
-static int	is_name_start(char c)
-{
-	if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
-		return (1);
-	if (c == '_')
-		return (1);
-	return (0);
-}
-
-/* Subsequent chars must be alnum or underscore.                              */
-static int	is_name_char(char c)
-{
-	if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
-		return (1);
-	if (c == '_' || (c >= '0' && c <= '9'))
-		return (1);
-	return (0);
+	print_str(2, "minishell: unset: `");
+	print_str(2, arg);
+	print_str(2, "': not a valid identifier\n");
 }
 
 /* Validate an unset key: KEY must match [A-Za-z_][A-Za-z0-9_]* strictly.     */
@@ -86,11 +57,11 @@ int	builtin_unset(char **argv, t_env *env)
 	{
 		if (!is_valid_unset_key(argv[i]))
 		{
-			print_unset_error(argv[i]); /* invalid identifier */
+			print_unset_error(argv[i]);
 			status = 1;
 		}
 		else
-			remove_epair_by_key(env, argv[i]); /* no error if missing */
+			remove_epair_by_key(env, argv[i]);
 		i += 1;
 	}
 	return (status);

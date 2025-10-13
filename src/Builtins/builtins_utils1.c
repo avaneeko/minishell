@@ -6,13 +6,31 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:36:28 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/09 19:33:55 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/13 22:44:22 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "builtins_utils.h"
 
+/* Safe write helper using project slen() for consistency.  */
+void	print_str(int fd, const char *s)
+{
+	if (s != NULL)
+		write(fd, s, (int)slen(s));
+}
+
+/*
+** app_destroy_safe:
+** - Make cleanup NULL-safe so calling it with NULL never dereferences a null
+**   pointer, preventing segfaults on the error path.
+** - If you already have app_destroy(app), add a NULL check inside it instead.
+*/
+// void	app_destroy_safe(t_app *app)
+// {
+// 	if (app == NULL)
+// 		return ;
+// }
 /**
  * @brief Duplicates a string
  *
@@ -62,19 +80,6 @@ int	is_builtin(const char *cmd)
 		|| streq(cmd, "env")
 		|| streq(cmd, "exit")
 	);
-}
-
-/*
-** app_destroy_safe:
-** - Make cleanup NULL-safe so calling it with NULL never dereferences a null
-**   pointer, preventing segfaults on the error path [web:4][attached_file:20].
-** - If you already have app_destroy(app), add a NULL check inside it instead.
-*/
-void	app_destroy_safe(t_app *app)
-{
-	if (app == NULL)
-		return ;
-	/* free fields of app here, guarding each as needed */
 }
 
 int	exec_builtin(t_app *app, char **argv, t_env *env)

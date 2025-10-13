@@ -1,0 +1,105 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtins_utils5.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/13 22:21:12 by jgueon            #+#    #+#             */
+/*   Updated: 2025/10/13 23:03:35 by jgueon           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+#include "builtins_utils.h"
+
+/* sort_lex: bubble until no swaps to keep code simple and Norm-compliant.    */
+void	sort_lex(char **v, int n)
+{
+	int	changed;
+
+	changed = 1;
+	while (changed)
+	{
+		changed = bubble_one_pass(v, n);
+	}
+}
+
+/* print_one_decl: prints 'declare -x KEY="VALUE"' for a serialized entry.    */
+void	print_one_decl(char const *kv)
+{
+	int	i;
+
+	print_str(1, "declare -x ");
+	i = 0;
+	while (kv[i] && kv[i] != '=')
+	{
+		write(1, &kv[i], 1);
+		i += 1;
+	}
+	if (kv[i] == '=')
+	{
+		print_str(1, "=\"");
+		i += 1;
+		while (kv[i])
+		{
+			write(1, &kv[i], 1);
+			i += 1;
+		}
+		print_str(1, "\"");
+	}
+	print_str(1, "\n");
+}
+
+/* print_export_noargs: serialize, sort, and print all variables.             */
+int	print_export_noargs(t_env const *env)
+{
+	char	**envp;
+	int		n;
+	int		i;
+
+	envp = env_serialize(env);
+	if (!envp)
+		return (0);
+	n = count_strv(envp);
+	sort_lex(envp, n);
+	i = 0;
+	while (i < n)
+	{
+		print_one_decl(envp[i]);
+		i += 1;
+	}
+	env_free_serialized(envp);
+	return (1);
+}
+
+/* ------------------------------- handlers --------------------------------- */
+/* handle_export_noeq: ensure KEY exists; create empty if missing.            */
+int	handle_export_noeq(t_env *env, char const *key)
+{
+	if (!exists_key(env, key))
+	{
+		if (!set_env_replace(env, key, ""))
+			return (1);
+	}
+	return (0);
+}
+
+/* alloc_key_copy: make a heap copy of KEY substring (length key_len).        */
+char	*alloc_key_copy(char const *arg, int key_len)
+{
+	char	*key;
+	int		i;
+
+	key = (char *)malloc((size_t)key_len + 1);
+	if (!key)
+		return (0);
+	i = 0;
+	while (i < key_len)
+	{
+		key[i] = arg[i];
+		i += 1;
+	}
+	key[key_len] = 0;
+	return (key);
+}

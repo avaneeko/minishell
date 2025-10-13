@@ -6,31 +6,12 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 19:37:04 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/09 19:43:00 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/13 22:46:20 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "builtins_utils.h"
-
-/* Find index of an existing key or -1 if not found. */
-/* - Uses streq() from your utils. */
-/* - Returns -1 for NULL env or key. */
-int	env_find_key(t_env *env, char *key)
-{
-	unsigned int	i;
-
-	if (!env || !key)
-		return (-1);
-	i = 0;
-	while (i < env->len)
-	{
-		if (key && env->pairs[i].key && streq(env->pairs[i].key, key))
-			return ((int)i);
-		i++;
-	}
-	return (-1);
-}
 
 /* Update value for an existing key. */
 /* - Duplicates value; if value is NULL, stores empty string. */
@@ -120,12 +101,4 @@ int	env_set(t_env *env, char *key, char *value, int origin)
 	if (idx >= 0)
 		return (update_existing(env, idx, value, origin));
 	return (append_new_pair(env, key, value, origin));
-}
-
-/* Unset key by delegating to remove_epair_by_key. */
-int	env_unset(t_env *env, char *key)
-{
-	if (!env || !key)
-		return (0);
-	return (remove_epair_by_key(env, key));
 }
