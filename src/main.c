@@ -70,6 +70,20 @@ t_app *get_app(void)
 	return (&app);
 }
 
+static void reset(t_app * app)
+{
+	clear_token_list(app->token_list);
+	//Debug_PrintAllHeredocumentContents(&app);
+	app_reset_heredocs(app);
+	app_reset_exec(app);
+	// write(1, &(char){'\n'}, 1);
+	free(app->prompt);
+	app->prompt = NULL;
+	free(app->pids);
+	app->pids = NULL;
+	app->skip_exec = 0;
+}
+
 int	main(int argc, char const *argv[], char const *envp[])
 {
 	t_app *app = get_app();
@@ -86,7 +100,10 @@ int	main(int argc, char const *argv[], char const *envp[])
 			continue;
 		}
 		if (!prompt_heredoc(app))
-			break;
+		{
+			reset(app);
+			continue ;
+		}
 		expand(app, &app->token_list, &app->env);
 		token_resplit(app);
 		dequote_tokens(app);
@@ -99,16 +116,7 @@ int	main(int argc, char const *argv[], char const *envp[])
 			else
 				app->last_exit_code = execute_pipeline(app, NULL, &app->env);
 		}
-		clear_token_list(app->token_list);
-		//Debug_PrintAllHeredocumentContents(&app);
-		app_reset_heredocs(app);
-		app_reset_exec(app);
-		// write(1, &(char){'\n'}, 1);
-		free(app->prompt);
-		app->prompt = NULL;
-		free(app->pids);
-		app->pids = NULL;
-		app->skip_exec = 0;
+		reset(app);
 	}
 
 	app_destroy(app);
