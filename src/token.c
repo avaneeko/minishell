@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 13:13:16 by losypenk          #+#    #+#             */
-/*   Updated: 2025/07/31 19:46:15 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/10/13 14:20:58 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,8 @@ void	destroy_token(t_token const *token)
 int	modify_token(t_token **token, char const *new_contents)
 {
 	size_t const	len = slen(new_contents);
-	t_token	*t;
+	t_token			*t;
+
 	if (slen((*token)->token) == len)
 	{
 		scpy((*token)->token, new_contents);
