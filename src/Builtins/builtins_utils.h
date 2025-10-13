@@ -6,7 +6,7 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 19:34:31 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/09 19:36:47 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/13 21:22:48 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include "../Execution/execution_utils.h"
+# include <linux/limits.h>
+
 
 // Change the current working directory to argv[1] (or HOME if none)
 int		builtin_cd(char **argv, t_env *env);

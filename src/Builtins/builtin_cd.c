@@ -6,20 +6,20 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 19:01:30 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/09 17:19:03 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/13 21:39:16 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "builtins_utils.h"
-#include <unistd.h>   // chdir, getcwd, write
-#include <stdlib.h>   // getenv
-#include <stdio.h>    // perror
-#include <linux/limits.h>   // PATH_MAX
+// #include <unistd.h>   // chdir, getcwd, write
+// #include <stdlib.h>   // getenv
+// #include <stdio.h>    // perror
+// #include <linux/limits.h>   // PATH_MAX
 
-static int	resolve_target(char **argv, char **out)
+static int	resolve_target(t_env const *env, char **argv, char **out)
 {
-	char	*home;
+	t_epair	pair;
 
 	*out = 0;
 	if (argv && argv[1])
@@ -27,15 +27,15 @@ static int	resolve_target(char **argv, char **out)
 		*out = argv[1];
 		return (1);
 	}
-	home = getenv("HOME");
-	if (!home)
+	if (!get_epair_by_key(env, "HOME", &pair))
 	{
-		write(2, "cd: HOME not set\n", 17);
+		write(2, "minishell: cd: HOME not set\n", 28);
 		return (0);
 	}
-	*out = home;
+	*out = pair.value;
 	return (1);
 }
+
 
 static char	*fetch_oldpwd(t_env *env)
 {
@@ -50,7 +50,7 @@ static int	capture_cwd(char *buf, size_t size)
 {
 	if (!getcwd(buf, size))
 	{
-		perror("cd");
+		perror("minishell: cd");
 		return (0);
 	}
 	return (1);
@@ -76,7 +76,7 @@ int	builtin_cd(char **argv, t_env *env)
 		return (1);
 	}
 	target = 0;
-	if (!resolve_target(argv, &target))
+	if (!resolve_target(env, argv, &target))
 		return (1);
 	oldpwd = fetch_oldpwd(env);
 	if (chdir(target) != 0)
