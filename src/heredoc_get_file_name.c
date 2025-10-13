@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   heredoc_get_file_name.c                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/13 21:02:06 by losypenk          #+#    #+#             */
+/*   Updated: 2025/10/13 21:02:45 by losypenk         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 // This file defines:
@@ -19,7 +31,7 @@ char	*get_heredoc_filename(void);
 char	*get_heredoc_filename(void)
 {
 	char *const		mem = malloc(64 + 1);
-	int	const		fd = open("/dev/random", O_RDONLY);
+	int const		fd = open("/dev/random", O_RDONLY);
 	int unsigned	i;
 
 	if (mem && fd > 0)
@@ -29,7 +41,7 @@ char	*get_heredoc_filename(void)
 			i = ~0;
 			while (++i < 64)
 				mem[i] = ";~ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef"
-				"ghijklmnopqrstuvwxyz0123456789"[(unsigned)mem[i] % 64];
+					"ghijklmnopqrstuvwxyz0123456789"[(unsigned)mem[i] % 64];
 			mem[64] = 0;
 			close(fd);
 			return (mem);
