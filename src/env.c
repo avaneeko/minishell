@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/13 14:21:50 by losypenk          #+#    #+#             */
+/*   Updated: 2025/10/13 14:25:20 by losypenk         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	create_env_from_envp(char const **envp, t_env *out_env)
@@ -35,7 +47,7 @@ void	destroy_epair(t_epair const *pair)
 }
 
 //	str - one envp entry.
-int		create_pair(char const *str, t_epair *out)
+int	create_pair(char const *str, t_epair *out)
 {
 	unsigned int const	e = get_char_idx(str, '=');
 	t_epair				pair;
@@ -47,14 +59,14 @@ int		create_pair(char const *str, t_epair *out)
 	if (!pair.key)
 		return (0);
 	pair.key[e] = 0;
-	lv = slen(str + e + 1); //ADDED 05.10: WHY: allocate lv+1 and copy null terminator to avoid garbage when printing.
-	pair.value = mclone(str + e + 1, lv + 1);//slen(str + e + 1));
+	lv = slen(str + e + 1);
+	pair.value = mclone(str + e + 1, lv + 1);
 	if (!pair.value)
 	{
 		free(pair.key);
 		return (0);
 	}
-	pair.value[lv] = 0; // ADDED 05.10: WHY: explicit terminate for safety
+	pair.value[lv] = 0;
 	pair.origin = ORIGIN_ENV;
 	*out = pair;
 	return (1);
@@ -64,100 +76,15 @@ int		create_pair(char const *str, t_epair *out)
 int	grow_env(t_env *env)
 {
 	t_epair *const	new = mclone_grow(env->pairs, env->len * sizeof(t_epair),
-		ENV_MEM_GROW_SIZE * sizeof(t_epair));
+			ENV_MEM_GROW_SIZE * sizeof(t_epair));
 
 	free(env->pairs);
 	if (new)
 		env->cap += ENV_MEM_GROW_SIZE;
 	else
-		env->cap = env->len = 0;
+	{
+		env->len = 0;
+		env->cap = 0;
+	}
 	return ((env->pairs = new) != 0);
-}
-
-// Will free() `env->pairs` on failure.
-int	try_append_epair(t_env *env, t_epair const *pair)
-{
-	if (env->len < env->cap || grow_env(env))
-	{
-		env->pairs[env->len++] = *pair;
-		return (1);
-	}
-	else
-		destroy_epair(pair);
-	return (0);
-}
-
-// Will free() `env->pairs` on failure.
-int		parse_envp(t_env *env, char const **envp)
-{
-	t_epair	new_pair;
-
-	while (*envp)
-	{
-		if (create_pair(*envp, &new_pair) && try_append_epair(env, &new_pair))
-			envp++;
-		else
-		{
-			free(env->pairs);
-			return (0);
-		}
-	}
-	return (1);
-}
-
-void	remove_epair_at_idx(t_env *env, unsigned int idx)
-{
-	destroy_epair(env->pairs + idx);
-	env->pairs[idx] = env->pairs[--(env->len)];
-}
-
-int		get_epair_by_key(t_env const *env, char const* key, t_epair *out)
-{
-	unsigned int	i;
-
-	i = ~0u;
-	while (++i < env->len)
-	{
-		if (streq(env->pairs[i].key, key))
-		{
-			*out = env->pairs[i];
-			return (1);
-		}
-	}
-	return (0);
-}
-
-int		get_epair_by_key2(t_env const *env, char const* key,
-		unsigned int key_len, t_epair *out)
-{
-	unsigned int	i;
-	size_t			pkey_len;
-
-	i = ~0u;
-	while (++i < env->len)
-	{
-		pkey_len = slen(env->pairs[i].key);
-		if (pkey_len == key_len && mcmp(env->pairs[i].key, key, key_len) == 0)
-		{
-			*out = env->pairs[i];
-			return (1);
-		}
-	}
-	return (0);
-}
-
-int		remove_epair_by_key(t_env *env, char const* key)
-{
-	unsigned int	i;
-
-	i = ~0u;
-	while (++i < env->len)
-	{
-		if (streq(env->pairs[i].key, key))
-		{
-			remove_epair_at_idx(env, i);
-			return (1);
-		}
-	}
-	return (0);
 }
