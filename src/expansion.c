@@ -1,14 +1,24 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expansion.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/13 14:29:42 by losypenk          #+#    #+#             */
+/*   Updated: 2025/10/13 14:34:15 by losypenk         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 // arg[0] is *i
 // arg[1] is *var_len
-// HACK: Using fake app to call get_expansion_contents, as in this case we don't
-// have access to the real app struct, but we do have access to env, which is
-// the only thing we need.
 static int	expand_variable(t_token *token, t_app *app, t_astr *a,
 							unsigned int **arg)
 {
 	char *const	var_name = malloc(arg[1][0] + 1);
+	char const	*val;
 
 	if (!var_name)
 	{
@@ -17,7 +27,7 @@ static int	expand_variable(t_token *token, t_app *app, t_astr *a,
 	}
 	mcpy(var_name, token->token + arg[0][0], arg[1][0]);
 	var_name[arg[1][0]] = '\0';
-	char const *val = get_expansion_contents(app, token->token + arg[0][0] + 1,
+	val = get_expansion_contents(app, token->token + arg[0][0] + 1,
 			arg[1][0] - 1);
 	if (val)
 	{
@@ -49,6 +59,12 @@ static int	handle_quoted_char(t_token *token, t_astr *a, char *q,
 	return (1);
 }
 
+static int	destroy_astr_and_ret(t_astr const *astr, int const ret)
+{
+	astr_destroy(astr);
+	return (ret);
+}
+
 // q - current quote.
 static int	do_str_expansion(t_app *app, t_token **t, t_env const *env)
 {
@@ -65,21 +81,14 @@ static int	do_str_expansion(t_app *app, t_token **t, t_env const *env)
 	{
 		if (q != '\'' && get_val_len((*t)->token + i, &var_len))
 		{
-			// Variable expansion.
 			if (!expand_variable(*t, app, &a, (unsigned int *[]){&i, &var_len}))
 				return (0);
 		}
-		else
-		{
-			if (!handle_quoted_char(*t, &a, &q, &i))
-				return (0);
-		}
+		else if (!handle_quoted_char(*t, &a, &q, &i))
+			return (0);
 	}
 	if (modify_token(t, a.s))
-	{
-		astr_destroy(&a);
-		return (1);
-	}
+		return (destroy_astr_and_ret(&a, 1));
 	astr_destroy(&a);
 	return (0);
 }
