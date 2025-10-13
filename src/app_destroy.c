@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   app_destroy.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/13 21:04:05 by losypenk          #+#    #+#             */
+/*   Updated: 2025/10/13 21:04:34 by losypenk         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void	close_heredocs(t_app *app)
@@ -17,7 +29,7 @@ void	close_heredocs(t_app *app)
 	app->cur_hd_name = 0;
 }
 
-void app_reset_heredocs(t_app *app)
+void	app_reset_heredocs(t_app *app)
 {
 	int unsigned	i;
 
@@ -38,8 +50,8 @@ void app_reset_heredocs(t_app *app)
 
 void	app_destroy(t_app *app)
 {
-    destroy_env(&app->env);
-    destroy_token_list_deep(app->token_list);
+	destroy_env(&app->env);
+	destroy_token_list_deep(app->token_list);
 	close_heredocs(app);
 	if (app->prompt)
 		free(app->prompt);
