@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cmdarr.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/13 21:08:49 by losypenk          #+#    #+#             */
+/*   Updated: 2025/10/13 21:09:21 by losypenk         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 //$ Purpose: Declares command array for storing the execution plan.
@@ -9,10 +21,10 @@
 // Only frees argv array and redirections with it's list.
 // NOT SUPPOSED TO FREE THE STRINGS INSIDE argv.
 // NOT SUPPOSED TO FREE REDIRECTION TARGETS.
-void free_command_payload(char **argv, t_redir *redirs, void *freethis)
+void	free_command_payload(char **argv, t_redir *redirs, void *freethis)
 {
-	t_redir *r;
-	t_redir *next;
+	t_redir	*r;
+	t_redir	*next;
 
 	free(argv);
 	argv = 0;
@@ -29,7 +41,7 @@ void free_command_payload(char **argv, t_redir *redirs, void *freethis)
 // This does not belong here.
 // Should be careful about cmd->infile and cmd->outfile not being stdin/out/err
 // and accidentally closing them.
-static void destroy_command(t_command *cmd)
+static void	destroy_command(t_command *cmd)
 {
 	free_command_payload(cmd->argv, cmd->redirs[0], cmd->redirs);
 	if (cmd->infile != -1)
@@ -48,7 +60,7 @@ static void destroy_command(t_command *cmd)
 //	Creates a new command array. Initial capacity is set to CMDARR_INIT_CAP.
 //	Returns 1 on success, 0 otherwise.
 //
-int cmdarr_create(t_cmdarr *self)
+int	cmdarr_create(t_cmdarr *self)
 {
 	self->cmds = malloc(sizeof(t_command) * CMDARR_MEM_RESERVE);
 	if (!self->cmds)
@@ -61,7 +73,7 @@ int cmdarr_create(t_cmdarr *self)
 //
 //	Destroys the command array, freeing all allocated memory.
 //
-void cmdarr_destroy(t_cmdarr *self)
+void	cmdarr_destroy(t_cmdarr *self)
 {
 	unsigned int	i;
 
@@ -87,9 +99,9 @@ void cmdarr_destroy(t_cmdarr *self)
 //	cmd is copied, but its contents are not deep-copied.
 //	Returns 1 on success, 0 otherwise.
 //
-int cmdarr_append(t_cmdarr *self, t_command *cmd, int const destroy_on_fail)
+int	cmdarr_append(t_cmdarr *self, t_command *cmd, int const destroy_on_fail)
 {
-	t_command *new_cmds;
+	t_command	*new_cmds;
 
 	if (self->len >= self->cap)
 	{
