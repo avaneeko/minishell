@@ -1,11 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   heredoc_expand_prompt.c                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/13 21:10:42 by losypenk          #+#    #+#             */
+/*   Updated: 2025/10/13 21:11:51 by losypenk         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 // This file declares:
 static int	expand_variable(char *str, t_app *app, t_astr *a,
-							unsigned int **arg);
+				unsigned int **arg);
 static int	err_expand_prompt_astr_failure(void *input_ptr);
 static int	handle_char(char const *str, t_astr *a, int unsigned *i);
-int	expand_prompt(t_app *app, char **input);
+int			expand_prompt(t_app *app, char **input);
 
 // Function that expands a heredoc prompt.
 // Will free `input` on failure.
@@ -41,6 +53,7 @@ static int	expand_variable(char *str, t_app *app, t_astr *a,
 							unsigned int **arg)
 {
 	char *const	var_name = malloc(arg[1][0] + 1);
+	char const	*val;
 
 	if (!var_name)
 	{
@@ -49,7 +62,7 @@ static int	expand_variable(char *str, t_app *app, t_astr *a,
 	}
 	mcpy(var_name, str + arg[0][0], arg[1][0]);
 	var_name[arg[1][0]] = '\0';
-	char const *val = get_expansion_contents(app, str + arg[0][0] + 1,
+	val = get_expansion_contents(app, str + arg[0][0] + 1,
 			arg[1][0] - 1);
 	if (val && !astr_append2(a, val, slen(val)))
 	{
