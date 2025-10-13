@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   dequoter.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/13 16:27:19 by losypenk          #+#    #+#             */
+/*   Updated: 2025/10/13 16:27:39 by losypenk         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 //$ Purpose: Strip quotes from tokens in-place.
@@ -5,10 +17,10 @@
 //$ see the unquoted strings.
 
 // This file implements:
-void	dequote_tokens(t_app *app);
-static void	dequote(t_token * tok);
+void		dequote_tokens(t_app *app);
+static void	dequote(t_token *tok);
 
-static void	dequote(t_token * tok)
+static void	dequote(t_token *tok)
 {
 	char	*src;
 	char	*dst;
