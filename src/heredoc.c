@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 13:54:30 by losypenk          #+#    #+#             */
-/*   Updated: 2025/10/13 13:59:51 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/10/13 20:03:03 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,8 +87,18 @@ static int
 	{
 		if (app->token_list->tok[i]->type == TOKEN_HEREDOC)
 		{
+			if (i + 1 >= app->token_list->len)
+				return (write(2, "minishell: syntax error, trailing heredoc\n",
+						42) != -1);
+			else if (app->token_list->tok[i + 1]->type != TOKEN_WORD)
+				return (write(2, "minishell: syntax error, unexpected "
+						"token after heredoc\n", 56) != -1);
+			else if (app->token_list->tok[i + 1]->token[0] == 0)
+				return (write(2, "minishell: heredoc followed by an empty "
+						"token\n", 46) != -1);
 			if (++count > 16)
-				return (1);
+				return (write(2, "minishell: maximum here-document count "
+						"exceeded\n", 48) != -1);
 		}
 	}
 	return (0);
@@ -100,8 +110,7 @@ int
 	unsigned int	i;
 
 	if (too_many_heredocs(app))
-		return (write(2, "minishell: maximum here-document count exceeded\n",
-				48) != -1);
+		return (0);
 	i = ~0;
 	while (++i < app->token_list->len)
 	{
