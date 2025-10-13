@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   astr.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/13 20:14:39 by losypenk          #+#    #+#             */
+/*   Updated: 2025/10/13 20:19:06 by losypenk         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "astr.h"
 #include <stdlib.h>
 #include "utils.h"
 
-int		astr_create(t_astr *self)
+int	astr_create(t_astr *self)
 {
 	void *const	mem = malloc(ASTR_PREALLOC);
 
@@ -10,7 +22,7 @@ int		astr_create(t_astr *self)
 		return (0);
 	self->cap = ASTR_PREALLOC;
 	self->len = 0;
-	self->s	= mem;
+	self->s = mem;
 	self->s[0] = 0;
 	return (1);
 }
@@ -20,18 +32,18 @@ void	astr_destroy(t_astr const *self)
 	free(self->s);
 }
 
-int		astr_grow(t_astr *self, unsigned int size)
+int	astr_grow(t_astr *self, unsigned int size)
 {
 	void *const	mem = mclone_grow(self->s, self->len + 1, size);
-			
+
 	free(self->s);
 	self->cap += size;
 	return ((self->s = mem) != 0);
 }
 
-int		astr_append(t_astr *self, char const *str)
+int	astr_append(t_astr *self, char const *str)
 {
-	size_t	str_len = slen(str);
+	size_t const	str_len = slen(str);
 
 	if (self->len + str_len + 1 <= self->cap || astr_grow(self,
 			ASTR_PREALLOC + str_len))
@@ -43,7 +55,7 @@ int		astr_append(t_astr *self, char const *str)
 	return (0);
 }
 
-int		astr_append2(t_astr *self, char const *buf, unsigned int len)
+int	astr_append2(t_astr *self, char const *buf, unsigned int len)
 {
 	if (self->len + len + 1 <= self->cap || astr_grow(self,
 			ASTR_PREALLOC + len))
@@ -54,9 +66,4 @@ int		astr_append2(t_astr *self, char const *buf, unsigned int len)
 		return (1);
 	}
 	return (0);
-}
-
-void	astr_reset(t_astr *self)
-{
-	self->s[0] = self->len = 0;
 }
