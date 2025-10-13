@@ -6,7 +6,7 @@
 #    By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/24 17:33:26 by losypenk          #+#    #+#              #
-#    Updated: 2025/10/13 16:24:21 by losypenk         ###   ########.fr        #
+#    Updated: 2025/10/13 16:32:16 by losypenk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ SRC := src/main.c src/utils.c src/utils2.c src/utils3.c src/token.c \
 	src/astr.c src/token_resplit.c src/heredoc.c src/expansion_utils.c \
 	src/heredoc_bad_good_heredoc.c src/heredoc_expand_prompt.c \
 	src/heredoc_get_file_name.c src/heredoc_input.c src/heredoc_input1.c \
-	src/heredoc_open_write.c src/cmdarr.c src/exec_builder.c
+	src/heredoc_open_write.c src/cmdarr.c src/exec_builder.c \
 	src/expand_last_err.c src/get_next_line.c src/get_next_line_utils.c \
 	src/app_reset_exec.c \
 	src/prompt.c \
