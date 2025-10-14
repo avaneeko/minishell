@@ -6,81 +6,12 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 19:59:28 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/09 19:59:59 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/14 16:44:42 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"                  /* basic types                   */
-#include <unistd.h>                     /* pipe, close                   */
-#include <stdlib.h>                     /* malloc, free                  */
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                             execution_resources.c                          */
-/*                                                                            */
-/*   Legacy pipeline resource allocation helpers used by old matrix-pipes     */
-/*   implementation; kept for compatibility and tests that still reference it.*/
-/*                                                                            */
-/* ************************************************************************** */
-/* Free partially created pipe pairs on failure.  */
-// (close both ends and free pair)
-// This is used on any partial failure during allocation/open.
-static void	free_pipes_partial(int **pipes, int made)
-{
-	int	i;
-
-	if (!pipes)
-		return ;
-	i = 0;
-	while (i < made)
-	{
-		if (pipes[i])
-		{
-			close(pipes[i][0]);
-			close(pipes[i][1]);
-			free(pipes[i]);
-		}
-		i += 1;
-	}
-}
-
-/* ************************************************************************** */
-/* Allocate the outer array of (n_cmd - 1) int[2] pointers when needed.       */
-/* Returns 0 on success, -1 on malloc failure.             					  */
-/* ************************************************************************** */
-static int	alloc_pipes_outer(int n_cmd, int ***pipes_ptr)
-{
-	int	**pipes;
-
-	*pipes_ptr = NULL;
-	if (n_cmd > 1)
-	{
-		pipes = (int **)malloc(sizeof(int *) * (n_cmd - 1));
-		if (!pipes)
-			return (-1);
-		*pipes_ptr = pipes;
-	}
-	return (0);
-}
-
-/* ************************************************************************** */
-/* Allocate PIDs array; if it fails, free the outer pipes array (if any).     */
-/* Returns 0 on success, -1 on failure. 				                      */
-/* ************************************************************************** */
-static int	alloc_pids_or_cleanup(int n_cmd, int **pipes, pid_t **pids_ptr)
-{
-	pid_t	*pids;
-
-	pids = (pid_t *)malloc(sizeof(pid_t) * n_cmd);
-	if (!pids)
-	{
-		if (pipes)
-			free(pipes);
-		return (-1);
-	}
-	*pids_ptr = pids;
-	return (0);
-}
+#include "minishell.h"
+#include "execution_utils.h"
 
 /* ************************************************************************** */
 /* Allocate one int[2] pair at index i of the pipes outer array.              */

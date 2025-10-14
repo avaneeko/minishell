@@ -6,21 +6,13 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 20:04:08 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/09 20:04:44 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/14 17:21:08 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>                     /* close  */
-#include <stdlib.h>                     /* free   */
+#include "minishell.h"
+#include "execution_utils.h"
 
-/* ************************************************************************** */
-/*                                                                            */
-/*                             executionutils3.c                              */
-/*                                                                            */
-/*   Small cross-file utilities: FD closers, env_free_serialized, and legacy  */
-/*   close_and_free_pipes for the old pipe-matrix implementation.             */
-/*                                                                            */
-/* ************************************************************************** */
 /* Close fd if valid and set to -1. */
 void	close_if_valid(int *fd)
 {
@@ -76,4 +68,17 @@ void	close_and_free_pipes(int n_cmd, int **pipes)
 		i += 1;
 	}
 	free(pipes);
+}
+
+int	count_commands(t_command *head)
+{
+	int	n;
+
+	n = 0;
+	while (head)
+	{
+		n += 1;
+		head = head->next;
+	}
+	return (n);
 }

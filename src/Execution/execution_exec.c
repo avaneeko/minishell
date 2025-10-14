@@ -3,28 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   execution_exec.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 19:49:48 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/10 17:43:53 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/10/14 16:54:43 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"                  /* t_command, t_env                   */
-#include <unistd.h>                     /* execve, write                      */
-#include <stdlib.h>                     /* exit, free                         */
-#include <string.h>                     /* strchr (optional if used)  		  */
 #include "execution_utils.h"
 #include "Builtins/builtins_utils.h"
 
-/* ************************************************************************** */
-/*                                                                            */
-/*                              execution_exec.c                              */
-/*                                                                            */
-/*   Child-side command execution: handle builtins, PATH lookup, and execve,  */
-/*   matching the behavior shown in EXECUTIONS.c.                             */
-/*                                                                            */
-/* ************************************************************************** */
 /* Has any slash in the string. */
 static int	has_slash(char const *s)
 {
@@ -54,7 +43,8 @@ static void	cmd_not_found(t_app *app, char const *cmd, char **envp)
 }
 
 /* Try execve and exit 126 on error with perror-like message. */
-static void	do_exec_or_fail(t_app *app, char const *path, char **argv, char **envp)
+static void	do_exec_or_fail(t_app *app, char const *path, char **argv,
+	char **envp)
 {
 	execve(path, argv, envp);
 	write(2, "minishell: exec error: ", 23);
@@ -63,6 +53,12 @@ static void	do_exec_or_fail(t_app *app, char const *path, char **argv, char **en
 	env_free_serialized(envp);
 	app_destroy(app);
 	exit(126);
+}
+
+static void	destroy_exit(t_app *app)
+{
+	app_destroy(app);
+	exit(1);
 }
 
 /* Execute one command in the child: builtin or external with PATH lookup. */
@@ -85,10 +81,7 @@ void	exec_command(t_app *app, t_command *cmd, t_env *env)
 	}
 	envp = env_serialize(env);
 	if (!envp)
-	{
-		app_destroy(app);
-		exit(1);
-	}
+		destroy_exit(app);
 	path = find_command_path(cmd->argv[0], env);
 	if (!path && has_slash(cmd->argv[0]))
 		do_exec_or_fail(app, cmd->argv[0], cmd->argv, envp);

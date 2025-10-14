@@ -6,7 +6,7 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 20:01:14 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/09 20:03:24 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/14 17:23:41 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,23 @@
 # define EXECUTION_UTILS_H
 
 # include "minishell.h"
+# include "../Builtins/builtins_utils.h"
+# include <unistd.h>	/* close/write/execve */
+# include <stdlib.h>	/* exit/ free */
+# include <sys/stat.h>	/* stat, S_IREG */
+# include <errno.h>		/* O_ / EINTR */
+# include <string.h>	/*strerror */
+# include <fcntl.h>		/*open flags */
+# include <stdint.h>	/* uintptr_t */
+# include <sys/wait.h>	/* waitpid/WIF* macros */
+# include <signal.h>	/* SIGINT/ SIGQUIT */
+
+/* Context to pass to child_exec to reduce parameters */
+typedef struct s_child_io_ctx
+{
+	int	pipefd[2];
+	int	io[4];
+}	t_child_io_ctx;
 
 /* libft-like */
 char	**ft_split(const char *s, char c);
@@ -35,6 +52,19 @@ void	close_and_free_pipes(int n_cmd, int **pipes);
 int		wait_pipeline(pid_t *pids, int n_cmd);
 void	exec_command(t_app *app, t_command *cmd, t_env *env);
 int		execute_pipeline(t_app *app, t_command *cmd, t_env *env);
+int		count_commands(t_command *head);
+void	save_stdio(int saved[2]);
+void	restore_stdio(int saved[2]);
+void	child_apply_stdin(int infile, int tmp_in);
+void	child_apply_stdout(int outfile, int is_last, int pipe_w);
+int		is_parent_builtin(char const *name);
+void	parent_apply_redirs(int infd, int outfd);
+int		parent_open_and_apply_redirs(t_app *app, t_redir *redirs);
+int		parent_run_single_builtin(t_app *app, t_command *cmd,
+			t_env *env, int *status);
+int		try_run_parent_builtin(t_app *app, t_command *cmd,
+			t_env *env, int *status);
+void	parent_after_fork(int *tmp_in, t_child_io_ctx *c);
 
 /* path utils */
 int		is_executable_file(char const *path);
@@ -43,8 +73,11 @@ int		is_executable_file(char const *path);
 int		setup_redirections(t_app *app, t_redir *redirs, int *infd, int *outfd);
 int		handle_input_redirection(t_app const *app, t_redir redir, int *infd);
 
-/* pipes */
+/* pipes and execution resources helpers */
 int		wait_pipeline(pid_t *pids, int n_cmd);
+void	free_pipes_partial(int **pipes, int made);
+int		alloc_pipes_outer(int n_cmd, int ***pipes_ptr);
+int		alloc_pids_or_cleanup(int n_cmd, int **pipes, pid_t **pids_ptr);
 
 /* FD helpers */
 void	close_if_valid(int *fd);

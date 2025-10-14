@@ -6,23 +6,14 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 19:47:11 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/09 19:48:16 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/14 17:01:46 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"                  /* t_env, t_epair, get_epair_by_key */
-#include <stdlib.h>                     /* malloc, free                      */
+#include "minishell.h"
 #include "execution_utils.h"
 
-/* ****************************************************************************/
-/*                                                                            */
-/*                               commandpath.c                                */
-/*                                                                            */
-/*   PATH resolution compatible with EXECUTIONS.c helpers: uses PATH from env,*/
-/*   ft_split on ':', then checks each candidate with is_executable_file.     */
-/*                                                                            */
-/* ************************************************************************** */
-/* Join dir and file with '/', allocating a new string. [attached_file:1] */
+/* Join dir and file with '/', allocating a new string. */
 static char	*join_path(char const *dir, char const *file)
 {
 	size_t	ld;

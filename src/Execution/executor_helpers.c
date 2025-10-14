@@ -6,21 +6,13 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 20:06:38 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/09 20:06:57 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/14 17:19:50 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>                     /* dup2, close   */
-#include "minishell.h"                  /* t_command     */
+#include "minishell.h"
+#include "execution_utils.h"
 
-/* ************************************************************************** */
-/*                                                                            */
-/*                             executor_helpers.c                             */
-/*                                                                            */
-/*   Legacy helpers used by the previous matrix-pipes implementation; kept so */
-/*   existing code that references them still compiles and behaves the same.  */
-/*                                                                            */
-/* ************************************************************************** */
 /* Wire stdin/stdout from the legacy pipes matrix for command idx. */
 void	set_pipe_ends(t_command *cmd, int **pipes, int n_cmd, int idx)
 {
@@ -51,4 +43,14 @@ void	set_redirs(t_command *cmd)
 		dup2(cmd->outfile, STDOUT_FILENO);
 		close(cmd->outfile);
 	}
+}
+
+/* Parent after fork: close write, close old tmp_in, carry read end. */
+void	parent_after_fork(int *tmp_in, t_child_io_ctx *c)
+{
+	close_if_valid(&c->io[1]);
+	close_if_valid(&c->io[2]);
+	close_if_valid(&c->pipefd[1]);
+	close_if_valid(tmp_in);
+	*tmp_in = c->pipefd[0];
 }

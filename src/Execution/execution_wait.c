@@ -6,26 +6,13 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 20:04:52 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/09 20:06:10 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/14 17:05:21 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <sys/wait.h>    /* waitpid, WIF* macros */
-#include <signal.h>      /* SIGINT, SIGQUIT */
-#include <unistd.h>      /* write */
-#include <errno.h>       /* EINTR */
-#include <stdlib.h>      /* free */
+#include "execution_utils.h"
 
-/* ************************************************************************** */
-/*					execution_wait.c										  */
-/*  - While waiting, if the last died by SIGINT, print a newline.             */
-/*  - If the last died by SIGQUIT, print "Quit (core dumped)".                */
-/*                                                                            */
-/*  Notes:                                                                    */
-/* Parent keeps custom handlers; children use SIG_DFL (see set_child_signals).*/
-/*                                                                            */
-/* ************************************************************************** */
 /* Translate a wait status to a shell exit code; print once for last proc.    */
 static int	translate_wait_status(int wstatus, int is_last)
 {

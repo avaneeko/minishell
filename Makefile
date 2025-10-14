@@ -6,7 +6,7 @@
 #    By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/24 17:33:26 by losypenk          #+#    #+#              #
-#    Updated: 2025/10/13 22:54:21 by jgueon           ###   ########.fr        #
+#    Updated: 2025/10/14 17:24:27 by jgueon           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -49,9 +49,10 @@ SRC := src/main.c src/utils.c src/utils2.c src/utils3.c src/token.c \
 	src/Execution/execution_utils.c \
 	src/Execution/execution_utils2.c \
 	src/Execution/execution_utils3.c \
+	src/Execution/execution_utils4.c \
+	src/Execution/execution_utils5.c \
 	src/Execution/execution_wait.c \
 	src/Execution/executor_helpers.c \
-	src/Execution/executor_patch.c \
 	src/Execution/executor.c \
 	src/Execution/redirection.c \
 	src/Signals/signals.c \

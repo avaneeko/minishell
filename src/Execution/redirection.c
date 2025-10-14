@@ -6,26 +6,13 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 20:16:09 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/09 20:19:06 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/14 16:49:38 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"                  /* t_redir, token kinds, t_app */
-#include <fcntl.h>                      /* open flags                  */
-#include <unistd.h>                     /* close / write               */
-#include <string.h>						/* strerror */
-#include <stdint.h>						/* uintptr_t*/
-#include <errno.h>						/* O_* */
+#include "execution_utils.h"
 
-/* ************************************************************************** */
-/*                                                                            */
-/*                               redirection.c                                */
-/*                                                                            */
-/*   Opens and wires input/output files and heredocs for a command, returning */
-/*   prepared infile/outfile FDs to the caller, as established in EXECUTIONS. */
-/*                                                                            */
-/*                                                                            */
-/* ************************************************************************** */
 /* Print: minishell: <target>: <strerror(errno)>\n */
 static void	print_open_error(char const *target)
 {
@@ -70,7 +57,8 @@ int	handle_input_redirection(t_app const *app, t_redir redir, int *infd)
 	return (0);
 }
 
-/* Handle single output redirection (truncate or append), updating outfd; print on error. */
+/* Handle single output redirection (truncate or append), updating outfd;
+print on error. */
 static int	handle_output_redirection(t_redir redir, int *outfd)
 {
 	int	fd;
