@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   astr.h                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/14 16:34:03 by losypenk          #+#    #+#             */
+/*   Updated: 2025/10/14 16:34:31 by losypenk         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef ASTR_H
 # define ASTR_H
 
@@ -5,9 +17,9 @@
 /*	Appendable string.														  */
 /******************************************************************************/
 
-#ifndef ASTR_PREALLOC
-# define ASTR_PREALLOC 512
-#endif
+# ifndef ASTR_PREALLOC
+#  define ASTR_PREALLOC 512
+# endif
 
 typedef struct s_astr
 {
