@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   app_reset_exec.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/14 17:09:57 by losypenk          #+#    #+#             */
+/*   Updated: 2025/10/14 17:10:06 by losypenk         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 /**
@@ -24,7 +36,7 @@ static void	free_redirections(t_redir **redirs)
 	free(redirs);
 }
 
-void		app_reset_exec(t_app *app)
+void	app_reset_exec(t_app *app)
 {
 	int unsigned	i;
 
