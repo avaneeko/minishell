@@ -6,7 +6,7 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 20:01:14 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/14 17:23:41 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/14 21:12:15 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ typedef struct s_child_io_ctx
 /* libft-like */
 char	**ft_split(const char *s, char c);
 void	ft_split_free(char **array);
-void	free_string_array(char **strs);
 
 /* env serialization */
 char	**env_serialize(const t_env *env);

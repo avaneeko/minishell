@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtins_utils.c                                   :+:      :+:    :+:   */
+/*   builtins_utils1.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:36:28 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/13 22:44:22 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/14 21:03:33 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,17 +20,6 @@ void	print_str(int fd, const char *s)
 		write(fd, s, (int)slen(s));
 }
 
-/*
-** app_destroy_safe:
-** - Make cleanup NULL-safe so calling it with NULL never dereferences a null
-**   pointer, preventing segfaults on the error path.
-** - If you already have app_destroy(app), add a NULL check inside it instead.
-*/
-// void	app_destroy_safe(t_app *app)
-// {
-// 	if (app == NULL)
-// 		return ;
-// }
 /**
  * @brief Duplicates a string
  *

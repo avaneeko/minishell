@@ -6,7 +6,7 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 19:34:31 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/13 22:52:03 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/14 21:03:40 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,9 +55,6 @@ char	*ft_strdup(const char *s1);
 // builtin_execution
 int		is_builtin(const char *cmd);
 int		exec_builtin(t_app *app, char **argv, t_env *env);
-
-/* helper function for builtin exit */
-void	app_destroy_safe(t_app *app);
 
 /* Builtin helper functions */
 void	print_str(int fd, const char *s);
