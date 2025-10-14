@@ -60,6 +60,18 @@ void	set_child_signals(void)
 	signal(SIGQUIT, SIG_DFL);
 }
 
+static void parent_sigint_handler(int signum)
+{
+	g_signal = 128 + signum;
+	get_app()->last_exit_code = g_signal;
+}
+
+void set_parent_signals(void)
+{
+	signal(SIGINT, parent_sigint_handler);
+	signal(SIGQUIT, SIG_DFL);
+}
+
 // int	main(int argc, char const *argv[], char const *envp[])
 // {
 // 	setup_signals(); // <==== ADD THIS_Before entering prompt/readline loop

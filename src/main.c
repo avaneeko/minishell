@@ -28,7 +28,6 @@ int	main(int argc, char const *argv[], char const *envp[])
 
 	if (!app_create(argc, argv, envp, app))
 		return EXIT_FAILURE;
-	set_default_signals();
 	while (prompt(app) > 0)
 	{
 		if (!tokenize(app->prompt, app->token_list))

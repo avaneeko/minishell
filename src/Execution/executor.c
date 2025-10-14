@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 22:22:36 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/10 21:06:51 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/10/14 19:56:59 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -496,12 +496,15 @@ static int	pipeline_run(t_app *app, t_env *env, t_command *head, pid_t *pids)
 	return (wait_pipeline(pids, i));
 }
 
+void set_parent_signals(void);
+
 /* Public entry: parent-builtin fast path, else forked pipeline. */
 int	execute_pipeline(t_app *app, t_command *head, t_env *env)
 {
 	int		n;
 	int		code;
 
+	set_parent_signals();
 	if (!head)
 		return (0);
 	if (!head->next && head->argv && head->argv[0])
