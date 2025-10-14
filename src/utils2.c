@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 19:06:24 by losypenk          #+#    #+#             */
-/*   Updated: 2025/09/04 16:54:09 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/10/14 16:03:52 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void	*mclone_grow(void const *p, size_t p_size, size_t grow_size)
 	return (mem);
 }
 
-int		is_wspc(char c)
+int	is_wspc(char c)
 {
 	return (c == ' ' || c == '\r' || c == '\n' || c == '\t' || c == '\v');
 }
