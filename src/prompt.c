@@ -6,12 +6,14 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 14:05:30 by losypenk          #+#    #+#             */
-/*   Updated: 2025/10/13 14:17:48 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/10/14 20:00:35 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "get_next_line.h"
+
+void	set_default_signals(void);
 
 static int	prompt_tty(t_app *app)
 {
@@ -44,6 +46,7 @@ int	prompt(t_app *app)
 {
 	int	(*dispatch[2])(t_app *app);
 
+	set_default_signals();
 	dispatch[0] = prompt_fd;
 	dispatch[1] = prompt_tty;
 	return (dispatch[1 & isatty(STDIN_FILENO)](app));
