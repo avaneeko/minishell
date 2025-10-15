@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 14:40:29 by losypenk          #+#    #+#             */
-/*   Updated: 2025/10/13 15:59:07 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/10/14 19:18:10 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 // Returns 1 if syntax is valid, 0 if invalid with the error printed to stderr.
 // Note that the helper functions return the opposite, 1 on error, 0 on success.
 
-static int	is_redir(enum e_token_type type)
+int	is_redir(enum e_token_type type)
 {
 	return (type == TOKEN_REDIRECT_INPUT
 		|| type == TOKEN_REDIRECT_OUTPUT
