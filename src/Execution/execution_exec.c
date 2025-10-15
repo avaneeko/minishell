@@ -6,15 +6,19 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 19:49:48 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/14 16:54:43 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/15 23:18:11 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"                  /* t_command, t_env                   */
+#include "minishell.h"
 #include "execution_utils.h"
 #include "Builtins/builtins_utils.h"
 
-/* Has any slash in the string. */
+/**
+ * @brief Return 1 if the string contains any slash character '/', else 0.
+ * @param s Input string to scan.
+ * @return 1 if a slash is present, 0 otherwise.
+ */
 static int	has_slash(char const *s)
 {
 	int	i;
@@ -31,7 +35,13 @@ static int	has_slash(char const *s)
 	return (0);
 }
 
-/* Print "command not found" and exit 127. */
+/**
+ * @brief Print a "command not found" message and exit the child with
+ * 		status 127, cleaning up resources.
+ * @param app Application handle to destroy before exiting.
+ * @param cmd The command string to report.
+ * @param envp Serialized environment to free before exit.
+ */
 static void	cmd_not_found(t_app *app, char const *cmd, char **envp)
 {
 	write(2, "minishell: command not found: ", 30);
@@ -42,7 +52,14 @@ static void	cmd_not_found(t_app *app, char const *cmd, char **envp)
 	exit(127);
 }
 
-/* Try execve and exit 126 on error with perror-like message. */
+/**
+ * @brief Attempt execve on the given path and exit with 126 on failure after
+ * 		printing an error.
+ * @param app Application handle to destroy on failure.
+ * @param path Absolute or relative path to execute.
+ * @param argv Argument vector for the new program.
+ * @param envp Serialized environment for the new program.
+ */
 static void	do_exec_or_fail(t_app *app, char const *path, char **argv,
 	char **envp)
 {
@@ -55,13 +72,25 @@ static void	do_exec_or_fail(t_app *app, char const *path, char **argv,
 	exit(126);
 }
 
+/**
+ * @brief Destroy the application and exit the process with status 1.
+ * @param app Application handle to destroy.
+ */
 static void	destroy_exit(t_app *app)
 {
 	app_destroy(app);
 	exit(1);
 }
 
-/* Execute one command in the child: builtin or external with PATH lookup. */
+/**
+ * @brief Execute a single command in the child, handling builtins or external
+ * 		commands with PATH lookup.
+ * @param app Application context for cleanup and state.
+ * @param cmd Parsed command containing argv and redirections.
+ * @param env Environment variables in internal form.
+ * @return This function does not return on success; it exits the child with
+ * 		the appropriate status.
+ */
 void	exec_command(t_app *app, t_command *cmd, t_env *env)
 {
 	char	**envp;

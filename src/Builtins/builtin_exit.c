@@ -6,14 +6,17 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 17:29:55 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/13 22:38:47 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/16 00:08:14 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "builtins_utils.h"
 
-/* Matches bash error text for non-numeric exit arguments. */
+/**
+ * @brief Print error for non-numeric exit argument in bash-compatible format.
+ * @param arg The offending argument string.
+ */
 static void	print_err_numeric(const char *arg)
 {
 	print_str(2, "minishell: exit: ");
@@ -21,14 +24,24 @@ static void	print_err_numeric(const char *arg)
 	print_str(2, ": numeric argument required\n");
 }
 
-/* Matches bash behavior for too many args: do not exit, status 1.  */
+/**
+ * @brief Print error for too many arguments to 'exit' without exiting
+ * 		the shell.
+ */
 static void	print_err_many(void)
 {
 	print_str(2, "minishell: exit: too many arguments\n");
 }
 
-/* ----------------------- core exit decision logic ----------------------- */
-/* Mirrors bash: no args => last code; bad numeric => 2; many args => 1. */
+/**
+ * @brief Decide exit status and whether to exit now, matching bash semantics.
+ * @param app Application to read last_exit_code when no args.
+ * @param argv Arguments for exit; may include a numeric status.
+ * @param must_exit Output: set to 1 if shell should exit, 0 if it must
+ * 		continue.
+ * @return Computed status: last code when no args, 2 for non-numeric, 1 for
+ * 		too many args, or normalized numeric status.
+ */
 static int	resolve_exit_status(t_app *app, char **argv, int *must_exit)
 {
 	int			argc;
@@ -52,8 +65,13 @@ static int	resolve_exit_status(t_app *app, char **argv, int *must_exit)
 	return (to_status(val));
 }
 
-/* ---------------------- child and parent entry points -------------------- */
-/* Used in child path: compute code; caller will _exit(code). */
+/**
+ * @brief Child path for 'exit': compute status and return it so caller can
+ * 		_exit(status).
+ * @param app Application to read last_exit_code if needed.
+ * @param argv Arguments for exit.
+ * @return Status code to use for _exit.
+ */
 int	builtin_exit_child(t_app *app, char **argv)
 {
 	int	must_exit;
@@ -63,7 +81,14 @@ int	builtin_exit_child(t_app *app, char **argv)
 	return (status);
 }
 
-/* Used in parent fast-path: print, cleanup, and exit; or keep running. */
+/**
+ * @brief Parent fast-path for 'exit': optionally exit the shell after printing
+ * 		'exit' and cleaning up.
+ * @param app Application to reset and destroy before exiting.
+ * @param argv Arguments for exit.
+ * @return If not exiting due to too many args, returns 1, otherwise does not
+ * 		return because it calls exit(status).
+ */
 int	builtin_exit_parent(t_app *app, char **argv)
 {
 	int	must_exit;

@@ -6,14 +6,19 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 22:21:12 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/13 23:03:35 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/16 00:25:29 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "builtins_utils.h"
 
-/* sort_lex: bubble until no swaps to keep code simple and Norm-compliant.    */
+/**
+ * @brief Bubble-sort a string vector lexicographically, looping until no swaps
+ * 		occur.
+ * @param v Vector of strings to sort.
+ * @param n Count of elements.
+ */
 void	sort_lex(char **v, int n)
 {
 	int	changed;
@@ -25,7 +30,10 @@ void	sort_lex(char **v, int n)
 	}
 }
 
-/* print_one_decl: prints 'declare -x KEY="VALUE"' for a serialized entry.    */
+/**
+ * @brief Print a serialized env entry as: declare -x KEY="VALUE".
+ * @param kv A "KEY=VALUE" string, where VALUE may be empty.
+ */
 void	print_one_decl(char const *kv)
 {
 	int	i;
@@ -51,7 +59,12 @@ void	print_one_decl(char const *kv)
 	print_str(1, "\n");
 }
 
-/* print_export_noargs: serialize, sort, and print all variables.             */
+/**
+ * @brief Print all environment pairs as 'declare -x KEY="VALUE"' in
+ * 		sorted order.
+ * @param env Environment to serialize and print.
+ * @return 1 on success, 0 on allocation failure.
+ */
 int	print_export_noargs(t_env const *env)
 {
 	char	**envp;
@@ -73,8 +86,13 @@ int	print_export_noargs(t_env const *env)
 	return (1);
 }
 
-/* ------------------------------- handlers --------------------------------- */
-/* handle_export_noeq: ensure KEY exists; create empty if missing.            */
+/**
+ * @brief Ensure a key exists for export without '=', creating it with empty
+ * 		value if missing.
+ * @param env Environment to modify.
+ * @param key Key name to ensure.
+ * @return 0 on success, 1 on failure to create.
+ */
 int	handle_export_noeq(t_env *env, char const *key)
 {
 	if (!exists_key(env, key))
@@ -85,7 +103,12 @@ int	handle_export_noeq(t_env *env, char const *key)
 	return (0);
 }
 
-/* alloc_key_copy: make a heap copy of KEY substring (length key_len).        */
+/**
+ * @brief Allocate and copy a key substring of length key_len from arg.
+ * @param arg Full argument containing the key prefix.
+ * @param key_len Number of characters to copy.
+ * @return Newly allocated key string or NULL on failure.
+ */
 char	*alloc_key_copy(char const *arg, int key_len)
 {
 	char	*key;

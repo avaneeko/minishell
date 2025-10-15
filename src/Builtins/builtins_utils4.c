@@ -1,20 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtin_exit_utils2.c                              :+:      :+:    :+:   */
+/*   builtins_utils4.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 22:04:08 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/13 22:16:19 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/16 00:18:45 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "builtins_utils.h"
 
-/* ------------------------------ string helpers ---------------------------- */
-/* strlen_or_zero: guards against NULL when building strings.                 */
+/**
+ * @brief Return slen(s) or 0 if s is NULL to simplify string size computations.
+ * @param s Nullable string.
+ * @return Length of s or 0 if s is NULL.
+ */
 size_t	strlen_or_zero(char const *s)
 {
 	if (s == NULL)
@@ -22,7 +25,13 @@ size_t	strlen_or_zero(char const *s)
 	return (slen(s));
 }
 
-/* copy_bytes: append src bytes to dst at index pointer.                      */
+/**
+ * @brief Copy src bytes to dst starting at *idx and advance *idx by the number
+ * 		of bytes copied.
+ * @param dst Destination buffer.
+ * @param idx In/out: write offset updated by number of bytes copied.
+ * @param src Source string to append, ignored if NULL.
+ */
 void	copy_bytes(char *dst, size_t *idx, char const *src)
 {
 	size_t	i;
@@ -38,7 +47,12 @@ void	copy_bytes(char *dst, size_t *idx, char const *src)
 	*idx = *idx + i;
 }
 
-/* join_kv: allocate "KEY=VALUE" string for create_pair.                      */
+/**
+ * @brief Allocate and build a "KEY=VALUE" string from key and optional value.
+ * @param k Non-NULL key string.
+ * @param v Nullable value string.
+ * @return Newly allocated "KEY=VALUE" string or NULL on failure.
+ */
 char	*join_kv(char const *k, char const *v)
 {
 	size_t	kl;
@@ -60,8 +74,14 @@ char	*join_kv(char const *k, char const *v)
 	return (s);
 }
 
-/* --------------------------- environment updates -------------------------- */
-/* set_env_replace: remove existing key and set to value.                     */
+/**
+ * @brief Replace an environment key with a new value, creating the pair if
+ * 		missing by delegating to append logic.
+ * @param env Environment to modify.
+ * @param key Key to set.
+ * @param val Value string or NULL to set empty string.
+ * @return 1 on success, 0 on allocation or API failure.
+ */
 int	set_env_replace(t_env *env, char const *key, char const *val)
 {
 	t_epair	pair;
@@ -81,7 +101,14 @@ int	set_env_replace(t_env *env, char const *key, char const *val)
 	return (1);
 }
 
-/* set_env_append: key+=val or fallback to replace if key missing.            */
+/**
+ * @brief Append to an existing key's value or fallback to replace if the key
+ * 		does not exist.
+ * @param env Environment to modify.
+ * @param key Key to append to.
+ * @param val Value to append.
+ * @return 1 on success, 0 on failure.
+ */
 int	set_env_append(t_env *env, char const *key, char const *val)
 {
 	t_epair	cur;

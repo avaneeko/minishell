@@ -6,15 +6,25 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 22:22:36 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/14 17:21:35 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/16 00:00:04 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "execution_utils.h"
 
-/* ---------------- child lifecycle and pipeline ---------------- */
-/* Child code path: set signals, wire FDs, and exec command. */
+/**
+ * @brief Child path: set signals, open redirections, wire stdio, then exec the
+ * 		command.
+ * @param app Application context used for cleanup before exiting the child.
+ * @param cmd Command node holding argv and the redirection list.
+ * @param env Environment variables for builtins or external execution.
+ * @param c Child I/O context carrying previous read end and current pipe ends.
+ * @details On redirection setup failure, closes pipe ends, destroys app,
+ * 		and _exit(1).
+ * @post Does not return on success; falls back to _exit(126) if exec cannot
+ * 		be performed.
+ */
 static void	child_exec(t_app *app, t_command *cmd, t_env *env,
 	t_child_io_ctx *c)
 {
@@ -41,7 +51,15 @@ static void	child_exec(t_app *app, t_command *cmd, t_env *env,
 	_exit(126);
 }
 
-/* Prepare step: is_last flag and pipe creation */
+/**
+ * @brief Initialize step context, detect last command, and create a pipe if not
+ * 		last.
+ * @param app Unused in this helper.
+ * @param cmd Current command; absence of cmd->next marks this as the last step.
+ * @param c I/O context to initialize; sets is_last flag in c->io[3] and
+ * 		initializes pipefd[].
+ * @return 0 on success, -1 if pipe() fails when a pipe is required.
+ */
 static int	prepare_step(t_app *app, t_command *cmd, t_child_io_ctx *c)
 {
 	(void)app;
@@ -57,7 +75,17 @@ static int	prepare_step(t_app *app, t_command *cmd, t_child_io_ctx *c)
 	return (0);
 }
 
-/* Open/pipe, fork, child/parent split, return pid or -1. */
+/**
+ * @brief Prepare descriptors, fork the child to run the step, and handle
+ * 		parent-side FD handoff.
+ * @param app Application context.
+ * @param cmd Command node to execute in this step.
+ * @param env Environment passed to the child.
+ * @param tmp_in In/out: previous pipe read end carried into the next step by
+ * 		the parent.
+ * @return PID in the parent, -1 on setup failure before fork; the child does
+ * 		not return.
+ */
 static pid_t	step_setup_and_fork(t_app *app, t_command *cmd,
 									t_env *env, int *tmp_in)
 {
@@ -74,7 +102,15 @@ static pid_t	step_setup_and_fork(t_app *app, t_command *cmd,
 	return (pid);
 }
 
-/* Run all steps; return last status or 1 on early failure. */
+/**
+ * @brief Iterate the pipeline: fork each step, record PIDs, then wait and
+ * 		return the final status.
+ * @param app Application context.
+ * @param env Environment for child execution.
+ * @param head Head of the command list to execute.
+ * @param pids Output array where each created child PID is stored in order.
+ * @return Final status from wait_pipeline, or 1 on early setup/fork failure.
+ */
 static int	pipeline_run(t_app *app, t_env *env, t_command *head, pid_t *pids)
 {
 	int			i;
@@ -101,7 +137,14 @@ static int	pipeline_run(t_app *app, t_env *env, t_command *head, pid_t *pids)
 	return (wait_pipeline(pids, i));
 }
 
-/* Public entry: parent-builtin fast path, else forked pipeline. */
+/**
+ * @brief Execute a pipeline: run parent-fast-path builtins when possible,
+ * 		else fork children and wait.
+ * @param app Application context (stores pids and last exit code).
+ * @param head Head of the command list (pipeline).
+ * @param env Environment variables.
+ * @return Final pipeline status code.
+ */
 int	execute_pipeline(t_app *app, t_command *head, t_env *env)
 {
 	int		n;

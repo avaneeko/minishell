@@ -6,14 +6,18 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 20:16:09 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/14 16:49:38 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/15 23:50:23 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"                  /* t_redir, token kinds, t_app */
+#include "minishell.h"
 #include "execution_utils.h"
 
-/* Print: minishell: <target>: <strerror(errno)>\n */
+/**
+ * @brief Print a standard open error "minishell: <target>: <strerror>" line
+ * 		to stderr.
+ * @param target The filename attempted to open, may be NULL.
+ */
 static void	print_open_error(char const *target)
 {
 	char const	*msg;
@@ -28,7 +32,14 @@ static void	print_open_error(char const *target)
 	write(2, "\n", 1);
 }
 
-/* Handle single input redirection or heredoc, updating infd; print on error. */
+/**
+ * @brief Handle one input redirection or heredoc, updating infd and reporting
+ * 		errors.
+ * @param app Application context with heredoc array.
+ * @param redir A single input-type redirection node.
+ * @param infd In/out: previous FD closed and replaced by the new one.
+ * @return 0 on success, -1 on failure.
+ */
 int	handle_input_redirection(t_app const *app, t_redir redir, int *infd)
 {
 	int				fd;
@@ -57,8 +68,13 @@ int	handle_input_redirection(t_app const *app, t_redir redir, int *infd)
 	return (0);
 }
 
-/* Handle single output redirection (truncate or append), updating outfd;
-print on error. */
+/**
+ * @brief Handle one output redirection (truncate or append), updating outfd and
+ * 		reporting errors.
+ * @param redir A single output-type redirection node.
+ * @param outfd In/out: previous FD closed and replaced by the new one.
+ * @return 0 on success, -1 on failure.
+ */
 static int	handle_output_redirection(t_redir redir, int *outfd)
 {
 	int	fd;
@@ -81,7 +97,15 @@ static int	handle_output_redirection(t_redir redir, int *outfd)
 	return (0);
 }
 
-/* Open all declared redirections for a command and return infd/outfd. */
+/**
+ * @brief Open all redirections in a command and return the resulting infd and
+ * 		outfd to apply.
+ * @param app Application context for heredoc descriptors.
+ * @param redirs Linked list of redirection nodes.
+ * @param infd Output: final input FD or -1.
+ * @param outfd Output: final output FD or -1.
+ * @return 0 on success, -1 on any redirection failure.
+ */
 int	setup_redirections(t_app *app, t_redir *redirs, int *infd, int *outfd)
 {
 	t_redir	*rp;

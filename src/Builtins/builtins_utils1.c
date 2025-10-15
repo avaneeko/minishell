@@ -6,14 +6,19 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:36:28 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/14 21:03:33 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/16 00:13:04 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "builtins_utils.h"
 
-/* Safe write helper using project slen() for consistency.  */
+/**
+ * @brief Safe write helper that prints a string to fd if the string is not
+ * 		NULL.
+ * @param fd File descriptor to write to.
+ * @param s Nullable string to print.
+ */
 void	print_str(int fd, const char *s)
 {
 	if (s != NULL)
@@ -21,16 +26,10 @@ void	print_str(int fd, const char *s)
 }
 
 /**
- * @brief Duplicates a string
- *
- * Description: This function allocates memory for a new string which is
- * a duplicate of the string s. Memory for the new string is obtained with
- * malloc, and can be freed with free.
- *
- * @param s: The string to duplicate
- *
- * @return A pointer to the duplicated string, or NULL if insufficient memory
- * was available
+ * @brief Duplicate a C-string into newly allocated memory, returning NULL on
+ * 		allocation failure.
+ * @param s1 Source string to duplicate.
+ * @return Newly allocated duplicate or NULL if allocation fails.
  */
 char	*ft_strdup(const char *s1)
 {
@@ -54,10 +53,12 @@ char	*ft_strdup(const char *s1)
 	return (dup);
 }
 
-/****************************************************************************
- *  Check if command is a builtin, and one to execute the detected built in *
- *																			*
- ****************************************************************************/
+/**
+ * @brief Return non-zero if command name is a supported
+ * 		builtin (cd, echo, pwd, export, unset, env, exit).
+ * @param cmd Command name string.
+ * @return 1 if builtin, 0 otherwise.
+ */
 int	is_builtin(const char *cmd)
 {
 	return (
@@ -71,6 +72,14 @@ int	is_builtin(const char *cmd)
 	);
 }
 
+/**
+ * @brief Execute a builtin by name and return its status code, handling both
+ * 		environment and app state where needed.
+ * @param app Application context used by builtins like exit.
+ * @param argv Argument vector where argv[0] is the builtin name.
+ * @param env Environment for builtins that read or modify variables.
+ * @return Status code returned by the builtin, or 0 if argv is empty.
+ */
 int	exec_builtin(t_app *app, char **argv, t_env *env)
 {
 	if (!argv || !argv[0])

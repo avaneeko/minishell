@@ -6,16 +6,22 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 19:37:04 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/13 22:46:20 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/16 00:50:40 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "builtins_utils.h"
 
-/* Update value for an existing key. */
-/* - Duplicates value; if value is NULL, stores empty string. */
-/* - Keeps origin in sync. */
+/**
+ * @brief Update an existing environment entry at index with a new value and
+ * 		origin.
+ * @param env Environment container.
+ * @param idx Index of the existing pair to modify.
+ * @param value New value; NULL is stored as an empty string.
+ * @param origin Origin metadata to set on the pair.
+ * @return 1 on success, 0 on allocation failure or invalid index.
+ */
 static int	update_existing(t_env *env, int idx, char *value, int origin)
 {
 	char	*dup;
@@ -34,7 +40,14 @@ static int	update_existing(t_env *env, int idx, char *value, int origin)
 	return (1);
 }
 
-/* helper function for append_new_pair */
+/**
+ * @brief Initialize a t_epair with heap-duplicated key and value plus origin.
+ * @param pair Output pair to initialize.
+ * @param key Key string to duplicate; must not be NULL.
+ * @param value Value to duplicate; NULL becomes an empty string.
+ * @param origin Origin metadata to assign.
+ * @return 1 on success, 0 on allocation failure or invalid input.
+ */
 static int	init_pair_values(t_epair *pair, char *key, char *value, int origin)
 {
 	if (!pair || !key)
@@ -50,7 +63,11 @@ static int	init_pair_values(t_epair *pair, char *key, char *value, int origin)
 	return (1);
 }
 
-/* helper function for append_new_pair */
+/**
+ * @brief Free key and value inside a t_epair if present; does not free the
+ * 		pair itself.
+ * @param pair Pair whose fields will be freed.
+ */
 static void	free_pair_values(t_epair *pair)
 {
 	if (!pair)
@@ -61,9 +78,16 @@ static void	free_pair_values(t_epair *pair)
 		free(pair->value);
 }
 
-/* Append a new key/value pair. */
-/* - Allocates key/value strings; frees them on any failure to avoid leaks. */
-/* - Delegates growth/ownership to try_append_epair on success. */
+/**
+ * @brief Append a new key/value pair to the environment, transferring ownership
+ * 		 to env on success.
+ * @param env Environment to modify.
+ * @param key Key to add; must not be NULL.
+ * @param value Value to add; NULL becomes an empty string.
+ * @param origin Origin metadata to assign to the new pair.
+ * @return 1 on success, 0 on allocation or append failure
+ * 		(with internal cleanup).
+ */
 static int	append_new_pair(t_env *env, char *key, char *value, int origin)
 {
 	t_epair	pair;
@@ -88,9 +112,15 @@ static int	append_new_pair(t_env *env, char *key, char *value, int origin)
 	return (1);
 }
 
-/* Set key to value with origin. */
-/* - Updates if present, otherwise appends. */
-/* - Returns 1 on success, 0 on allocation or API failure. */
+/**
+ * @brief Set key to value in env with the given origin: update if present,
+ * 		otherwise append a new pair.
+ * @param env Environment to modify.
+ * @param key Key name to set.
+ * @param value Value string or NULL for empty.
+ * @param origin Origin metadata to store.
+ * @return 1 on success, 0 on allocation or API failure.
+ */
 int	env_set(t_env *env, char *key, char *value, int origin)
 {
 	int	idx;

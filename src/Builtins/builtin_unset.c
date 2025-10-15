@@ -6,14 +6,17 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 19:30:33 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/13 22:56:58 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/16 00:48:46 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "builtins_utils.h"
 
-/* Print the standard minishell-style error for invalid identifiers.          */
+/**
+ * @brief Print minishell-style error for an invalid unset identifier.
+ * @param arg The offending argument to display in the error.
+ */
 static void	print_unset_error(char const *arg)
 {
 	print_str(2, "minishell: unset: `");
@@ -21,7 +24,11 @@ static void	print_unset_error(char const *arg)
 	print_str(2, "': not a valid identifier\n");
 }
 
-/* Validate an unset key: KEY must match [A-Za-z_][A-Za-z0-9_]* strictly.     */
+/**
+ * @brief Validate an unset key against [A-Za-z_][A-Za-z0-9_]*.
+ * @param s Key string to validate.
+ * @return 1 if valid, 0 otherwise.
+ */
 static int	is_valid_unset_key(char const *s)
 {
 	int	i;
@@ -40,8 +47,14 @@ static int	is_valid_unset_key(char const *s)
 	return (1);
 }
 
-/* -------------------------------- entry point ----------------------------- */
-/* Iterate args and remove valid keys; print error for invalid ones.          */
+/**
+ * @brief Remove variables specified in argv from the environment, reporting
+ * 		invalid identifiers.
+ * @param argv Arguments where each item is a key to unset.
+ * @param env Environment to modify.
+ * @return 0 if all keys were valid, 1 if any invalid identifiers were
+ * 		encountered.
+ */
 int	builtin_unset(char **argv, t_env *env)
 {
 	int	i;

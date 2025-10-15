@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtin_utils6.c                                   :+:      :+:    :+:   */
+/*   builtins_utils7.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 22:29:34 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/13 22:43:00 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/16 00:30:07 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,14 @@
 #include "builtins_utils.h"
 #include <limits.h>		/* LLONG_MAX, LLONG_MIN */
 
-/* For positive: lim = LLONG_MAX; for negative: lim = (unsigned)LLONG_MAX + 1 */
+/**
+ * @brief Compute the overflow boundary for the given sign for parsing
+ * 		to long long.
+ * @param sign +1 for positive, -1 for negative.
+ * @param lim Output: LLONG_MAX for positive, (unsigned)LLONG_MAX+1 for
+ * 		negative.
+ * @return 1 on success, 0 if lim is NULL.
+ */
 int	compute_limit_for_sign(int sign, unsigned long long *lim)
 {
 	if (lim == NULL)
@@ -26,7 +33,14 @@ int	compute_limit_for_sign(int sign, unsigned long long *lim)
 	return (1);
 }
 
-/* Accumulates one decimal digit with overflow guard under bound 'lim'. */
+/**
+ * @brief Add one digit d (0..9) into accumulator with overflow check
+ * 		against lim.
+ * @param acc In/out: accumulated magnitude.
+ * @param lim Maximum allowed magnitude before overflow occurs.
+ * @param d Decimal digit to add.
+ * @return 1 if successful, 0 if overflow or invalid digit.
+ */
 int	add_digit_check(unsigned long long *acc, unsigned long long lim, int d)
 {
 	unsigned long long	u;
@@ -42,7 +56,14 @@ int	add_digit_check(unsigned long long *acc, unsigned long long lim, int d)
 	return (1);
 }
 
-/* Converts accumulated magnitude to signed result, with LLONG_MIN case. */
+/**
+ * @brief Convert accumulated magnitude and sign to a long long, handling the
+ * 		LLONG_MIN edge case.
+ * @param sign +1 or -1 sign.
+ * @param acc Accumulated magnitude.
+ * @param lim Limit used to detect LLONG_MIN case.
+ * @param out Output: resulting signed long long.
+ */
 void	assign_signed_result(int sign, unsigned long long acc,
 		unsigned long long lim, long long *out)
 {
@@ -56,7 +77,15 @@ void	assign_signed_result(int sign, unsigned long long acc,
 		*out = -(long long)acc;
 }
 
-/* Core digit parser: loop over digits, check overflow per step, then sign. */
+/**
+ * @brief Parse digits from s starting at index start with overflow checks and
+ * 		produce a signed result.
+ * @param s Input numeric string tail.
+ * @param start Index of first digit.
+ * @param sign +1 or -1 sign determined earlier.
+ * @param out Output: parsed long long value.
+ * @return 1 on success, 0 on overflow.
+ */
 int	parse_digits_core(const char *s, int start, int sign, long long *out)
 {
 	unsigned long long	acc;
@@ -79,9 +108,13 @@ int	parse_digits_core(const char *s, int start, int sign, long long *out)
 	return (1);
 }
 
-/* ------------------------ top-level integer parsing ---------------------- */
-
-/* Public helper: parse optional sign, accumulate digits with overflow. */
+/**
+ * @brief Top-level parse for optional sign then digits into long long with
+ * 		overflow checking.
+ * @param s Input numeric string with optional leading sign.
+ * @param out Output: parsed long long value.
+ * @return 1 on success, 0 on invalid format or overflow.
+ */
 int	parse_ll(const char *s, long long *out)
 {
 	int	sign;

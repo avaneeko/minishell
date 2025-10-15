@@ -6,14 +6,17 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 21:58:36 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/13 23:04:28 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/16 00:15:41 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "builtins_utils.h"
 
-/* print_export_error: matches minishell error style for invalid identifiers. */
+/**
+ * @brief Print minishell-style export error for an invalid identifier.
+ * @param arg The invalid argument string to report.
+ */
 void	print_export_error(char const *arg)
 {
 	print_str(2, "minishell: export: `");
@@ -21,8 +24,12 @@ void	print_export_error(char const *arg)
 	print_str(2, "': not a valid identifier\n");
 }
 
-/* --------------------------- identifier utilities ------------------------- */
-/* is_name_start: first char must be alpha or underscore.                     */
+/**
+ * @brief Return 1 if the first identifier character is alphabetic or
+ * 		underscore.
+ * @param c Character to test.
+ * @return 1 if valid start character, 0 otherwise.
+ */
 int	is_name_start(char c)
 {
 	if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
@@ -32,7 +39,12 @@ int	is_name_start(char c)
 	return (0);
 }
 
-/* is_name_char: subsequent chars may include digits.                         */
+/**
+ * @brief Return 1 if the identifier body character is alphanumeric or
+ * 		underscore.
+ * @param c Character to test.
+ * @return 1 if valid identifier body character, 0 otherwise.
+ */
 int	is_name_char(char c)
 {
 	if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
@@ -42,7 +54,13 @@ int	is_name_char(char c)
 	return (0);
 }
 
-/* scan_key_body: walk past a valid NAME, stop at '=' or '+=' or end. */
+/**
+ * @brief Scan identifier body until '=' or '+=' or end, ensuring valid
+ * 		characters.
+ * @param arg Full argument string.
+ * @param start Index to begin scanning from.
+ * @return Index of the stopping position, or -1 on invalid character.
+ */
 int	scan_key_body(char const *arg, int start)
 {
 	int	i;
@@ -57,7 +75,15 @@ int	scan_key_body(char const *arg, int start)
 	return (i);
 }
 
-/* parse_key_mode: now short; sets key_len, is_append, has_eq or fails. */
+/**
+ * @brief Parse an export argument to determine key length, whether '+=' append
+ * 		mode is used, and if '=' is present.
+ * @param arg Input argument like KEY, KEY=VAL, or KEY+=VAL.
+ * @param key_len Output: length of the key.
+ * @param is_append Output: 1 if '+=' mode detected, else 0.
+ * @param has_eq Output: 1 if '=' present, else 0.
+ * @return 1 on success, 0 on invalid identifier.
+ */
 int	parse_key_mode(char const *arg, int *key_len, int *is_append, int *has_eq)
 {
 	int	i;

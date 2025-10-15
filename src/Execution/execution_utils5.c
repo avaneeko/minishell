@@ -6,14 +6,18 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/14 17:14:05 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/14 17:16:31 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/15 23:43:21 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "execution_utils.h"
 
-/* Apply already-opened infd/outfd to stdio in the parent. */
+/**
+ * @brief Apply open input/output FDs to the parent’s stdio and close originals.
+ * @param infd Input FD to dup2 to STDIN, or -1 to skip.
+ * @param outfd Output FD to dup2 to STDOUT, or -1 to skip.
+ */
 void	parent_apply_redirs(int infd, int outfd)
 {
 	if (infd >= 0)
@@ -28,7 +32,13 @@ void	parent_apply_redirs(int infd, int outfd)
 	}
 }
 
-/* Helper 1: open and apply redirections in parent; returns 0 ok, 1 on fail */
+/**
+ * @brief Open and apply redirections in the parent; return 0 on success and 1
+ * 		on failure.
+ * @param app Application state for heredoc access and errors.
+ * @param redirs Linked list of redirections to apply.
+ * @return 0 if redirections applied successfully, 1 on setup error.
+ */
 int	parent_open_and_apply_redirs(t_app *app, t_redir *redirs)
 {
 	int	infd;
@@ -42,7 +52,15 @@ int	parent_open_and_apply_redirs(t_app *app, t_redir *redirs)
 	return (0);
 }
 
-/* Helper 2: run the single builtin in parent; sets *status and returns 1 */
+/**
+ * @brief Run a single builtin in the parent fast path, storing the status and
+ * 		returning 1 to indicate handled.
+ * @param app Application context.
+ * @param cmd Single command to execute.
+ * @param env Environment variables.
+ * @param status Output: exit status set by the builtin.
+ * @return Always 1 since it handles the execution when called.
+ */
 int	parent_run_single_builtin(t_app *app, t_command *cmd,
 										t_env *env, int *status)
 {
@@ -55,7 +73,15 @@ int	parent_run_single_builtin(t_app *app, t_command *cmd,
 	return (1);
 }
 
-/* checks, save/restore stdio, and delegate work */
+/**
+ * @brief If exactly one parent-only builtin is present, run it in the parent
+ * 		with redirections and return 1.
+ * @param app Application state.
+ * @param cmd Head of the pipeline; must be single command for this path.
+ * @param env Environment variables.
+ * @param status Output: builtin exit status if handled.
+ * @return 1 if executed in parent, 0 otherwise.
+ */
 int	try_run_parent_builtin(t_app *app, t_command *cmd,
 									t_env *env, int *status)
 {

@@ -6,14 +6,21 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 19:20:36 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/13 22:22:46 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/16 00:47:03 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "builtins_utils.h"
 
-/* val_ptr_after_key: compute pointer to value after '=' or '+='.             */
+/**
+ * @brief Return a pointer to the value portion after KEY= or KEY+= in an export
+ * 		argument.
+ * @param arg Full argument containing a key then '=' or '+='.
+ * @param key_len Length of the key portion.
+ * @param is_append Non-zero if the operator is "+=" instead of "=".
+ * @return Pointer to the first character of the value part in arg.
+ */
 static char const	*val_ptr_after_key(char const *arg, int key_len,
 				int is_append)
 {
@@ -25,7 +32,15 @@ static char const	*val_ptr_after_key(char const *arg, int key_len,
 	return (arg + key_len + off);
 }
 
-/* apply_set_or_append: call append or replace and map to 0/1 return.         */
+/**
+ * @brief Apply export with either replace semantics (KEY=VAL) or append
+ * 		semantics (KEY+=VAL).
+ * @param env Environment to update.
+ * @param key Key to modify.
+ * @param val Value to assign or append.
+ * @param is_append Non-zero to append to existing value, zero to replace.
+ * @return 0 on success, 1 on failure to set/append.
+ */
 static int	apply_set_or_append(t_env *env, char const *key,
 		char const *val, int is_append)
 {
@@ -40,7 +55,15 @@ static int	apply_set_or_append(t_env *env, char const *key,
 	return (0);
 }
 
-/* handle_export_with_eq: split, then set or append; now ≤25 lines.           */
+/**
+ * @brief Handle an export argument that contains '=' or '+=' by splitting and
+ * 		updating the environment.
+ * @param env Environment to update.
+ * @param arg Argument in the form KEY=VAL or KEY+=VAL.
+ * @param key_len Length of KEY in arg.
+ * @param is_append Non-zero if using "+=" append mode.
+ * @return 0 on success, 1 on allocation or update failure.
+ */
 static int	handle_export_with_eq(t_env *env, char const *arg,
 		int key_len, int is_append)
 {
@@ -57,7 +80,13 @@ static int	handle_export_with_eq(t_env *env, char const *arg,
 	return (ret);
 }
 
-/* process_one_export_arg: validate and dispatch no-eq vs with-eq             */
+/**
+ * @brief Process one export argument: validate identifier and dispatch to no-eq
+ * 		or with-eq handler.
+ * @param env Environment to update.
+ * @param arg One export argument token.
+ * @return 0 on success, 1 if identifier is invalid or update fails.
+ */
 static int	process_one_export_arg(t_env *env, char const *arg)
 {
 	int	key_len;
@@ -74,6 +103,13 @@ static int	process_one_export_arg(t_env *env, char const *arg)
 	return (handle_export_with_eq(env, arg, key_len, is_append));
 }
 
+/**
+ * @brief Validate and apply export arguments: print sorted "declare -x" when
+ * 		no args, or set/append variables.
+ * @param argv Arguments with keys or key=value assignments.
+ * @param env Environment to modify.
+ * @return 0 on full success, 1 if any argument was invalid or failed to set.
+ */
 int	builtin_export(char **argv, t_env *env)
 {
 	int	i;
