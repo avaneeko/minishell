@@ -6,7 +6,7 @@
 #    By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/24 17:33:26 by losypenk          #+#    #+#              #
-#    Updated: 2025/10/14 17:22:22 by losypenk         ###   ########.fr        #
+#    Updated: 2025/10/15 18:30:41 by losypenk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,7 @@ SRC := src/main.c src/utils.c src/utils2.c src/utils3.c src/token.c \
 	src/prompt.c \
 	src/dequoter.c \
 	src/exec_handle_redir.c \
+	src/exec_builder1.c \
 	src/syntax_checker.c \
 	src/Builtins/builtin_cd.c \
 	src/Builtins/builtin_echo.c \
