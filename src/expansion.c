@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 14:29:42 by losypenk          #+#    #+#             */
-/*   Updated: 2025/10/13 14:34:15 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/10/16 17:47:24 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ static int	do_str_expansion(t_app *app, t_token **t, t_env const *env)
 	unsigned int	var_len;
 	t_astr			a;
 
+	(void)env;
 	i = 0;
 	q = 0;
 	if (!astr_create(&a))

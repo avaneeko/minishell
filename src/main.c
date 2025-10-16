@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/16 16:38:05 by losypenk          #+#    #+#             */
-/*   Updated: 2025/10/16 17:23:44 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/10/16 17:47:34 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ int	main(int argc, char const *argv[], char const *envp[])
 			continue ;
 		}
 		if (!(prompt_heredoc(app) && expand(app, &app->token_list, &app->env)
-			&& token_resplit(app)))
+				&& token_resplit(app)))
 		{
 			reset(app);
 			continue ;
