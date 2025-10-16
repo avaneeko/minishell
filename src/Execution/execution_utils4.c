@@ -3,16 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   execution_utils4.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/14 17:07:57 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/15 23:40:48 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/16 15:39:37 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "execution_utils.h"
-
 
 /**
  * @brief Save copies of current stdin and stdout into saved[0] and saved[1].
