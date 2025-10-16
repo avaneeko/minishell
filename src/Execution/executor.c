@@ -6,12 +6,15 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 22:22:36 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/16 15:06:46 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/10/16 15:32:58 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "execution_utils.h"
+
+// From signals.c
+void	set_parent_signals(void);
 
 /**
  * @brief Child path: set signals, open redirections, wire stdio, then exec the

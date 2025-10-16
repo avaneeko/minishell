@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution_utils.h                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 20:01:14 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/14 21:12:15 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/16 15:32:24 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,11 @@
 # include <stdint.h>	/* uintptr_t */
 # include <sys/wait.h>	/* waitpid/WIF* macros */
 # include <signal.h>	/* SIGINT/ SIGQUIT */
+
+typedef struct s_app		t_app;
+typedef struct s_env		t_env;
+typedef struct s_command	t_command;
+typedef struct s_redir		t_redir;
 
 /* Context to pass to child_exec to reduce parameters */
 typedef struct s_child_io_ctx
