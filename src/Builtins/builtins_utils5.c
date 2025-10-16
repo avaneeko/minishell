@@ -6,7 +6,7 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 22:21:12 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/16 00:25:29 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/16 21:14:12 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,33 +57,6 @@ void	print_one_decl(char const *kv)
 		print_str(1, "\"");
 	}
 	print_str(1, "\n");
-}
-
-/**
- * @brief Print all environment pairs as 'declare -x KEY="VALUE"' in
- * 		sorted order.
- * @param env Environment to serialize and print.
- * @return 1 on success, 0 on allocation failure.
- */
-int	print_export_noargs(t_env const *env)
-{
-	char	**envp;
-	int		n;
-	int		i;
-
-	envp = env_serialize(env);
-	if (!envp)
-		return (0);
-	n = count_strv(envp);
-	sort_lex(envp, n);
-	i = 0;
-	while (i < n)
-	{
-		print_one_decl(envp[i]);
-		i += 1;
-	}
-	env_free_serialized(envp);
-	return (1);
 }
 
 /**

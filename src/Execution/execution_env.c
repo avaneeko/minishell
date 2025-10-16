@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution_env.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 19:49:02 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/16 15:41:39 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/10/16 20:44:49 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,11 +62,11 @@ char	**env_serialize(t_env const *env)
 	j = 0;
 	while (i < env->len)
 	{
-		if (!push_kv(out, &j, env->pairs[i].key, env->pairs[i].value))
+		if (env->pairs[i].key && env->pairs[i].value
+			&& env->pairs[i].value[0] != '\0')
 		{
-			out[j] = NULL;
-			env_free_serialized(out);
-			return (NULL);
+			if (!push_kv(out, &j, env->pairs[i].key, env->pairs[i].value))
+				return (out[j] = NULL, env_free_serialized(out), NULL);
 		}
 		i += 1;
 	}
