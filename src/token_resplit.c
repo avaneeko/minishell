@@ -1,37 +1,51 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   token_resplit.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/14 16:58:31 by losypenk          #+#    #+#             */
+/*   Updated: 2025/10/14 17:00:39 by losypenk         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-char toggle_quote(char c, char q)
+// From token_resplit1.c
+char	toggle_quote(char c, char q);
+
+static int unsigned	split_inner_loop(char const *t, char *q, int unsigned i)
 {
-	if ((c == '\'' || c == '\"') && q == 0)
-		return c; // open
-	if (q != 0 && c == q)
-		return 0; // close
-	return q; // unchanged
+	while (t[i])
+	{
+		*q = toggle_quote(t[i], *q);
+		if (!*q && (t[i] == ' ' || t[i] == '\t'))
+			break ;
+		i++;
+	}
+	return (i);
 }
 
-static int split(t_token_list **new_list, char const *t)
+static int	split(t_token_list **new_list, char const *t)
 {
-	char q;
-	unsigned int start;
-	unsigned int i;
-	
+	char			q;
+	unsigned int	start;
+	unsigned int	i;
+	t_token			*new_tok;
+
 	q = 0;
 	i = 0;
 	while (t[i])
 	{
-		while (t[i] && !q && (t[i] == ' ' || t[i] == '\t')) // Skip leading spaces outside quotes
+		while (t[i] && !q && (t[i] == ' ' || t[i] == '\t'))
 			i++;
 		start = i;
-		while (t[i]) // Find end of token (space outside quotes or end of string)
+		i = split_inner_loop(t, &q, i);
+		if (start < i)
 		{
-			q = toggle_quote(t[i], q);
-			if (!q && (t[i] == ' ' || t[i] == '\t'))
-				break;
-			i++;
-		} if (start < i)
-		{
-			t_token *new_tok; // Create new TOKEN_WORD from t[start..i-1]
-			if (create_token2(TOKEN_WORD, t + start, i - start, &new_tok) && append_token_list(new_list, new_tok))
+			if (create_token2(TOKEN_WORD, t + start, i - start, &new_tok)
+				&& append_token_list(new_list, new_tok))
 				;
 			else
 				return (0);
@@ -50,16 +64,16 @@ static int	append_and_null(t_token_list **list, t_token **tok)
 	return (success);
 }
 
-static int do_split(t_token_list *list, t_token_list **new_list)
+static int	do_split(t_token_list *list, t_token_list **new_list)
 {
-	unsigned int i;
+	unsigned int	i;
 
 	i = 0;
 	while (i < list->len)
 	{
 		if (list->tok[i]->type == TOKEN_WORD)
 		{
-			if(!split(new_list, list->tok[i]->token))
+			if (!split(new_list, list->tok[i]->token))
 				return (0);
 		}
 		else if (!append_and_null(new_list, list->tok + i))
@@ -69,9 +83,9 @@ static int do_split(t_token_list *list, t_token_list **new_list)
 	return (1);
 }
 
-int token_resplit(t_app *app)
+int	token_resplit(t_app *app)
 {
-	t_token_list *new_list;
+	t_token_list	*new_list;
 
 	if (!new_token_list(4096, &new_list))
 		return (0);

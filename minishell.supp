@@ -1,0 +1,7 @@
+{
+	libreadline
+	Memcheck:Leak
+	...
+	obj:*libreadline.so.*
+	...
+}

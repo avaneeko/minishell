@@ -6,7 +6,7 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 19:01:30 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/16 15:53:49 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/16 20:17:08 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,8 @@ static char	*fetch_oldpwd(t_env *env)
 }
 
 /**
- * @brief Capture the current working directory into the provided buffer using
- * 		getcwd.
+ * @brief Capture the current working directory into the provided buffer
+ * 		using getcwd.
  * @param buf Destination buffer to store the absolute path.
  * @param size Size of buf in bytes.
  * @return 1 on success, 0 on failure after printing an error message.

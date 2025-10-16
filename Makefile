@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+         #
+#    By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/24 17:33:26 by losypenk          #+#    #+#              #
-#    Updated: 2025/10/14 17:24:27 by jgueon           ###   ########.fr        #
+#    Updated: 2025/10/16 15:45:58 by losypenk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,11 +20,14 @@ SRC := src/main.c src/utils.c src/utils2.c src/utils3.c src/token.c \
 	src/heredoc_get_file_name.c src/heredoc_input.c src/heredoc_input1.c \
 	src/heredoc_open_write.c src/cmdarr.c src/exec_builder.c \
 	src/expand_last_err.c src/get_next_line.c src/get_next_line_utils.c \
+	src/tokenizer1.c \
+	src/token_resplit1.c \
 	src/astr1.c \
 	src/app_reset_exec.c \
 	src/prompt.c \
 	src/dequoter.c \
 	src/exec_handle_redir.c \
+	src/exec_builder1.c \
 	src/syntax_checker.c \
 	src/Builtins/builtin_cd.c \
 	src/Builtins/builtin_echo.c \
@@ -56,6 +59,7 @@ SRC := src/main.c src/utils.c src/utils2.c src/utils3.c src/token.c \
 	src/Execution/executor.c \
 	src/Execution/redirection.c \
 	src/Signals/signals.c \
+	src/Signals/signals1.c
 
 OBJ := $(SRC:src/%.c=obj/%.o)
 

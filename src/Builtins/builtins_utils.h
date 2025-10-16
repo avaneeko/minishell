@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins_utils.h                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 19:34:31 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/14 21:03:40 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/16 15:32:00 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,10 @@
 # include <stdlib.h>
 # include "../Execution/execution_utils.h"
 # include <linux/limits.h>
+
+typedef struct s_app		t_app;
+typedef struct s_env		t_env;
+typedef struct s_command	t_command;
 
 // Change the current working directory to argv[1] (or HOME if none)
 int		builtin_cd(char **argv, t_env *env);

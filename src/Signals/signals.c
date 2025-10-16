@@ -1,6 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signals.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/16 15:43:44 by losypenk          #+#    #+#             */
+/*   Updated: 2025/10/16 16:30:36 by losypenk         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
-#include <readline/readline.h>
-#include <readline/history.h>
 #include <signal.h>
 #include <unistd.h>
 
@@ -15,12 +25,11 @@ static void	sigint_handler_default(int signum)
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
-	rl_done = 1;
 	g_signal = 128 + signum;
 	get_app()->last_exit_code = g_signal;
 }
 
-static int	heredoc_event_hook(void)
+int	heredoc_event_hook(void)
 {
 	if (g_signal == 130)
 	{
@@ -30,7 +39,7 @@ static int	heredoc_event_hook(void)
 	return (0);
 }
 
-static void	sigint_handler_heredoc(int signum)
+void	sigint_handler_heredoc(int signum)
 {
 	rl_done = 1;
 	g_signal = 128 + signum;
@@ -46,23 +55,8 @@ void	set_default_signals(void)
 	signal(SIGQUIT, SIG_IGN);
 }
 
-void	set_heredoc_signals(void)
+void	parent_sigint_handler(int signum)
 {
-	g_signal = 0;
-	rl_event_hook = heredoc_event_hook;
-	signal(SIGINT, sigint_handler_heredoc);
-	signal(SIGQUIT, SIG_IGN);
+	g_signal = 128 + signum;
+	get_app()->last_exit_code = g_signal;
 }
-
-void	set_child_signals(void)
-{
-	// g_signal = 0;
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
-}
-
-// int	main(int argc, char const *argv[], char const *envp[])
-// {
-// 	setup_signals(); // <==== ADD THIS_Before entering prompt/readline loop
-// 	// ...
-// }

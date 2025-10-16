@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution_resources.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 19:59:28 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/16 15:53:07 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/16 15:40:41 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,10 +73,10 @@ static int	open_pipes_loop(int n_cmd, int **pipes)
 
 /**
  * @brief Ensure that all needed pipe pairs are opened or perform full cleanup
- * 		on failure.
+ * on failure.
  * @param n_cmd Number of commands in pipeline.
  * @param pipes_ptr Pointer to the outer pipes array pointer for possible
- * 		 NULLing.
+ * NULLing.
  * @param pids_ptr Unused here; present for symmetry with other allocators.
  * @return 0 on success, -1 on failure with cleanup.
  */
