@@ -6,13 +6,12 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/14 17:07:57 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/15 23:40:48 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/16 15:53:37 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "execution_utils.h"
-
 
 /**
  * @brief Save copies of current stdin and stdout into saved[0] and saved[1].

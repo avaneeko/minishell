@@ -6,7 +6,7 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 19:49:02 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/15 23:55:42 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/16 15:52:39 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ static int	push_kv(char **out, unsigned int *j, char const *k, char const *v)
 	*j = *j + 1;
 	return (1);
 }
+
 /**
  * @brief Serialize the internal environment into a newly allocated
  * 			NULL-terminated char** suitable for execve.
