@@ -15,6 +15,7 @@ static void	sigint_handler_default(int signum)
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
+	rl_done = 1;
 	g_signal = 128 + signum;
 	get_app()->last_exit_code = g_signal;
 }

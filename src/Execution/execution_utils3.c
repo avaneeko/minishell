@@ -6,22 +6,17 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 20:04:08 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/09 20:04:44 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/15 23:34:37 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>                     /* close  */
-#include <stdlib.h>                     /* free   */
+#include "minishell.h"
+#include "execution_utils.h"
 
-/* ************************************************************************** */
-/*                                                                            */
-/*                             executionutils3.c                              */
-/*                                                                            */
-/*   Small cross-file utilities: FD closers, env_free_serialized, and legacy  */
-/*   close_and_free_pipes for the old pipe-matrix implementation.             */
-/*                                                                            */
-/* ************************************************************************** */
-/* Close fd if valid and set to -1. */
+/**
+ * @brief Close fd if non-negative and set it to -1 to avoid reuse.
+ * @param fd Pointer to file descriptor to close and invalidate.
+ */
 void	close_if_valid(int *fd)
 {
 	if (fd && *fd >= 0)
@@ -31,7 +26,10 @@ void	close_if_valid(int *fd)
 	}
 }
 
-/* Close both ends of a 2-int pipe pair if valid.  */
+/**
+ * @brief Close both ends of a pipe pair if the array is not NULL.
+ * @param pipefd An array of two file descriptors.
+ */
 void	close_pipe_pair(int pipefd[2])
 {
 	if (pipefd)
@@ -41,7 +39,10 @@ void	close_pipe_pair(int pipefd[2])
 	}
 }
 
-/* Free a NULL-terminated env array created by env_serialize.  */
+/**
+ * @brief Free a serialized environment array created by env_serialize.
+ * @param envp NULL-terminated "KEY=VALUE" array to free.
+ */
 void	env_free_serialized(char **envp)
 {
 	unsigned int	i;
@@ -57,7 +58,12 @@ void	env_free_serialized(char **envp)
 	free(envp);
 }
 
-/* Legacy: close N-1 pipes and free the outer array.  */
+/**
+ * @brief Close all N-1 pipe pairs created for a pipeline and free the outer
+ * 		array.
+ * @param n_cmd Number of commands, determining how many pipe pairs exist.
+ * @param pipes Outer array of int[2] pipe pairs.
+ */
 void	close_and_free_pipes(int n_cmd, int **pipes)
 {
 	int	i;
@@ -76,4 +82,22 @@ void	close_and_free_pipes(int n_cmd, int **pipes)
 		i += 1;
 	}
 	free(pipes);
+}
+
+/**
+ * @brief Count how many t_command nodes are linked starting from head.
+ * @param head First node of the command list.
+ * @return Number of commands in the list.
+ */
+int	count_commands(t_command *head)
+{
+	int	n;
+
+	n = 0;
+	while (head)
+	{
+		n += 1;
+		head = head->next;
+	}
+	return (n);
 }

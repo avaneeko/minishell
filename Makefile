@@ -6,7 +6,7 @@
 #    By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/24 17:33:26 by losypenk          #+#    #+#              #
-#    Updated: 2025/10/15 18:30:41 by losypenk         ###   ########.fr        #
+#    Updated: 2025/10/16 15:07:18 by losypenk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,7 +36,14 @@ SRC := src/main.c src/utils.c src/utils2.c src/utils3.c src/token.c \
 	src/Builtins/builtin_export.c \
 	src/Builtins/builtin_pwd.c \
 	src/Builtins/builtin_unset.c \
-	src/Builtins/builtins_utils.c \
+	src/Builtins/builtins_utils1.c \
+	src/Builtins/builtins_utils2.c \
+	src/Builtins/builtins_utils3.c \
+	src/Builtins/builtins_utils4.c \
+	src/Builtins/builtins_utils5.c \
+	src/Builtins/builtins_utils6.c \
+	src/Builtins/builtins_utils7.c \
+	src/Builtins/builtins_utils8.c \
 	src/Builtins/env_helpers.c \
 	src/Execution/command_path.c \
 	src/Execution/execution_env.c \
@@ -45,9 +52,10 @@ SRC := src/main.c src/utils.c src/utils2.c src/utils3.c src/token.c \
 	src/Execution/execution_utils.c \
 	src/Execution/execution_utils2.c \
 	src/Execution/execution_utils3.c \
+	src/Execution/execution_utils4.c \
+	src/Execution/execution_utils5.c \
 	src/Execution/execution_wait.c \
 	src/Execution/executor_helpers.c \
-	src/Execution/executor_patch.c \
 	src/Execution/executor.c \
 	src/Execution/redirection.c \
 	src/Signals/signals.c \

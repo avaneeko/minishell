@@ -6,43 +6,28 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 19:49:02 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/09 19:49:25 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/15 23:55:42 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"                  /* t_env, pairs, lengths           */
-#include <stdlib.h>                     /* malloc, free                    */
+#include "minishell.h"
 #include "execution_utils.h"
+#include "../Builtins/builtins_utils.h"
 
-/* ************************************************************************** */
-/*                                                                            */
-/*                               execution_env.c                              */
-/*                                                                            */
-/*   Environment serialization to NULL-terminated array of "KEY=VALUE" pairs. */
-/*                                                                            */
-/* ************************************************************************** */
-/* Build "KEY=VALUE" heap string.  */
-static char	*join_kv(char const *k, char const *v)
-{
-	size_t	lk;
-	size_t	lv;
-	char	*s;
-
-	if (!k || !v)
-		return (NULL);
-	lk = slen(k);
-	lv = slen(v);
-	s = (char *)malloc(lk + 1 + lv + 1);
-	if (!s)
-		return (NULL);
-	mcpy(s, k, lk);
-	s[lk] = '=';
-	mcpy(s + lk + 1, v, lv);
-	s[lk + 1 + lv] = '\0';
-	return (s);
-}
-
-/* Push one joined KV into out[j], increment j on success.  */
+/**
+ * @brief Push a "KEY=VALUE" string into out at index *j and advance the index.
+ * @param out Output vector under construction; has capacity for
+ * 		env->len + 1 entries.
+ * @param j In/out index of the next free slot; incremented on successful push.
+ * @param k Key string; when NULL the pair is skipped but success is reported
+ * 		to continue building.
+ * @param v Value string; when NULL the pair is skipped but success is reported
+ *		to continue building.
+ * @return 1 on success (including skipped pairs when k or v is NULL), 0 on
+ *		allocation failure.
+ * @note Used by env_serialize to build the execve-compatible environment
+ *		vector.
+ */
 static int	push_kv(char **out, unsigned int *j, char const *k, char const *v)
 {
 	char	*s;
@@ -56,8 +41,13 @@ static int	push_kv(char **out, unsigned int *j, char const *k, char const *v)
 	*j = *j + 1;
 	return (1);
 }
-
-/* Serialize env to a newly allocated NULL-terminated array. */
+/**
+ * @brief Serialize the internal environment into a newly allocated
+ * 			NULL-terminated char** suitable for execve.
+ * @param env Environment structure containing key/value pairs.
+ * @return Newly allocated vector of "KEY=VALUE" strings ending with NULL, or
+ * 			NULL on allocation failure.
+ */
 char	**env_serialize(t_env const *env)
 {
 	char			**out;

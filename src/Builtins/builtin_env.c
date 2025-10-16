@@ -6,13 +6,19 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 17:26:53 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/09 17:29:31 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/16 00:05:26 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "builtins_utils.h"
 
+/**
+ * @brief Print environment variables as KEY=VALUE lines to stdout, skipping
+ * 		entries without a value.
+ * @param env Environment structure to read from.
+ * @return 0 after printing or if env is NULL.
+ */
 int	builtin_env(t_env *env)
 {
 	unsigned int	i;

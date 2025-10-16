@@ -6,16 +6,18 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 19:14:04 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/09 17:25:24 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/16 00:45:15 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "builtins_utils.h"
 
-/* minishell: echo must accept -n, -nnn, and repeated -n flags like bash */
-/* - Rule: A flag is valid if it is '-' followed by one or more 'n' and nothing else. */
-/* - Consume all leading valid flags, then print args separated by one space; omit trailing '\n' if any -n was seen. */
+/**
+ * @brief Check if a string is a valid -n flag form: "-n", "-nn", "-nnn", etc.
+ * @param s String to test.
+ * @return 1 if s matches -n with one or more 'n', 0 otherwise.
+ */
 static int	is_echo_n(char const *s)
 {
 	int	i;
@@ -30,6 +32,13 @@ static int	is_echo_n(char const *s)
 	return (s[i] == '\0');
 }
 
+/**
+ * @brief Echo arguments separated by spaces, honoring repeated -n flags to
+ * 		suppress the trailing newline.
+ * @param argv Vector where argv[0]="echo" and subsequent items are options or
+ * 		strings.
+ * @return Always returns 0.
+ */
 int	builtin_echo(char **argv)
 {
 	int	i;
