@@ -6,21 +6,22 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/15 18:37:46 by losypenk          #+#    #+#             */
-/*   Updated: 2025/10/15 18:38:58 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/10/16 15:05:17 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 // we can afford to reference here, as long as the tokens live during the exec.
 // Simplifies memory management a lot.
-void	handle_word_token(t_command *cmd, t_token *token, int unsigned *cur_argv)
+void	handle_word_token(t_command *cmd, t_token *token,
+			int unsigned *cur_argv)
 {
 	cmd->argv[(*cur_argv)++] = token->token;
 }
 
 void	finalize_redir_list(t_redir **redirs, int unsigned count)
 {
-	int unsigned i;
+	int unsigned	i;
 
 	if (!count)
 		return ;
@@ -50,8 +51,8 @@ void	finalize_list(t_app *app)
 
 int	count_argv_entries(t_token_list const *list, int unsigned start_idx)
 {
-	int unsigned i;
-	int unsigned count;
+	int unsigned	i;
+	int unsigned	count;
 
 	i = start_idx;
 	count = 0;
