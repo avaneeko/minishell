@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/16 15:11:24 by losypenk          #+#    #+#             */
+/*   Updated: 2025/10/16 15:32:51 by losypenk         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -14,8 +26,14 @@
 # include <readline/history.h>
 # include "utils.h"
 # include "astr.h"
+# include "Builtins/builtins_utils.h"
+# include "Execution/execution_utils.h"
 
-extern volatile	int g_signal;
+typedef struct s_app		t_app;
+typedef struct s_env		t_env;
+typedef struct s_command	t_command;
+
+extern volatile int			g_signal;
 
 enum e_token_type
 {
@@ -47,13 +65,13 @@ typedef struct s_token_list
 }	t_token_list;
 
 // Max characters allowed in the prompt at a time.
-#define PROMPT_CHAR_LIMIT 1024
+# define PROMPT_CHAR_LIMIT 1024
 
 //
 //	Instantiate a new token list, with set capacity.
 //	Returns 1 on success, 0 otherwise.
 //
-int		new_token_list(unsigned int capacity, t_token_list **out);
+int			new_token_list(unsigned int capacity, t_token_list **out);
 
 //
 //	Destroys the token list.
@@ -61,37 +79,37 @@ int		new_token_list(unsigned int capacity, t_token_list **out);
 //	This does not release the tokens that list references, only the list itself.
 //*	list is unusable after this function.
 //
-void	destroy_token_list(t_token_list const *list);
+void		destroy_token_list(t_token_list const *list);
 
 //
 //	Destroys the token list and all of it's tokens.
 //*	list and its tokens are rendered unusable after this function.
 //
-void	destroy_token_list_deep(t_token_list const *list);
+void		destroy_token_list_deep(t_token_list const *list);
 
 //
 //	Copies the token list. dst must have enough space for the copy.
 //
-void	copy_token_list(t_token_list const *src, t_token_list *dst);
+void		copy_token_list(t_token_list const *src, t_token_list *dst);
 
 //
 //	Clones the token list, allocating resources for the newly created clone.
 //*	This does not clone the tokens, only their references inside the list.
 //	Returns 1 on success, 0 otherwise.
 //
-int		clone_token_list(t_token_list const *list, t_token_list **out);
+int			clone_token_list(t_token_list const *list, t_token_list **out);
 
 //
 //	Empties the entire token list, freeing all it's tokens and their references.
 //
-void	clear_token_list(t_token_list *list);
+void		clear_token_list(t_token_list *list);
 
 //
 //	Resizes the token list.
 //	Always free()'s the old *list, even on failure.
 //	Returns 1 on success, 0 otherwise.
 //
-int		resize_token_list(t_token_list **list, unsigned int new_capacity);
+int			resize_token_list(t_token_list **list, unsigned int new_capacity);
 
 //
 //	Appends the new token pointer to the list, might grow the `*list` if it's
@@ -99,7 +117,7 @@ int		resize_token_list(t_token_list **list, unsigned int new_capacity);
 //!	Will free the `*list` and `token` on failure.
 //	Returns 1 on success, 0 on failure.
 //
-int		append_token_list(t_token_list **list, t_token *token);
+int			append_token_list(t_token_list **list, t_token *token);
 
 //
 //	Creates an allocated token with type `type` and `tok` contents.
@@ -108,7 +126,8 @@ int		append_token_list(t_token_list **list, t_token *token);
 //	Writes the new token to *out, only on success.
 //	Returns 1 on success, 0 otherwise.
 //
-int		create_token(enum e_token_type type, char const *tok, t_token **out);
+int			create_token(enum e_token_type type, char const *tok,
+				t_token **out);
 
 //
 //	Same as create_token, but accepts a pointer with a size to allow for
@@ -116,14 +135,14 @@ int		create_token(enum e_token_type type, char const *tok, t_token **out);
 //	Writes the new token to *out, only on success.
 //	Returns 1 on success, 0 otherwise.
 //
-int		create_token2(enum e_token_type type, char const *tok, size_t tok_len,
-		t_token **out);
+int			create_token2(enum e_token_type type, char const *tok,
+				size_t tok_len, t_token **out);
 
 //
 //	Destroy token. Releases all resources held by token.
 //	Token is rendered unusable after this function.
 //
-void	destroy_token(t_token const *token);
+void		destroy_token(t_token const *token);
 
 //
 //	Modifies the token's contents by recreating the token with appropriate size.
@@ -136,7 +155,7 @@ void	destroy_token(t_token const *token);
 //	Writes the output to `*token` or nulls it on failure.
 //	Returns 1 on success, 0 otherwise.
 //
-int		modify_token(t_token **token, char const *new_contents);
+int			modify_token(t_token **token, char const *new_contents);
 
 //
 //	Environment.
@@ -163,63 +182,60 @@ typedef struct s_env
 //	Appends the epair entry into the env.
 //! Will free `env->pairs` and `pair` on failure.
 //
-int		try_append_epair(t_env *env, t_epair const *pair);
+int			try_append_epair(t_env *env, t_epair const *pair);
 
 //
 //	Removes the pair with matching `key`.
 //	Returns 1 if epair with `key` was found and removed, 0 otherwise.
 //
-int		remove_epair_by_key(t_env *env, char const* key);
+int			remove_epair_by_key(t_env *env, char const *key);
 
 //
 //	Lookup an epair with `key`.
 //	Returns 1 if epair with `key` was found and written to `out`, 0 otherwise.
 //! Do not destroy or free() the `out` pair.
 //
-int		get_epair_by_key(t_env const *env, char const* key, t_epair *out);
+int			get_epair_by_key(t_env const *env, char const *key, t_epair *out);
 
 //
 //	Just like get_epair_by_key() but with `key` and `key_len` instead
 //	null terminated `key` argument.
 //! Do not destroy or free() the `out` pair.
 //
-int		get_epair_by_key2(t_env const *env, char const* key,
-		unsigned int key_len, t_epair *out);
+int			get_epair_by_key2(t_env const *env, char const *key,
+				unsigned int key_len, t_epair *out);
 
 //
 //	Removes the pair at `idx` from the env list via remove-swap.
 //
-void	remove_epair_at_idx(t_env *env, unsigned int idx);
+void		remove_epair_at_idx(t_env *env, unsigned int idx);
 
 //
 //	Destroys env, freeing every epair held by env and the env itself.
 //
-void	destroy_env(t_env *env);
+void		destroy_env(t_env *env);
 
 //
 //	Destroys all resources held by epair.
 //	Assumes epair ptr is not malloc()'ed. (Current design)
 //
-void	destroy_epair(t_epair const *pair);
+void		destroy_epair(t_epair const *pair);
 
 // Will free() `env->pairs` on failure.
-int		grow_env(t_env *env);
+int			grow_env(t_env *env);
 
 //
 //	TODO: Document.
 //
-int	create_env_from_envp(char const **envp, t_env *out_env);
+int			create_env_from_envp(char const **envp, t_env *out_env);
 
 //
 // Parses all of envp into `t_env`
 //
-int		parse_envp(t_env *env, char const **envp);
-
+int			parse_envp(t_env *env, char const **envp);
 
 // Added 9.10 for Werror flag(used in builtin_export.c; set_env_replace)
-int		create_pair(char const *str, t_epair *out);
-
-
+int			create_pair(char const *str, t_epair *out);
 
 // Initial amount of entries reserved by `t_env`, in entries.
 # ifndef ENV_MEM_RESERVE
@@ -231,8 +247,8 @@ int		create_pair(char const *str, t_epair *out);
 #  define ENV_MEM_GROW_SIZE 512u
 # endif
 
-#define ORIGIN_EXPORT 42
-#define ORIGIN_ENV -42
+# define ORIGIN_EXPORT 42
+# define ORIGIN_ENV -42
 
 //
 //	Expansion.
@@ -241,9 +257,9 @@ int		create_pair(char const *str, t_epair *out);
 // Holds all expansion state/information.
 typedef struct s_exp
 {
-	t_astr	a;				  // Appendable string for currently expanded token.
-	t_token_list **list;	  // The token list.
-	t_env const *env;		  // Environment variables.
+	t_astr			a;		// Appendable string for currently expanded token.
+	t_token_list	**list;	// The token list.
+	t_env const		*env;	// Environment variables.
 }	t_exp;
 
 //
@@ -253,7 +269,7 @@ typedef struct s_exp
 //	1 - valid standard variable name
 //	2 - special variable (currently only $?)
 //
-int	is_valid_var_name(char const *s);
+int			is_valid_var_name(char const *s);
 
 // Get length of the variable.
 // Examples (return meaning `*out =`):
@@ -262,40 +278,7 @@ int	is_valid_var_name(char const *s);
 // Given s -> "something" it should return 0. (no $ found, not a variable)
 //! This does not handle $1 to $9 - positional arguments, out of scope.
 // TODO: Handle $? - last exit code.
-int get_val_len(char const *s, unsigned int *out);
-
-// struct s_app;
-typedef struct s_app t_app;
-
-//
-//	Gets the contents based on the environment key `s`
-//*	`s` cannot be null.
-//
-char const *get_expansion_contents(t_app *app, char const *s,
-		unsigned int len);
-
-//
-//	Tokenizer.
-//
-int	tokenize(char *str, t_token_list *list);
-
-//
-//	Token expansion.
-//
-int	expand(t_app *app, t_token_list **list, t_env const *env);
-
-//
-//	Post-expansion token splitting.
-//
-int token_resplit(t_app *app);
-
-//
-//	Dequotes all word tokens in the token list of the application.
-//	This function iterates through the token list stored in the
-//	`t_app` structure and dequotes each token of type `TOKEN_WORD`. This is
-//	achieved by calling the `dequote` function on each TOKEN_WORD token.
-//
-void	dequote_tokens(t_app *app);
+int			get_val_len(char const *s, unsigned int *out);
 
 //
 //	All things application.
@@ -305,38 +288,31 @@ void	dequote_tokens(t_app *app);
 //	Command array
 //
 
-// Forward declare.
-typedef struct s_command t_command;
+typedef struct s_redir
+{
+	int				type;		// e.g., TOKEN_REDIRECT_INPUT, etc.
+	char			*target;	// filename or heredoc delimiter
+	struct s_redir	*next;
+}	t_redir;
+
+typedef struct s_command
+{
+	char				**argv;
+	t_redir				**redirs;	// Linked list of redirections
+	int					infile;		// File descriptor for redir input or -1
+	int					outfile;	// File descriptor for redir output or -1
+	int					is_builtin;	// 1 if is builtin, 0 if not
+	struct s_command	*next;		// Next command in pipeline
+}	t_command;
 
 //$ Command array is the execution chain from the tokenizers output.
 //$ This executiuon chain is later executed by the execution unit itself.
 typedef struct s_cmdarr
 {
-	t_command *cmds;
-	int unsigned cap;
-	int unsigned len;
-} t_cmdarr;
-
-//
-//	Creates a new command array. Initial capacity is set to CMDARR_INIT_CAP.
-//	Returns 1 on success, 0 otherwise.
-//
-int cmdarr_create(t_cmdarr *self);
-
-//
-//	Destroys the command array, freeing all allocated memory.
-//
-void cmdarr_destroy(t_cmdarr *self);
-
-//
-//	Appends a command to the command array.
-//	Will resize the command array if needed.
-//	If destroy_on_fail is set to 1, the command will be freed using
-//	destroy_command() and self with destroy_command() on failure.
-//	cmd is copied, but its contents are not deep-copied.
-//	Returns 1 on success, 0 otherwise.
-//
-int cmdarr_append(t_cmdarr *self, t_command *cmd, int const destroy_on_fail);
+	t_command		*cmds;
+	int unsigned	cap;
+	int unsigned	len;
+}	t_cmdarr;
 
 //
 //	Application state.
@@ -356,20 +332,72 @@ typedef struct s_app
 	pid_t			*pids;		// Array of child pids for exec.
 }	t_app;
 
-int		app_create(int argc, char const **argv, char const **envp,
-	t_app *out);
+//
+//	Gets the contents based on the environment key `s`
+//*	`s` cannot be null.
+//
+char const	*get_expansion_contents(t_app *app, char const *s,
+				unsigned int len);
 
-void	app_destroy(t_app *app);
+//
+//	Tokenizer.
+//
+int			tokenize(char *str, t_token_list *list);
+
+//
+//	Token expansion.
+//
+int			expand(t_app *app, t_token_list **list, t_env const *env);
+
+//
+//	Post-expansion token splitting.
+//
+int			token_resplit(t_app *app);
+
+//
+//	Dequotes all word tokens in the token list of the application.
+//	This function iterates through the token list stored in the
+//	`t_app` structure and dequotes each token of type `TOKEN_WORD`. This is
+//	achieved by calling the `dequote` function on each TOKEN_WORD token.
+//
+void		dequote_tokens(t_app *app);
+
+//
+//	Creates a new command array. Initial capacity is set to CMDARR_INIT_CAP.
+//	Returns 1 on success, 0 otherwise.
+//
+int			cmdarr_create(t_cmdarr *self);
+
+//
+//	Destroys the command array, freeing all allocated memory.
+//
+void		cmdarr_destroy(t_cmdarr *self);
+
+//
+//	Appends a command to the command array.
+//	Will resize the command array if needed.
+//	If destroy_on_fail is set to 1, the command will be freed using
+//	destroy_command() and self with destroy_command() on failure.
+//	cmd is copied, but its contents are not deep-copied.
+//	Returns 1 on success, 0 otherwise.
+//
+int			cmdarr_append(t_cmdarr *self, t_command *cmd,
+				int const destroy_on_fail);
+
+int			app_create(int argc, char const **argv, char const **envp,
+				t_app *out);
+
+void		app_destroy(t_app *app);
 
 // Closes all open fd's of app->heredoc.
-void app_reset_heredocs(t_app *app);
+void		app_reset_heredocs(t_app *app);
 
 // Resets the execution state of the app, freeing all allocated memory
 // related to execution (app->exec).
-void	app_reset_exec(t_app *app);
+void		app_reset_exec(t_app *app);
 
 // Resets the tokenizer, which stores the tokens at app->token_list.
-void	app_reset_tokenizer(t_app *app);
+void		app_reset_tokenizer(t_app *app);
 
 //
 //	Returns 1 if token list syntax is valid,
@@ -384,13 +412,13 @@ int			is_syntax_valid(t_app *app);
 //
 //	Prompt the user for all the here documents inside the tokens.
 //
-int	prompt_heredoc(t_app *app);
+int			prompt_heredoc(t_app *app);
 
 //
 // Display the prompt and read user input, adds it to history.
 // Returns 1 on success, 0 on EOF (Ctrl-D), -1 on error
 //
-int	prompt(t_app *app);
+int			prompt(t_app *app);
 
 //
 //	Execution.
@@ -401,30 +429,11 @@ int	prompt(t_app *app);
 #  define CMDARR_MEM_RESERVE 1024u
 # endif
 
-int build_exec(t_app *app);
-typedef struct s_redir
-{
-	int				type;     // e.g., TOKEN_REDIRECT_INPUT, TOKEN_REDIRECT_OUTPUT, etc.
-	char			*target;  // filename or heredoc delimiter
-	struct s_redir	*next;
-}   t_redir;
+int			build_exec(t_app *app);
 
-typedef struct s_command
-{
-	char				**argv;
-	t_redir				**redirs;     // Linked list of redirections
-	int					infile;      // File descriptor for redirected input or -1
-    int					outfile;     // File descriptor for redirected output or -1
-	int					is_builtin;  // 1 if is builtin, 0 if not
-	struct s_command	*next;      // Next command in pipeline
-}   t_command;
-
-# include "Builtins/builtins_utils.h"
-# include "Execution/execution_utils.h"
-
-void	setup_signals(void);
-void	set_child_signals(void);
-int		get_exit_status(void);
-void	set_exit_status(int status);
+void		setup_signals(void);
+void		set_child_signals(void);
+int			get_exit_status(void);
+void		set_exit_status(int status);
 
 #endif
