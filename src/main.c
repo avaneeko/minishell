@@ -6,7 +6,7 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/16 16:38:05 by losypenk          #+#    #+#             */
-/*   Updated: 2025/10/16 16:46:27 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/10/16 16:50:42 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,12 @@ static void	exec(t_app *app)
 	dequote_tokens(app);
 	if (is_syntax_valid(app) && !app->skip_exec)
 	{
-		build_exec(app);
+		if (!build_exec(app))
+		{
+			write(2, "OOM during exec build.\n", 23);
+			app->last_exit_code = 1;
+			return ;
+		}
 		if (app->exec.len)
 			app->last_exit_code = execute_pipeline(app, &app->exec.cmds[0],
 					&app->env);
