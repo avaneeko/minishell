@@ -6,7 +6,7 @@
 #    By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/24 17:33:26 by losypenk          #+#    #+#              #
-#    Updated: 2025/10/16 15:07:18 by losypenk         ###   ########.fr        #
+#    Updated: 2025/10/16 15:45:58 by losypenk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -59,6 +59,7 @@ SRC := src/main.c src/utils.c src/utils2.c src/utils3.c src/token.c \
 	src/Execution/executor.c \
 	src/Execution/redirection.c \
 	src/Signals/signals.c \
+	src/Signals/signals1.c
 
 OBJ := $(SRC:src/%.c=obj/%.o)
 

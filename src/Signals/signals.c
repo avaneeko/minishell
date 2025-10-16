@@ -6,13 +6,11 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/16 15:43:44 by losypenk          #+#    #+#             */
-/*   Updated: 2025/10/16 15:45:23 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/10/16 16:30:36 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <readline/readline.h>
-#include <readline/history.h>
 #include <signal.h>
 #include <unistd.h>
 
@@ -27,12 +25,11 @@ static void	sigint_handler_default(int signum)
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
-	rl_done = 1;
 	g_signal = 128 + signum;
 	get_app()->last_exit_code = g_signal;
 }
 
-static int	heredoc_event_hook(void)
+int	heredoc_event_hook(void)
 {
 	if (g_signal == 130)
 	{
@@ -42,7 +39,7 @@ static int	heredoc_event_hook(void)
 	return (0);
 }
 
-static void	sigint_handler_heredoc(int signum)
+void	sigint_handler_heredoc(int signum)
 {
 	rl_done = 1;
 	g_signal = 128 + signum;
@@ -58,7 +55,7 @@ void	set_default_signals(void)
 	signal(SIGQUIT, SIG_IGN);
 }
 
-static void	parent_sigint_handler(int signum)
+void	parent_sigint_handler(int signum)
 {
 	g_signal = 128 + signum;
 	get_app()->last_exit_code = g_signal;

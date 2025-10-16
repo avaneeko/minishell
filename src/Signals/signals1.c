@@ -6,9 +6,17 @@
 /*   By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/16 15:44:03 by losypenk          #+#    #+#             */
-/*   Updated: 2025/10/16 15:45:13 by losypenk         ###   ########.fr       */
+/*   Updated: 2025/10/16 15:51:23 by losypenk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "minishell.h"
+#include <signal.h>
+
+// From signals.c
+void	parent_sigint_handler(int signum);
+void	sigint_handler_heredoc(int signum);
+int		heredoc_event_hook(void);
 
 void	set_parent_signals(void)
 {
