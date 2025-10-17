@@ -6,7 +6,7 @@
 /*   By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 17:26:53 by jgueon            #+#    #+#             */
-/*   Updated: 2025/10/16 00:05:26 by jgueon           ###   ########.fr       */
+/*   Updated: 2025/10/16 20:39:33 by jgueon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,8 @@ int	builtin_env(t_env *env)
 	i = 0;
 	while (i < env->len)
 	{
-		if (env->pairs[i].key && env->pairs[i].value)
+		if (env->pairs[i].key && env->pairs[i].value
+			&& env->pairs[i].value[0] != '\0')
 		{
 			write(1, env->pairs[i].key, slen(env->pairs[i].key));
 			write(1, "=", 1);

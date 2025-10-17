@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: losypenk <losypenk@student.hive.fi>        +#+  +:+       +#+         #
+#    By: jgueon <jgueon@student.hive.fi>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/24 17:33:26 by losypenk          #+#    #+#              #
-#    Updated: 2025/10/16 15:45:58 by losypenk         ###   ########.fr        #
+#    Updated: 2025/10/16 21:25:10 by jgueon           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -44,6 +44,7 @@ SRC := src/main.c src/utils.c src/utils2.c src/utils3.c src/token.c \
 	src/Builtins/builtins_utils6.c \
 	src/Builtins/builtins_utils7.c \
 	src/Builtins/builtins_utils8.c \
+	src/Builtins/builtins_utils9.c \
 	src/Builtins/env_helpers.c \
 	src/Execution/command_path.c \
 	src/Execution/execution_env.c \
